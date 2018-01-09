@@ -12,6 +12,9 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TABLE_GENERIC_TASK = "generic_task";
+    private static final String TABLE_PIN_TASK = "pin_task";
+
     private static DatabaseHandler db;
     private EditText ageEntry;
     private RadioButton male;
@@ -49,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d("Gender", participant.getGender());
         }
 
-        GenericTaskDataModel model = db.getAllGenericTaskData();
+        GenericTaskDataModel model = db.getAllGenericTaskData(TABLE_GENERIC_TASK);
         for (int i = 0; i < model.length(); i++) {
             Log.d("Entry Start", "--------------------------------------");
             Log.d("User ID", model.getUserId().get(i));

@@ -1,5 +1,6 @@
 package com.example.olive.agerecognitionstudy;
 
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -22,6 +23,7 @@ public class GenericTaskActivity extends AppCompatActivity implements SensorEven
     private static final int MAX_Y = 25;
     private static final int TOUCH_AMOUNT = 3;
     private static final int OFFSET = 13;
+    private static final String TABLE_GENERIC_TASK = "generic_task";
 
     DatabaseHandler database;
 
@@ -103,7 +105,7 @@ public class GenericTaskActivity extends AppCompatActivity implements SensorEven
 
         if (touch_counter > TOUCH_AMOUNT){
             target.setVisibility(View.GONE);
-            database.createGenericTaskEntry(taskmodel);
+            database.createGenericOrPinTask(taskmodel, TABLE_GENERIC_TASK);
             database.closeDB();
             nextButton.setVisibility(View.VISIBLE);
         } else {
@@ -113,7 +115,8 @@ public class GenericTaskActivity extends AppCompatActivity implements SensorEven
     }
 
     public void nextButtonClicked(View view) {
-
+        Intent intent = new Intent(this, PinTaskActivity.class);
+        startActivity(intent);
     }
 
     public boolean dispatchTouchEvent(MotionEvent event) {

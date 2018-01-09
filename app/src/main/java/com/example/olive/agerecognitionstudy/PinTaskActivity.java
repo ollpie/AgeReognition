@@ -1,6 +1,9 @@
 package com.example.olive.agerecognitionstudy;
 
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
@@ -15,6 +18,9 @@ import android.widget.GridLayout;
 
 public class PinTaskActivity extends AppCompatActivity {
 
+    private static final int REPETITIONS = 5;
+    private static final String[] PINS = {"0537", "8683", "3915", "4710", "6327"};
+
     Point btnCenter;
     private Point touchPoint;
     private GridLayout layout;
@@ -25,6 +31,10 @@ public class PinTaskActivity extends AppCompatActivity {
     View touchCenterYLine;
     View touchCenterXLine;
 
+    private int repetitionCount = 0;
+
+    DatabaseHandler database;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,6 +42,8 @@ public class PinTaskActivity extends AppCompatActivity {
         LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.activity_pin_task, null);
         layout = findViewById(R.id.gridLayout);
+
+        database = MainActivity.getDbHandler();
 
         btnCenterXLine = new View(this);
         btnCenterXLine.setBackgroundColor(0xFFFFFFFF);
@@ -48,6 +60,7 @@ public class PinTaskActivity extends AppCompatActivity {
         touchCenterXLine = new View(this);
         touchCenterXLine.setBackgroundColor(0xFFF00000);
         this.addContentView(touchCenterXLine, new ViewGroup.LayoutParams( 1, ViewGroup.LayoutParams.FILL_PARENT));
+        showAlertDialog();
     }
 
     public void buttonPressed(View view) {
@@ -100,4 +113,30 @@ public class PinTaskActivity extends AppCompatActivity {
     int getManhattanDistance(Point touch, Point center) {
         return Math.abs(touch.x-center.x) + Math.abs(touch.y-center.y);
     }
+
+    private void showAlertDialog() {
+        AlertDialog.Builder alertDialogBuilder = new Builder(this);
+
+        // set title
+        alertDialogBuilder.setTitle("Die einzugebene Pin lautet:");
+
+        // set dialog message
+        alertDialogBuilder
+                .setMessage(PINS[repetitionCount])
+                .setCancelable(false)
+                .setPositiveButton("OK",new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,int id) {
+                        // if this button is clicked, close
+                        // current activity
+                        dialog.cancel();
+                    }
+                });
+
+        // create alert dialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+
+        // show it
+        alertDialog.show();
+    }
+
 }

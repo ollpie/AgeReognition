@@ -89,6 +89,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             + KEY_X_GYRO + " REAL," + KEY_Y_GYRO + " REAL," + KEY_Z_GYRO + " REAL,"
             + KEY_X_ROTATION + " REAL," + KEY_Y_ROTATION + " REAL," + KEY_Z_ROTATION + " REAL" + ")";
 
+    private static final String CREATE_TABLE_PIN_TASK = "CREATE TABLE "
+            + TABLE_GENERIC_TASK + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_PARTICIPANT_ID + " TEXT," + KEY_TARGET_ID + " INTEGER,"
+            + KEY_TIMESTAMP + " REAL," + KEY_EVENT_TYPE + " TEXT,"
+            + KEY_X_TARGET + " REAL," + KEY_Y_TARGET + " REAL,"
+            + KEY_X_TOUCH + " REAL," + KEY_Y_TOUCH + " REAL,"
+            + KEY_X_ACC + " REAL," + KEY_Y_ACC + " REAL," + KEY_Z_ACC + " REAL,"
+            + KEY_X_GRAVITY + " REAL," + KEY_Y_GRAVITY + " REAL," + KEY_Z_GRAVITY + " REAL,"
+            + KEY_X_GYRO + " REAL," + KEY_Y_GYRO + " REAL," + KEY_Z_GYRO + " REAL,"
+            + KEY_X_ROTATION + " REAL," + KEY_Y_ROTATION + " REAL," + KEY_Z_ROTATION + " REAL" + ")";
+
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -99,6 +109,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // creating required tables
         db.execSQL(CREATE_TABLE_GENERIC_TASK);
         db.execSQL(CREATE_TABLE_PARTICIPANTS);
+        db.execSQL(CREATE_TABLE_PIN_TASK);
     }
 
     @Override
@@ -160,11 +171,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     // deleting all Participants
     public void deleteAllParticipants() {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("DROP TABLE IF EXISTS "+ TABLE_PARTICIPANTS);
+        db.execSQL("delete from "+ TABLE_PARTICIPANTS);
         db.execSQL("delete from "+ TABLE_GENERIC_TASK);
     }
 
-    public void createGenericTaskEntry(GenericTaskDataModel taskModel) {
+    public void createGenericOrPinTask(GenericTaskDataModel taskModel, String table) {
         SQLiteDatabase db = this.getWritableDatabase();
         for (int i = 0; i < taskModel.length(); i++) {
             ContentValues values = new ContentValues();
@@ -195,13 +206,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             values.put(KEY_Y_ROTATION, taskModel.getYRotation().get(i));
             values.put(KEY_Z_ROTATION, taskModel.getZRotation().get(i));
 
-            db.insert(TABLE_GENERIC_TASK, null, values);
+            db.insert(table, null, values);
         }
     }
 
-    public GenericTaskDataModel getAllGenericTaskData() {
+    public GenericTaskDataModel getAllGenericTaskData(String table) {
         GenericTaskDataModel model = new GenericTaskDataModel();
-        String selectQuery = "SELECT * FROM " + TABLE_GENERIC_TASK;
+        String selectQuery = "SELECT * FROM " + table;
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
