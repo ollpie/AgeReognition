@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Age Recognition Study</string>
+    <string name="start_btn_name">Starte Session</string>
+    <string name="age_hint">Alter</string>
+    <string name="radio_male">Männlich</string>
+    <string name="radio_female">Weiblich</string>
+</resources>
