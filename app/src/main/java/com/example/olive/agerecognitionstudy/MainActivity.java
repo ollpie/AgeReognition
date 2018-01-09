@@ -1,5 +1,8 @@
 package com.example.olive.agerecognitionstudy;
 
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -27,18 +30,22 @@ public class MainActivity extends AppCompatActivity {
 
         setupUI();
         db = new DatabaseHandler(getApplicationContext());
-
-
-
     }
 
     public void startSession(View view) {
-        Participant p = new Participant(Integer.parseInt(ageEntry.getText().toString()), checkGender());
-        currentUserID = p.getId();
-        db.createParticipant(p);
-        db.closeDB();
-        Intent intent = new Intent(this, GenericTaskActivity.class);
-        startActivity(intent);
+        if (ageEntry.getText().equals("")) {
+            showAlertDialog();
+        }else if (!male.isChecked() && !female.isChecked()){
+            showAlertDialog();
+        }else{
+            Participant p = new Participant(Integer.parseInt(ageEntry.getText().toString()), checkGender());
+            currentUserID = p.getId();
+            db.createParticipant(p);
+            db.closeDB();
+            ageEntry.setText("");
+            Intent intent = new Intent(this, GenericTaskActivity.class);
+            startActivity(intent);
+        }
     }
 
     public void logData(View view) {
@@ -52,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d("Gender", participant.getGender());
         }
 
-        GenericTaskDataModel model = db.getAllGenericTaskData(TABLE_GENERIC_TASK);
+        GenericTaskDataModel model = db.getAllGenericTaskData(TABLE_PIN_TASK);
         for (int i = 0; i < model.length(); i++) {
             Log.d("Entry Start", "--------------------------------------");
             Log.d("User ID", model.getUserId().get(i));
@@ -96,6 +103,28 @@ public class MainActivity extends AppCompatActivity {
         } else {
             return "Weiblich";
         }
+    }
+
+    private void showAlertDialog() {
+        AlertDialog.Builder alertDialogBuilder = new Builder(this);
+
+        // set title
+        alertDialogBuilder.setTitle("Obacht!");
+
+        // set dialog message
+        alertDialogBuilder
+                .setMessage("Bitte Alter und Geschlecht auswählen.")
+                .setCancelable(false)
+                .setPositiveButton("OK",new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,int id) {
+                        // if this button is clicked, close
+                        // current activity
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 
     public static DatabaseHandler getDbHandler() {

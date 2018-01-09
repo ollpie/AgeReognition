@@ -5,33 +5,56 @@ import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Point;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.GridLayout;
+import android.widget.TextView;
 
-public class PinTaskActivity extends AppCompatActivity {
+public class PinTaskActivity extends AppCompatActivity implements SensorEventListener {
 
-    private static final int REPETITIONS = 5;
-    private static final String[] PINS = {"0537", "8683", "3915", "4710", "6327"};
+    private static final int REPETITIONS = 2;
+    private static final String[] PINS = {"0537", "8683"};
+    private static final String TABLE_PIN_TASK = "pin_task";
 
-    Point btnCenter;
-    private Point touchPoint;
     private GridLayout layout;
-    double euclideanDistance;
-    int manhattenDistance;
-    View btnCenterYLine;
-    View btnCenterXLine;
-    View touchCenterYLine;
-    View touchCenterXLine;
+    private TextView pinView;
 
     private int repetitionCount = 0;
+    private String receivedDigits = "";
+    private int pinIndex = 0;
+    private boolean didStartIntent = false;
+    private GenericTaskDataModel taskmodel;
+    private SensorManager sensorManager;
+
+    private float x_Acc = 0.0F;
+    private float y_Acc = 0.0F;
+    private float z_Acc = 0.0F;
+
+    private float x_Gravity = 0.0F;
+    private float y_Gravity = 0.0F;
+    private float z_Gravity = 0.0F;
+
+    private float x_Gyroscope = 0.0F;
+    private float y_Gyroscope = 0.0F;
+    private float z_Gyroscope = 0.0F;
+
+    private float x_Rotation = 0.0F;
+    private float y_Rotation = 0.0F;
+    private float z_Rotation = 0.0F;
+
+    private float xTarget;
+    private float yTarget;
+
+    private String currentButtonPress = "";
+    private String userID = "";
 
     DatabaseHandler database;
 
@@ -39,54 +62,77 @@ public class PinTaskActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pin_task);
+        pinView = findViewById(R.id.pin_text_view);
         LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.activity_pin_task, null);
         layout = findViewById(R.id.gridLayout);
-
         database = MainActivity.getDbHandler();
-
-        btnCenterXLine = new View(this);
-        btnCenterXLine.setBackgroundColor(0xFFFFFFFF);
-        this.addContentView(btnCenterXLine, new ViewGroup.LayoutParams( 1, ViewGroup.LayoutParams.FILL_PARENT));
-
-        btnCenterYLine = new View(this);
-        btnCenterYLine.setBackgroundColor(0xFFFFFFFF);
-        this.addContentView(btnCenterYLine, new ViewGroup.LayoutParams( ViewGroup.LayoutParams.FILL_PARENT, 1));
-
-        touchCenterYLine = new View(this);
-        touchCenterYLine.setBackgroundColor(0xFFF00000);
-        this.addContentView(touchCenterYLine, new ViewGroup.LayoutParams( ViewGroup.LayoutParams.FILL_PARENT, 1));
-
-        touchCenterXLine = new View(this);
-        touchCenterXLine.setBackgroundColor(0xFFF00000);
-        this.addContentView(touchCenterXLine, new ViewGroup.LayoutParams( 1, ViewGroup.LayoutParams.FILL_PARENT));
+        taskmodel = new GenericTaskDataModel();
+        sensorManager=(SensorManager) getSystemService(SENSOR_SERVICE);
+        userID = MainActivity.currentUserID;
         showAlertDialog();
     }
 
-    public void buttonPressed(View view) {
-        btnCenter = new Point();
-        Button b = (Button) view;
-        touchPoint.y -= b.getHeight();
-        if (b.getText().equals("Done")) {
-            Intent intent = new Intent(this, DragAndDropTask.class);
-            startActivity(intent);
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            x_Acc = event.values[0];
+            y_Acc = event.values[1];
+            z_Acc = event.values[2];
         }
+        if (event.sensor.getType() == Sensor.TYPE_GRAVITY) {
+            x_Gravity = event.values[0];
+            y_Gravity = event.values[1];
+            z_Gravity = event.values[2];
+        }
+        if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
+            x_Gyroscope = event.values[0];
+            y_Gyroscope = event.values[1];
+            z_Gyroscope = event.values[2];
+        }
+        if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
+            x_Rotation = event.values[0];
+            y_Rotation = event.values[1];
+            z_Rotation = event.values[2];
+        }
+    }
 
-        btnCenter.x = (int) (layout.getX() + b.getX() + b.getWidth()/2);
-        btnCenter.y = (int) (layout.getY() + b.getY() + b.getHeight()/2);
-        euclideanDistance = getEuclideanDistance(touchPoint, btnCenter);
-        manhattenDistance = getManhattanDistance(touchPoint, btnCenter);
-
-        btnCenterXLine.setX(btnCenter.x);
-        btnCenterYLine.setY(btnCenter.y);
-        touchCenterYLine.setY(touchPoint.y);
-        touchCenterXLine.setX(touchPoint.x);
-
-        Log.d("Button pressed was", b.getText().toString());
-        Log.d("Button Center is", String.valueOf(btnCenter));
-        Log.d("Touch Point", String.valueOf(touchPoint));
-        Log.d("Euclidean Distance", String.valueOf(euclideanDistance));
-        Log.d("Manhatten Distance", String.valueOf(manhattenDistance));
+    public void buttonPressed(View view) {
+        Button b = (Button) view;
+        //currentButtonPress = (String) b.getText();
+        xTarget = (layout.getX() + b.getX() + b.getWidth()/2);
+        yTarget = (layout.getY() + b.getY() + b.getHeight()/2);
+        //touchPoint.y -= b.getHeight();
+        if (b.getText().equals("Delete") && !receivedDigits.equals("")){
+            receivedDigits = receivedDigits.substring(0, receivedDigits.length()-1);
+            pinView.setText(receivedDigits);
+        }
+        if (b.getText().equals("Done")) {
+            if (receivedDigits.equals(PINS[PINS.length-1]) && repetitionCount == REPETITIONS-1) {
+                didStartIntent = true;
+                pinView.setText("FERTIG");
+                database.createGenericOrPinTask(taskmodel, TABLE_PIN_TASK);
+                Intent intent = new Intent(this, DragAndDropTask.class);
+                startActivity(intent);
+            }
+            if (receivedDigits.equals(PINS[pinIndex]) && !didStartIntent){
+                repetitionCount++;
+                if (repetitionCount == REPETITIONS){
+                    repetitionCount = 0;
+                    if (pinIndex != PINS.length - 1) {
+                        pinIndex++;
+                    }
+                }
+                receivedDigits = "";
+                pinView.setText(receivedDigits);
+                showAlertDialog();
+            }
+        }else{
+            if(!b.getText().equals("Delete")){
+                receivedDigits += b.getText();
+                pinView.setText(receivedDigits);
+            }
+        }
     }
 
     public boolean dispatchTouchEvent(MotionEvent event) {
@@ -94,7 +140,15 @@ public class PinTaskActivity extends AppCompatActivity {
 
         switch(eventAction) {
             case MotionEvent.ACTION_DOWN:
-                touchPoint = new Point((int) event.getX(), (int) event.getY());
+                writeDataIntoLists("Down", event.getX(), event.getY());
+                break;
+
+            case MotionEvent.ACTION_MOVE:
+                //writeDataIntoLists("Move", event.getX(), event.getY());
+                break;
+
+            case MotionEvent.ACTION_UP:
+                writeDataIntoLists("Up", event.getX(), event.getY());
                 break;
             default:
                 break;
@@ -103,15 +157,27 @@ public class PinTaskActivity extends AppCompatActivity {
         return super.dispatchTouchEvent(event);
     }
 
-    double getEuclideanDistance(Point touch, Point center) {
-        int deltaX = touch.x - center.x;
-        int deltaY = touch.y - center.y;
-        double result = Math.sqrt(deltaX*deltaX + deltaY*deltaY);
-        return result;
-    }
-
-    int getManhattanDistance(Point touch, Point center) {
-        return Math.abs(touch.x-center.x) + Math.abs(touch.y-center.y);
+    private void writeDataIntoLists(String eventType, Float xTouch, Float yTouch) {
+        taskmodel.setUserId(userID);
+        taskmodel.setTargetId(0);
+        taskmodel.setTimestamp(System.currentTimeMillis());
+        taskmodel.setEventType(eventType);
+        taskmodel.setXTarget(xTarget);
+        taskmodel.setYTarget(yTarget);
+        taskmodel.setXTouch(xTouch);
+        taskmodel.setYTouch(yTouch);
+        taskmodel.setXAcc(x_Acc);
+        taskmodel.setYAcc(y_Acc);
+        taskmodel.setZAcc(z_Acc);
+        taskmodel.setXGravity(x_Gravity);
+        taskmodel.setYGravity(y_Gravity);
+        taskmodel.setZGravity(z_Gravity);
+        taskmodel.setXGyroscope(x_Gyroscope);
+        taskmodel.setYGyroscope(y_Gyroscope);
+        taskmodel.setZGyroscope(z_Gyroscope);
+        taskmodel.setXRotation(x_Rotation);
+        taskmodel.setYRotation(y_Rotation);
+        taskmodel.setZRotation(z_Rotation);
     }
 
     private void showAlertDialog() {
@@ -122,7 +188,7 @@ public class PinTaskActivity extends AppCompatActivity {
 
         // set dialog message
         alertDialogBuilder
-                .setMessage(PINS[repetitionCount])
+                .setMessage(PINS[pinIndex])
                 .setCancelable(false)
                 .setPositiveButton("OK",new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog,int id) {
@@ -132,11 +198,39 @@ public class PinTaskActivity extends AppCompatActivity {
                     }
                 });
 
-        // create alert dialog
         AlertDialog alertDialog = alertDialogBuilder.create();
-
-        // show it
         alertDialog.show();
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // register this class as a listener for the orientation and
+        // accelerometer sensors
+        sensorManager.registerListener(this,
+                sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+                SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this,
+                sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY),
+                SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this,
+                sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE),
+                SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this,
+                sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR),
+                SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    @Override
+    protected void onPause() {
+        // unregister listener
+        super.onPause();
+        sensorManager.unregisterListener(this);
     }
 
 }

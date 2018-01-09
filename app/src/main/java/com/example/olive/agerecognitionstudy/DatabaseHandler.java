@@ -74,12 +74,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     // Table Create Statements
     // Participants table create statement
-    private static final String CREATE_TABLE_PARTICIPANTS = "CREATE TABLE "
+    private static final String CREATE_TABLE_PARTICIPANTS = "CREATE TABLE IF NOT EXISTS "
             + TABLE_PARTICIPANTS + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_PARTICIPANT_ID + " TEXT," + KEY_AGE
             + " INTEGER," + KEY_GENDER + " TEXT" + ")";
 
     // Generic task table create statement
-    private static final String CREATE_TABLE_GENERIC_TASK = "CREATE TABLE "
+    private static final String CREATE_TABLE_GENERIC_TASK = "CREATE TABLE IF NOT EXISTS "
             + TABLE_GENERIC_TASK + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_PARTICIPANT_ID + " TEXT," + KEY_TARGET_ID + " INTEGER,"
             + KEY_TIMESTAMP + " REAL," + KEY_EVENT_TYPE + " TEXT,"
             + KEY_X_TARGET + " REAL," + KEY_Y_TARGET + " REAL,"
@@ -89,8 +89,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             + KEY_X_GYRO + " REAL," + KEY_Y_GYRO + " REAL," + KEY_Z_GYRO + " REAL,"
             + KEY_X_ROTATION + " REAL," + KEY_Y_ROTATION + " REAL," + KEY_Z_ROTATION + " REAL" + ")";
 
-    private static final String CREATE_TABLE_PIN_TASK = "CREATE TABLE "
-            + TABLE_GENERIC_TASK + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_PARTICIPANT_ID + " TEXT," + KEY_TARGET_ID + " INTEGER,"
+    private static final String CREATE_TABLE_PIN_TASK = "CREATE TABLE IF NOT EXISTS "
+            + TABLE_PIN_TASK + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_PARTICIPANT_ID + " TEXT," + KEY_TARGET_ID + " INTEGER,"
             + KEY_TIMESTAMP + " REAL," + KEY_EVENT_TYPE + " TEXT,"
             + KEY_X_TARGET + " REAL," + KEY_Y_TARGET + " REAL,"
             + KEY_X_TOUCH + " REAL," + KEY_Y_TOUCH + " REAL,"
@@ -107,8 +107,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
 
         // creating required tables
-        db.execSQL(CREATE_TABLE_GENERIC_TASK);
         db.execSQL(CREATE_TABLE_PARTICIPANTS);
+        db.execSQL(CREATE_TABLE_GENERIC_TASK);
         db.execSQL(CREATE_TABLE_PIN_TASK);
     }
 
@@ -117,6 +117,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // on upgrade drop older tables
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PARTICIPANTS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_GENERIC_TASK);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PIN_TASK);
 
         // create new tables
         onCreate(db);
@@ -171,8 +172,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     // deleting all Participants
     public void deleteAllParticipants() {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("delete from "+ TABLE_PARTICIPANTS);
-        db.execSQL("delete from "+ TABLE_GENERIC_TASK);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PARTICIPANTS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_GENERIC_TASK);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PIN_TASK);
     }
 
     public void createGenericOrPinTask(GenericTaskDataModel taskModel, String table) {
