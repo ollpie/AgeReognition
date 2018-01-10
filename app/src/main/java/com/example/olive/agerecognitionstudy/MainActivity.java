@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
             db.createParticipant(p);
             db.closeDB();
             ageEntry.setText("");
-            Intent intent = new Intent(this, GenericTaskActivity.class);
+            Intent intent = new Intent(this, DragAndDropTask.class);
             startActivity(intent);
         }
     }

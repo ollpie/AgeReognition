@@ -172,9 +172,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     // deleting all Participants
     public void deleteAllParticipants() {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PARTICIPANTS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_GENERIC_TASK);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PIN_TASK);
+        db.execSQL("delete from " + TABLE_PARTICIPANTS);
+        db.execSQL("delete from " + TABLE_GENERIC_TASK);
+        db.execSQL("delete from " + TABLE_PIN_TASK);
     }
 
     public void createGenericOrPinTask(GenericTaskDataModel taskModel, String table) {
