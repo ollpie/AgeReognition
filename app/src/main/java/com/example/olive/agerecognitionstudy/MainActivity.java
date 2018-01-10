@@ -23,11 +23,11 @@ public class MainActivity extends AppCompatActivity {
     private RadioButton male;
     private RadioButton female;
     public static String currentUserID;
+    public static int statusbarOffset;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setupUI();
         db = new DatabaseHandler(getApplicationContext());
     }
@@ -40,10 +40,10 @@ public class MainActivity extends AppCompatActivity {
         }else{
             Participant p = new Participant(Integer.parseInt(ageEntry.getText().toString()), checkGender());
             currentUserID = p.getId();
-            db.createParticipant(p);
-            db.closeDB();
+            //db.createParticipant(p);
+            //db.closeDB();
             ageEntry.setText("");
-            Intent intent = new Intent(this, DragAndDropTask.class);
+            Intent intent = new Intent(this, UnlockActivityTask.class);
             startActivity(intent);
         }
     }
@@ -95,6 +95,12 @@ public class MainActivity extends AppCompatActivity {
         ageEntry = findViewById(R.id.editTextAge);
         male = findViewById(R.id.radio_btn_male);
         female = findViewById(R.id.radio_btn_female);
+
+        // calculate statusbar offset
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            statusbarOffset = getResources().getDimensionPixelSize(resourceId);
+        }
     }
 
     private String checkGender(){

@@ -1,8 +1,16 @@
-package com.example.olive.agerecognitionstudy;
+/*package com.example.olive.agerecognitionstudy;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
+import android.provider.DocumentsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
 
 import com.andrognito.patternlockview.PatternLockView;
 import com.andrognito.patternlockview.PatternLockView.Dot;
@@ -10,14 +18,15 @@ import com.andrognito.patternlockview.listener.PatternLockViewListener;
 import com.andrognito.patternlockview.utils.PatternLockUtils;
 import com.andrognito.patternlockview.utils.ResourceUtils;
 
+import java.nio.file.Path;
 import java.util.List;
 
 public class DragAndDropTask extends AppCompatActivity {
 
-    /*DrawingView dv ;
+    DrawingView dv ;
     private Paint mPaint;
     private Long touchDownTS;
-    private Long touchUpTS;*/
+    private Long touchUpTS;
 
     private PatternLockView mPatternLockView;
 
@@ -49,10 +58,10 @@ public class DragAndDropTask extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupPatternUnlock();
-        //dv = new DrawingView(this);
-        //setContentView(dv);
+        dv = new DrawingView(this);
+        setContentView(dv);
 
-        /*mPaint = new Paint();
+        mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setDither(true);
         mPaint.setColor(Color.GREEN);
@@ -60,14 +69,14 @@ public class DragAndDropTask extends AppCompatActivity {
         mPaint.setStrokeJoin(Paint.Join.ROUND);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
 
-        mPaint.setStrokeWidth(5);*/
+        mPaint.setStrokeWidth(5);
     }
 
-    /*public class DrawingView extends View {
+    public class DrawingView extends View {
 
         private Bitmap mBitmap;
         private Canvas mCanvas;
-        private Path mPath;
+        pri mPath;
         private Paint mBitmapPaint;
         Context context;
 
@@ -149,7 +158,7 @@ public class DragAndDropTask extends AppCompatActivity {
             }
             return true;
         }
-    }*/
+    }
 
     private void setupPatternUnlock () {
         mPatternLockView = findViewById(R.id.pattern_lock_view);
@@ -168,4 +177,4 @@ public class DragAndDropTask extends AppCompatActivity {
         mPatternLockView.setInputEnabled(true);
         mPatternLockView.addPatternLockListener(mPatternLockViewListener);
     }
-}
+}*/

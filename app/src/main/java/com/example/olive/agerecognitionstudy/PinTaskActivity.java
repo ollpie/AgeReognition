@@ -112,7 +112,7 @@ public class PinTaskActivity extends AppCompatActivity implements SensorEventLis
                 didStartIntent = true;
                 pinView.setText("FERTIG");
                 database.createGenericOrPinTask(taskmodel, TABLE_PIN_TASK);
-                Intent intent = new Intent(this, DragAndDropTask.class);
+                Intent intent = new Intent(this, UnlockActivityTask.class);
                 startActivity(intent);
             }
             if (receivedDigits.equals(PINS[pinIndex]) && !didStartIntent){
