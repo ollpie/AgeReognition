@@ -140,15 +140,15 @@ public class PinTaskActivity extends AppCompatActivity implements SensorEventLis
 
         switch(eventAction) {
             case MotionEvent.ACTION_DOWN:
-                writeDataIntoLists("Down", event.getX(), event.getY());
+                writeDataIntoLists("Down", event.getX(), event.getY()-MainActivity.statusbarOffset);
                 break;
 
             case MotionEvent.ACTION_MOVE:
-                //writeDataIntoLists("Move", event.getX(), event.getY());
+                //writeDataIntoLists("Move", event.getX(), event.getY()-MainActivity.statusbarOffset);
                 break;
 
             case MotionEvent.ACTION_UP:
-                writeDataIntoLists("Up", event.getX(), event.getY());
+                writeDataIntoLists("Up", event.getX(), event.getY()-MainActivity.statusbarOffset);
                 break;
             default:
                 break;
