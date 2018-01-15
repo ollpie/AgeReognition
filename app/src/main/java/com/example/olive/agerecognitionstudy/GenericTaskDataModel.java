@@ -8,64 +8,54 @@ import java.util.ArrayList;
 
 public class GenericTaskDataModel {
 
-    ArrayList<String> userId;
+    String participantId;
     ArrayList<Integer> targetId;
-    ArrayList<Long> timestamp;
     ArrayList<String> eventType;
-
     ArrayList<Float> xTarget;
     ArrayList<Float> yTarget;
-
     ArrayList<Float> xTouch;
     ArrayList<Float> yTouch;
-
-    ArrayList<Float> xAcc;
-    ArrayList<Float> yAcc;
-    ArrayList<Float> zAcc;
-
-    ArrayList<Float> xGravity;
-    ArrayList<Float> yGravity;
-    ArrayList<Float> zGravity;
-
-    ArrayList<Float> xGyroscope;
-    ArrayList<Float> yGyroscope;
-    ArrayList<Float> zGyroscope;
-
-    ArrayList<Float> xRotation;
-    ArrayList<Float> yRotation;
-    ArrayList<Float> zRotation;
+    ArrayList<Float> touchPressure;
+    ArrayList<Float> touchSize;
+    ArrayList<Float> touchOrientation;
+    ArrayList<Float> touchMajor;
+    ArrayList<Float> touchMinor;
+    ArrayList<Long> timestamp;
 
     public GenericTaskDataModel () {
-        this.userId = new ArrayList<>();
         this.targetId = new ArrayList<>();
-        this.timestamp = new ArrayList<>();
         this.eventType = new ArrayList<>();
-
         this.xTarget = new ArrayList<>();
         this.yTarget = new ArrayList<>();
-
         this.xTouch = new ArrayList<>();
         this.yTouch = new ArrayList<>();
-
-        this.xAcc = new ArrayList<>();
-        this.yAcc = new ArrayList<>();
-        this.zAcc = new ArrayList<>();
-
-        this.xGravity = new ArrayList<>();
-        this.yGravity = new ArrayList<>();
-        this.zGravity = new ArrayList<>();
-
-        this.xGyroscope = new ArrayList<>();
-        this.yGyroscope = new ArrayList<>();
-        this.zGyroscope = new ArrayList<>();
-
-        this.xRotation = new ArrayList<>();
-        this.yRotation = new ArrayList<>();
-        this.zRotation = new ArrayList<>();
+        this.touchPressure = new ArrayList<>();
+        this.touchSize = new ArrayList<>();
+        this.touchOrientation = new ArrayList<>();
+        this.touchMajor = new ArrayList<>();
+        this.touchMinor = new ArrayList<>();
+        this.timestamp = new ArrayList<>();
     }
 
-    public void setUserId (String id){
-        this.userId.add(id);
+    public GenericTaskDataModel (String participantID) {
+        this.participantId = participantID;
+        this.targetId = new ArrayList<>();
+        this.eventType = new ArrayList<>();
+        this.xTarget = new ArrayList<>();
+        this.yTarget = new ArrayList<>();
+        this.xTouch = new ArrayList<>();
+        this.yTouch = new ArrayList<>();
+        this.touchPressure = new ArrayList<>();
+        this.touchSize = new ArrayList<>();
+        this.touchOrientation = new ArrayList<>();
+        this.touchMajor = new ArrayList<>();
+        this.touchMinor = new ArrayList<>();
+        this.timestamp = new ArrayList<>();
+    }
+
+    //Setter Methods
+    public void setParticipantId(String id){
+        this.participantId = id;
     }
 
     public void setTargetId (int id){
@@ -96,57 +86,29 @@ public class GenericTaskDataModel {
         this.yTarget.add(y);
     }
 
-    public void setXAcc (Float x){
-        this.xAcc.add(x);
+    public void setTouchPressure (Float pressure){
+        this.touchPressure.add(pressure);
     }
 
-    public void setYAcc (Float y){
-        this.yAcc.add(y);
+    public void setTouchSize (Float size){
+        this.touchSize.add(size);
     }
 
-    public void setZAcc (Float z){
-        this.zAcc.add(z);
+    public void setTouchOrientation (Float orientation){
+        this.touchOrientation.add(orientation);
     }
 
-    public void setXGravity (Float x){
-        this.xGravity.add(x);
+    public void setTouchMajor (Float major){
+        this.touchMajor.add(major);
     }
 
-    public void setYGravity (Float y){
-        this.yGravity.add(y);
+    public void setTouchMinor (Float minor){
+        this.touchMinor.add(minor);
     }
 
-    public void setZGravity (Float z){
-        this.zGravity.add(z);
-    }
-
-    public void setXGyroscope (Float x){
-        this.xGyroscope.add(x);
-    }
-
-    public void setYGyroscope (Float y){
-        this.yGyroscope.add(y);
-    }
-
-    public void setZGyroscope (Float z){
-        this.zGyroscope.add(z);
-    }
-
-    public void setXRotation (Float x){
-        this.xRotation.add(x);
-    }
-
-    public void setYRotation (Float y){
-        this.yRotation.add(y);
-    }
-
-    public void setZRotation (Float z){
-        this.zRotation.add(z);
-    }
-
-
-    public ArrayList<String> getUserId (){
-        return this.userId;
+    //Getter Methods
+    public String getParticipantId(){
+        return this.participantId;
     }
 
     public ArrayList<Integer> getTargetId (){
@@ -177,56 +139,28 @@ public class GenericTaskDataModel {
         return this.yTarget;
     }
 
-    public ArrayList<Float> getXAcc (){
-        return this.xAcc;
+    public ArrayList<Float> getTouchPressure () {
+        return this.touchPressure;
     }
 
-    public ArrayList<Float> getYAcc (){
-        return this.yAcc;
+    public ArrayList<Float> getTouchSize (){
+        return this.touchSize;
     }
 
-    public ArrayList<Float> getZAcc (){
-        return this.zAcc;
+    public ArrayList<Float> getTouchOrientation () {
+        return this.touchOrientation;
     }
 
-    public ArrayList<Float> getXGravity (){
-        return this.xGravity;
+    public ArrayList<Float> getTouchMajor (){
+        return this.touchMajor;
     }
 
-    public ArrayList<Float> getYGravity (){
-        return this.yGravity;
+    public ArrayList<Float> getTouchMinor (){
+        return this.touchMinor;
     }
 
-    public ArrayList<Float> getZGravity (){
-        return this.zGravity;
-    }
-
-    public ArrayList<Float> getXGyroscope (){
-        return this.xGyroscope;
-    }
-
-    public ArrayList<Float> getYGyroscope (){
-        return this.yGyroscope;
-    }
-
-    public ArrayList<Float> getZGyroscope (){
-        return this.zGyroscope;
-    }
-
-    public ArrayList<Float> getXRotation (){
-        return this.xRotation;
-    }
-
-    public ArrayList<Float> getYRotation (){
-        return this.yRotation;
-    }
-
-    public ArrayList<Float> getZRotation (){
-        return this.zRotation;
-    }
 
     public int length() {
-        return userId.size();
+        return targetId.size();
     }
-
 }

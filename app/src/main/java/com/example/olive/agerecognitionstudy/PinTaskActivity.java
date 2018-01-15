@@ -158,7 +158,7 @@ public class PinTaskActivity extends AppCompatActivity implements SensorEventLis
     }
 
     private void writeDataIntoLists(String eventType, Float xTouch, Float yTouch) {
-        taskmodel.setUserId(userID);
+        taskmodel.setParticipantId(userID);
         taskmodel.setTargetId(0);
         taskmodel.setTimestamp(System.currentTimeMillis());
         taskmodel.setEventType(eventType);

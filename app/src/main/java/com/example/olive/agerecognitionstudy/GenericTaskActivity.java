@@ -142,7 +142,7 @@ public class GenericTaskActivity extends AppCompatActivity implements SensorEven
     }
 
     private void writeDataIntoLists(String eventType, Float xTouch, Float yTouch) {
-        taskmodel.setUserId(userID);
+        taskmodel.setParticipantId(userID);
         taskmodel.setTargetId(touch_counter);
         taskmodel.setTimestamp(System.currentTimeMillis());
         taskmodel.setEventType(eventType);
@@ -150,18 +150,6 @@ public class GenericTaskActivity extends AppCompatActivity implements SensorEven
         taskmodel.setYTarget(target.getY() + OFFSET);
         taskmodel.setXTouch(xTouch);
         taskmodel.setYTouch(yTouch);
-        taskmodel.setXAcc(x_Acc);
-        taskmodel.setYAcc(y_Acc);
-        taskmodel.setZAcc(z_Acc);
-        taskmodel.setXGravity(x_Gravity);
-        taskmodel.setYGravity(y_Gravity);
-        taskmodel.setZGravity(z_Gravity);
-        taskmodel.setXGyroscope(x_Gyroscope);
-        taskmodel.setYGyroscope(y_Gyroscope);
-        taskmodel.setZGyroscope(z_Gyroscope);
-        taskmodel.setXRotation(x_Rotation);
-        taskmodel.setYRotation(y_Rotation);
-        taskmodel.setZRotation(z_Rotation);
     }
 
     @Override

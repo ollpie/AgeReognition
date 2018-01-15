@@ -213,7 +213,7 @@ public class MainActivity extends AppCompatActivity {
             GenericTaskDataModel model = db.getAllGenericTaskData(TABLE_PIN_TASK);
 
             for (int i = 0; i < model.length(); i++) {
-                sheet.addCell(new Label(0, i+1, model.getUserId().get(i)));
+                sheet.addCell(new Label(0, i+1, model.getParticipantId().get(i)));
                 sheet.addCell(new Label(1, i+1, String.valueOf(model.getTargetId().get(i))));
                 sheet.addCell(new Label(3, i+1, String.valueOf(model.getTimestamp().get(i))));
                 sheet.addCell(new Label(4, i+1, model.getEventType().get(i)));

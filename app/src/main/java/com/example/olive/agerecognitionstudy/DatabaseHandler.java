@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,7 +92,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String KEY_Y_ROTATION = "y_rotation";
     private static final String KEY_Z_ROTATION = "z_rotation";
 
-    private static final String TASK_ID = "task_id";
+    private static final String KEY_TASK_ID = "task_id";
 
     // PIN_TASK Table - column names
 
@@ -112,11 +111,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     // Generic task table create statement
     private static final String CREATE_TABLE_GENERIC_TASK = "CREATE TABLE IF NOT EXISTS "
             + TABLE_GENERIC_TASK + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
-            + KEY_PARTICIPANT_ID + " TEXT,"
-            + KEY_TARGET_ID + " INTEGER," + KEY_EVENT_TYPE + " TEXT," + KEY_X_TARGET + " REAL," + KEY_Y_TARGET + " REAL,"
+            + KEY_PARTICIPANT_ID + " TEXT," + KEY_TARGET_ID + " INTEGER,"
+            + KEY_EVENT_TYPE + " TEXT," + KEY_X_TARGET + " REAL," + KEY_Y_TARGET + " REAL,"
             + KEY_X_TOUCH + " REAL," + KEY_Y_TOUCH + " REAL," + KEY_TOUCH_PRESSURE + " REAL,"
             + KEY_TOUCH_SIZE + " REAL," + KEY_ORIENTATION + " REAL," + KEY_TOUCH_MAJOR + " REAL,"
-            + KEY_TOUCH_MINOR + " REAL," + KEY_TIMESTAMP + " REAL, FOREIGN KEY (" + KEY_PARTICIPANT_ID + ") REFERENCES " + TABLE_PARTICIPANTS + "(" + KEY_PARTICIPANT_ID + "))";
+            + KEY_TOUCH_MINOR + " REAL," + KEY_TIMESTAMP
+            + " REAL, FOREIGN KEY (" + KEY_PARTICIPANT_ID + ") REFERENCES " + TABLE_PARTICIPANTS + "(" + KEY_PARTICIPANT_ID + "))";
 
     private static final String CREATE_TABLE_PIN_TASK = "CREATE TABLE IF NOT EXISTS "
             + TABLE_PIN_TASK + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
@@ -147,9 +147,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             + KEY_TOUCH_MINOR + " REAL," + KEY_TIMESTAMP + " REAL, FOREIGN KEY (" + KEY_PARTICIPANT_ID + ") REFERENCES " + TABLE_PARTICIPANTS + "(" + KEY_PARTICIPANT_ID + "))";
 
     private static final String CREATE_TABLE_MOTION_SENSOR = "CREATE TABLE IF NOT EXISTS " + TABLE_MOTION_SENSOR +
-            "(" + KEY_ID + " INTEGER PRIMARY KEY,"
-            + KEY_PARTICIPANT_ID + " TEXT,"
-            + TASK_ID + " TEXT," + KEY_TIMESTAMP + " REAL,"
+            "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_PARTICIPANT_ID + " TEXT,"
+            + KEY_TASK_ID + " TEXT," + KEY_TIMESTAMP + " REAL,"
             + KEY_X_ACC + " REAL," + KEY_Y_ACC + " REAL," + KEY_Z_ACC + " REAL,"
             + KEY_X_GRAVITY + " REAL," + KEY_Y_GRAVITY + " REAL," + KEY_Z_GRAVITY + " REAL,"
             + KEY_X_GYRO + " REAL," + KEY_Y_GYRO + " REAL," + KEY_Z_GYRO + " REAL,"
@@ -185,7 +184,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    // ------------------------ "participants" table methods ----------------//
+    // ------------------------ table methods ----------------//
 
     /**
      * Creating Participants
@@ -198,16 +197,62 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_AGE, participant.getAge());
         values.put(KEY_GENDER, participant.getGender());
 
-        // insert row
         long participant_id = db.insert(TABLE_PARTICIPANTS, null, values);
-        Log.d("Create Participant", "participant created");
         return participant_id;
 
     }
 
+    public void createGenericTaskData(GenericTaskDataModel taskModel, String table) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        for (int i = 0; i < taskModel.length(); i++) {
+            ContentValues values = new ContentValues();
+
+            values.put(KEY_PARTICIPANT_ID, taskModel.getParticipantId());
+            values.put(KEY_TARGET_ID, taskModel.getTargetId().get(i));
+            values.put(KEY_EVENT_TYPE, taskModel.getEventType().get(i));
+            values.put(KEY_X_TARGET, taskModel.getXTarget().get(i));
+            values.put(KEY_Y_TARGET, taskModel.getYTarget().get(i));
+            values.put(KEY_X_TOUCH, taskModel.getXTouch().get(i));
+            values.put(KEY_Y_TOUCH, taskModel.getYTouch().get(i));
+            values.put(KEY_TOUCH_PRESSURE, taskModel.getTouchPressure().get(i));
+            values.put(KEY_TOUCH_SIZE, taskModel.getTouchSize().get(i));
+            values.put(KEY_ORIENTATION, taskModel.getTouchOrientation().get(i));
+            values.put(KEY_TOUCH_MAJOR, taskModel.getTouchMajor().get(i));
+            values.put(KEY_TOUCH_MINOR, taskModel.getTouchMinor().get(i));
+            values.put(KEY_TIMESTAMP, taskModel.getTimestamp().get(i));
+
+            db.insert(table, null, values);
+        }
+    }
+
+    public void createMotionSensorData(MotionSensorDataModel dataModel) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        for (int i = 0; i < dataModel.length(); i++) {
+            ContentValues values = new ContentValues();
+
+            values.put(KEY_PARTICIPANT_ID, dataModel.getParticipantID());
+            values.put(KEY_TASK_ID, dataModel.getTaskID());
+            values.put(KEY_TIMESTAMP, dataModel.getTimestamp().get(i));
+            values.put(KEY_X_ACC, dataModel.getXAcc().get(i));
+            values.put(KEY_Y_ACC, dataModel.getYAcc().get(i));
+            values.put(KEY_Z_ACC, dataModel.getZAcc().get(i));
+            values.put(KEY_X_GRAVITY, dataModel.getXGravity().get(i));
+            values.put(KEY_Y_GRAVITY, dataModel.getYGravity().get(i));
+            values.put(KEY_Z_GRAVITY, dataModel.getZGravity().get(i));
+            values.put(KEY_X_GYRO, dataModel.getXGyroscope().get(i));
+            values.put(KEY_Y_GYRO, dataModel.getYGyroscope().get(i));
+            values.put(KEY_Z_GYRO, dataModel.getZGyroscope().get(i));
+            values.put(KEY_X_ROTATION, dataModel.getXRotation().get(i));
+            values.put(KEY_Y_ROTATION, dataModel.getYRotation().get(i));
+            values.put(KEY_Z_ROTATION, dataModel.getZRotation().get(i));
+
+            db.insert(TABLE_MOTION_SENSOR, null, values);
+        }
+    }
+
     /*
- * getting all participants
- * */
+* DATA GETTERS
+* */
     public List<Participant> getAllParticipants() {
         List<Participant> participants = new ArrayList<>();
         String selectQuery = "SELECT * FROM " + TABLE_PARTICIPANTS;
@@ -227,59 +272,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 participants.add(pt);
             } while (c.moveToNext());
         }
-
         return participants;
     }
 
-    // deleting all Participants
-    public void deleteAllTables() {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PARTICIPANTS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_GENERIC_TASK);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PIN_TASK);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_UNLOCK_PATTERN_TASK);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_READING_TASK);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_MOTION_SENSOR);
-    }
-
-    public void createGenericTaskData(GenericTaskDataModel taskModel, String table) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        for (int i = 0; i < taskModel.length(); i++) {
-            ContentValues values = new ContentValues();
-
-            values.put(KEY_PARTICIPANT_ID, taskModel.getUserId().get(i));
-            values.put(KEY_TARGET_ID, taskModel.getTargetId().get(i));
-            values.put(KEY_TIMESTAMP, taskModel.getTimestamp().get(i));
-            values.put(KEY_EVENT_TYPE, taskModel.getEventType().get(i));
-
-            values.put(KEY_X_TARGET, taskModel.getXTarget().get(i));
-            values.put(KEY_Y_TARGET, taskModel.getYTarget().get(i));
-            values.put(KEY_X_TOUCH, taskModel.getXTouch().get(i));
-            values.put(KEY_Y_TOUCH, taskModel.getYTouch().get(i));
-
-            values.put(KEY_X_ACC, taskModel.getXAcc().get(i));
-            values.put(KEY_Y_ACC, taskModel.getYAcc().get(i));
-            values.put(KEY_Z_ACC, taskModel.getZAcc().get(i));
-
-            values.put(KEY_X_GRAVITY, taskModel.getXGravity().get(i));
-            values.put(KEY_Y_GRAVITY, taskModel.getYGravity().get(i));
-            values.put(KEY_Z_GRAVITY, taskModel.getZGravity().get(i));
-
-            values.put(KEY_X_GYRO, taskModel.getXGyroscope().get(i));
-            values.put(KEY_Y_GYRO, taskModel.getYGyroscope().get(i));
-            values.put(KEY_Z_GYRO, taskModel.getZGyroscope().get(i));
-
-            values.put(KEY_X_ROTATION, taskModel.getXRotation().get(i));
-            values.put(KEY_Y_ROTATION, taskModel.getYRotation().get(i));
-            values.put(KEY_Z_ROTATION, taskModel.getZRotation().get(i));
-
-            db.insert(table, null, values);
-        }
-    }
-
-    public GenericTaskDataModel getAllGenericTaskData(String table) {
+    public GenericTaskDataModel getAllGenericTaskData() {
         GenericTaskDataModel model = new GenericTaskDataModel();
-        String selectQuery = "SELECT * FROM " + table;
+        String selectQuery = "SELECT * FROM " + TABLE_GENERIC_TASK;
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -287,14 +285,37 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // looping through all rows and adding to list
         if (c.moveToFirst()) {
             do {
-                model.setUserId(c.getString((c.getColumnIndex(KEY_PARTICIPANT_ID))));
+                model.setParticipantId(c.getString((c.getColumnIndex(KEY_PARTICIPANT_ID))));
                 model.setTargetId(c.getInt((c.getColumnIndex(KEY_TARGET_ID))));
-                model.setTimestamp(c.getLong((c.getColumnIndex(KEY_TIMESTAMP))));
                 model.setEventType(c.getString((c.getColumnIndex(KEY_EVENT_TYPE))));
                 model.setXTarget(c.getFloat((c.getColumnIndex(KEY_X_TARGET))));
                 model.setYTarget(c.getFloat((c.getColumnIndex(KEY_Y_TARGET))));
                 model.setXTouch(c.getFloat((c.getColumnIndex(KEY_X_TOUCH))));
                 model.setYTouch(c.getFloat((c.getColumnIndex(KEY_Y_TOUCH))));
+                model.setTouchPressure(c.getFloat((c.getColumnIndex(KEY_TOUCH_PRESSURE))));
+                model.setTouchSize(c.getFloat((c.getColumnIndex(KEY_TOUCH_SIZE))));
+                model.setYTouch(c.getFloat((c.getColumnIndex(KEY_ORIENTATION))));
+                model.setTouchMajor(c.getFloat((c.getColumnIndex(KEY_TOUCH_MAJOR))));
+                model.setTouchMinor(c.getFloat((c.getColumnIndex(KEY_TOUCH_MINOR))));
+                model.setTimestamp(c.getLong((c.getColumnIndex(KEY_TIMESTAMP))));
+            } while (c.moveToNext());
+        }
+        return model;
+    }
+
+    public MotionSensorDataModel getMotionSensorData() {
+        MotionSensorDataModel model = new MotionSensorDataModel();
+        String selectQuery = "SELECT * FROM " + TABLE_MOTION_SENSOR;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()) {
+            do {
+                model.setParticipantID(c.getString((c.getColumnIndex(KEY_PARTICIPANT_ID))));
+                model.setTaskID(c.getString((c.getColumnIndex(KEY_TASK_ID))));
+                model.setTimestamp(c.getLong((c.getColumnIndex(KEY_TIMESTAMP))));
                 model.setXAcc(c.getFloat((c.getColumnIndex(KEY_X_ACC))));
                 model.setYAcc(c.getFloat((c.getColumnIndex(KEY_Y_ACC))));
                 model.setZAcc(c.getFloat((c.getColumnIndex(KEY_Z_ACC))));
@@ -309,8 +330,18 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 model.setZRotation(c.getFloat((c.getColumnIndex(KEY_Z_ROTATION))));
             } while (c.moveToNext());
         }
-
         return model;
+    }
+
+    // deleting all Tables
+    public void deleteAllTables() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PARTICIPANTS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_GENERIC_TASK);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PIN_TASK);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_UNLOCK_PATTERN_TASK);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_READING_TASK);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_MOTION_SENSOR);
     }
 
     // closing database
