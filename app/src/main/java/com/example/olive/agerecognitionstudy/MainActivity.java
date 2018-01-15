@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void clearData(View view) {
         Log.d("Clear Data", "Deleting all Participants");
-        db.deleteAllParticipants();
+        db.deleteAllTables();
     }
 
     private void setupUI() {

@@ -1,13 +1,15 @@
 package com.example.olive.agerecognitionstudy;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -16,11 +18,22 @@ import static org.junit.Assert.*;
  */
 @RunWith(AndroidJUnit4.class)
 public class ExampleInstrumentedTest {
-    @Test
-    public void useAppContext() throws Exception {
-        // Context of the app under test.
-        Context appContext = InstrumentationRegistry.getTargetContext();
+    SQLiteDatabase db;
 
-        assertEquals("com.example.olive.agerecognitionstudy", appContext.getPackageName());
+    @Before
+    public void clearDatabase() throws Exception {
+        Context appContext = InstrumentationRegistry.getTargetContext();
+        db = new DatabaseHandler(appContext).getWritableDatabase();
+        db.close();
+        appContext.deleteDatabase("participantsManager");
+        db = new DatabaseHandler(appContext).getWritableDatabase();
+    }
+
+    @Test
+    public void testDatabase() throws Exception {
+        // Context of the app under test.
+
+        assertEquals(true, db.isOpen());
+
     }
 }

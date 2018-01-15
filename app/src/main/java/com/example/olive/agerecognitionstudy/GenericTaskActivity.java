@@ -105,7 +105,7 @@ public class GenericTaskActivity extends AppCompatActivity implements SensorEven
 
         if (touch_counter > TOUCH_AMOUNT){
             target.setVisibility(View.GONE);
-            database.createGenericOrPinTask(taskmodel, TABLE_GENERIC_TASK);
+            database.createGenericTaskData(taskmodel, TABLE_GENERIC_TASK);
             database.closeDB();
             nextButton.setVisibility(View.VISIBLE);
         } else {

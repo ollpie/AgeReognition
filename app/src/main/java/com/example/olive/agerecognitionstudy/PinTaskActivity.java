@@ -111,7 +111,7 @@ public class PinTaskActivity extends AppCompatActivity implements SensorEventLis
             if (receivedDigits.equals(PINS[PINS.length-1]) && repetitionCount == REPETITIONS-1) {
                 didStartIntent = true;
                 pinView.setText("FERTIG");
-                database.createGenericOrPinTask(taskmodel, TABLE_PIN_TASK);
+                database.createGenericTaskData(taskmodel, TABLE_PIN_TASK);
                 Intent intent = new Intent(this, UnlockActivityTask.class);
                 startActivity(intent);
             }
