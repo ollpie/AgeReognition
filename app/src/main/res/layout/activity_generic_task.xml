@@ -23,6 +23,4 @@
         android:background="@null"
         android:onClick="targetClicked"
         app:srcCompat="@drawable/cross" />
-
-
 </RelativeLayout>
