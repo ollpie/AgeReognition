@@ -111,7 +111,7 @@ public class PinTaskActivity extends AppCompatActivity implements SensorEventLis
             if (receivedDigits.equals(PINS[PINS.length-1]) && repetitionCount == REPETITIONS-1) {
                 didStartIntent = true;
                 pinView.setText("FERTIG");
-                database.createGenericTaskData(taskmodel, TABLE_PIN_TASK);
+                database.createGenericTaskData(taskmodel);
                 Intent intent = new Intent(this, UnlockActivityTask.class);
                 startActivity(intent);
             }
@@ -166,18 +166,6 @@ public class PinTaskActivity extends AppCompatActivity implements SensorEventLis
         taskmodel.setYTarget(yTarget);
         taskmodel.setXTouch(xTouch);
         taskmodel.setYTouch(yTouch);
-        taskmodel.setXAcc(x_Acc);
-        taskmodel.setYAcc(y_Acc);
-        taskmodel.setZAcc(z_Acc);
-        taskmodel.setXGravity(x_Gravity);
-        taskmodel.setYGravity(y_Gravity);
-        taskmodel.setZGravity(z_Gravity);
-        taskmodel.setXGyroscope(x_Gyroscope);
-        taskmodel.setYGyroscope(y_Gyroscope);
-        taskmodel.setZGyroscope(z_Gyroscope);
-        taskmodel.setXRotation(x_Rotation);
-        taskmodel.setYRotation(y_Rotation);
-        taskmodel.setZRotation(z_Rotation);
     }
 
     private void showAlertDialog() {

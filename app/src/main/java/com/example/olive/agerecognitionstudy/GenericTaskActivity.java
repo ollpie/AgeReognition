@@ -16,14 +16,12 @@ import java.util.Random;
 
 public class GenericTaskActivity extends AppCompatActivity implements SensorEventListener{
 
-    //, Float xAcc, Float yAcc, Float zAcc, Float xGravity, Float yGravity, Float zGravity, Float xGyroscope, Float yGyroscope, Float zGyroscope, Float xRotation, Float yRotation, Float zRotation
-
     private static final int MIN = 0;
     private static final int MAX_X = 14;
     private static final int MAX_Y = 25;
     private static final int TOUCH_AMOUNT = 3;
     private static final int OFFSET = 13;
-    private static final String TABLE_GENERIC_TASK = "generic_task";
+    private static final String TASK_ID = "Generic Task";
 
     DatabaseHandler database;
 
@@ -33,26 +31,20 @@ public class GenericTaskActivity extends AppCompatActivity implements SensorEven
     private Random randomX;
     private Random randomY;
 
-    private float x_Acc = 0.0F;
-    private float y_Acc = 0.0F;
-    private float z_Acc = 0.0F;
+    private float xTouch = 0.0F;
+    private float yTouch = 0.0F;
 
-    private float x_Gravity = 0.0F;
-    private float y_Gravity = 0.0F;
-    private float z_Gravity = 0.0F;
-
-    private float x_Gyroscope = 0.0F;
-    private float y_Gyroscope = 0.0F;
-    private float z_Gyroscope = 0.0F;
-
-    private float x_Rotation = 0.0F;
-    private float y_Rotation = 0.0F;
-    private float z_Rotation = 0.0F;
+    private float touchPressure = 0.0F;
+    private float touchSize = 0.0F;
+    private float touchOrientation = 0.0F;
+    private float touchMajor = 0.0F;
+    private float touchMinor = 0.0F;
 
     private int touch_counter = 0;
     private String userID = "";
 
     private GenericTaskDataModel taskmodel;
+    private MotionSensorDataModel motionSensorModel;
     private SensorManager sensorManager;
 
     private float xPositions[] = new float[]{30.0F, 42.0F, 74.0F, 102.0F, 134.0F, 166.0F, 198.0F, 230.0F, 262.0F, 294.0F, 326.0F, 358.0F, 390.0F, 422.0F, 454.0F};
@@ -64,40 +56,72 @@ public class GenericTaskActivity extends AppCompatActivity implements SensorEven
         setupUI();
         userID = MainActivity.currentUserID;
         database = MainActivity.getDbHandler();
-        taskmodel = new GenericTaskDataModel();
-        sensorManager=(SensorManager) getSystemService(SENSOR_SERVICE);
+        taskmodel = new GenericTaskDataModel(userID);
+        motionSensorModel = new MotionSensorDataModel(userID, TASK_ID);
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
         randomX = new Random();
         randomY = new Random();
 
         target.setX(xPositions[randomX.nextInt(((MAX_X - MIN) +1)+MIN)]);
         target.setY(yPositions[randomY.nextInt(((MAX_Y - MIN) +1)+MIN)]);
-
-
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
+        float xAcc = 0.0F;
+        float yAcc = 0.0F;
+        float zAcc = 0.0F;
+
+        float xGrav = 0.0F;
+        float yGrav = 0.0F;
+        float zGrav = 0.0F;
+
+        float xGyro = 0.0F;
+        float yGyro = 0.0F;
+        float zGyro = 0.0F;
+
+        float xRot = 0.0F;
+        float yRot = 0.0F;
+        float zRot = 0.0F;
+
+        motionSensorModel.setTimestamp(System.currentTimeMillis());
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            x_Acc = event.values[0];
-            y_Acc = event.values[1];
-            z_Acc = event.values[2];
+            xAcc = event.values[0];
+            yAcc = event.values[1];
+            zAcc = event.values[2];
         }
         if (event.sensor.getType() == Sensor.TYPE_GRAVITY) {
-            x_Gravity = event.values[0];
-            y_Gravity = event.values[1];
-            z_Gravity = event.values[2];
+            xGrav = event.values[0];
+            yGrav = event.values[1];
+            zGrav = event.values[2];
         }
         if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
-            x_Gyroscope = event.values[0];
-            y_Gyroscope = event.values[1];
-            z_Gyroscope = event.values[2];
+            xGyro = event.values[0];
+            yGyro = event.values[1];
+            zGyro = event.values[2];
         }
         if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
-            x_Rotation = event.values[0];
-            y_Rotation = event.values[1];
-            z_Rotation = event.values[2];
+            xRot = event.values[0];
+            yRot = event.values[1];
+            zRot = event.values[2];
         }
+
+        motionSensorModel.setXAcc(xAcc);
+        motionSensorModel.setYAcc(yAcc);
+        motionSensorModel.setZAcc(zAcc);
+
+        motionSensorModel.setXGravity(xGrav);
+        motionSensorModel.setYGravity(yGrav);
+        motionSensorModel.setZGravity(zGrav);
+
+        motionSensorModel.setXGyroscope(xGyro);
+        motionSensorModel.setYGyroscope(yGyro);
+        motionSensorModel.setZGyroscope(zGyro);
+
+        motionSensorModel.setXRotation(xRot);
+        motionSensorModel.setYRotation(yRot);
+        motionSensorModel.setZRotation(zRot);
     }
 
     public void targetClicked(View view) {
@@ -105,7 +129,8 @@ public class GenericTaskActivity extends AppCompatActivity implements SensorEven
 
         if (touch_counter > TOUCH_AMOUNT){
             target.setVisibility(View.GONE);
-            database.createGenericTaskData(taskmodel, TABLE_GENERIC_TASK);
+            database.createGenericTaskData(taskmodel);
+            database.createMotionSensorData(motionSensorModel);
             database.closeDB();
             nextButton.setVisibility(View.VISIBLE);
         } else {
@@ -121,18 +146,25 @@ public class GenericTaskActivity extends AppCompatActivity implements SensorEven
 
     public boolean dispatchTouchEvent(MotionEvent event) {
         int eventAction = event.getAction();
+        xTouch = event.getX();
+        yTouch = event.getY()-MainActivity.statusbarOffset;
+        touchPressure = event.getPressure();
+        touchSize = event.getSize();
+        touchOrientation = event.getOrientation();
+        touchMajor = event.getTouchMajor();
+        touchMinor = event.getTouchMinor();
 
         switch(eventAction) {
             case MotionEvent.ACTION_DOWN:
-                writeDataIntoLists("Down", event.getX(), event.getY()-MainActivity.statusbarOffset);
+                writeDataIntoLists("Down");
                 break;
 
             case MotionEvent.ACTION_MOVE:
-                //writeDataIntoLists("Move", event.getX(), event.getY()-MainActivity.statusbarOffset);
+                writeDataIntoLists("Move");
                 break;
 
             case MotionEvent.ACTION_UP:
-                writeDataIntoLists("Up", event.getX(), event.getY()-MainActivity.statusbarOffset);
+                writeDataIntoLists("Up");
                 break;
             default:
                 break;
@@ -141,7 +173,7 @@ public class GenericTaskActivity extends AppCompatActivity implements SensorEven
         return super.dispatchTouchEvent(event);
     }
 
-    private void writeDataIntoLists(String eventType, Float xTouch, Float yTouch) {
+    private void writeDataIntoLists(String eventType) {
         taskmodel.setParticipantId(userID);
         taskmodel.setTargetId(touch_counter);
         taskmodel.setTimestamp(System.currentTimeMillis());
@@ -150,6 +182,11 @@ public class GenericTaskActivity extends AppCompatActivity implements SensorEven
         taskmodel.setYTarget(target.getY() + OFFSET);
         taskmodel.setXTouch(xTouch);
         taskmodel.setYTouch(yTouch);
+        taskmodel.setTouchPressure(touchPressure);
+        taskmodel.setTouchSize(touchSize);
+        taskmodel.setTouchOrientation(touchOrientation);
+        taskmodel.setTouchMajor(touchMajor);
+        taskmodel.setTouchMinor(touchMinor);
     }
 
     @Override

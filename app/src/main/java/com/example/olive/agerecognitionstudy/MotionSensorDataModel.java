@@ -8,25 +8,25 @@ import java.util.ArrayList;
 
 public class MotionSensorDataModel {
 
-    String participantID;
-    String taskID;
-    ArrayList<Long> timestamp;
+    private String participantID;
+    private String taskID;
+    private ArrayList<Long> timestamp;
 
-    ArrayList<Float> xAcc;
-    ArrayList<Float> yAcc;
-    ArrayList<Float> zAcc;
+    private ArrayList<Float> xAcc;
+    private ArrayList<Float> yAcc;
+    private ArrayList<Float> zAcc;
 
-    ArrayList<Float> xGravity;
-    ArrayList<Float> yGravity;
-    ArrayList<Float> zGravity;
+    private ArrayList<Float> xGravity;
+    private ArrayList<Float> yGravity;
+    private ArrayList<Float> zGravity;
 
-    ArrayList<Float> xGyroscope;
-    ArrayList<Float> yGyroscope;
-    ArrayList<Float> zGyroscope;
+    private ArrayList<Float> xGyroscope;
+    private ArrayList<Float> yGyroscope;
+    private ArrayList<Float> zGyroscope;
 
-    ArrayList<Float> xRotation;
-    ArrayList<Float> yRotation;
-    ArrayList<Float> zRotation;
+    private ArrayList<Float> xRotation;
+    private ArrayList<Float> yRotation;
+    private ArrayList<Float> zRotation;
 
     public MotionSensorDataModel() {
         this.timestamp = new ArrayList<>();
@@ -127,7 +127,7 @@ public class MotionSensorDataModel {
     }
 
     public void setTaskID (String taskID){
-        this.participantID = taskID;
+        this.taskID = taskID;
     }
 
     // Getter methods

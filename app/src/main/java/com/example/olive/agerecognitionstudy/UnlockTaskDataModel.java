@@ -66,7 +66,7 @@ public class UnlockTaskDataModel {
         this.participantId = participantId;
     }
 
-    public void setPin(String pattern) {
+    public void setPattern(String pattern) {
         this.pattern.add(pattern);
     }
 
