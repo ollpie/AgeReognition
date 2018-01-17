@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 public class PinTaskDataModel {
     String participantId;
+    ArrayList<String> participantList;
     ArrayList<String> pin;
     ArrayList<String> eventType;
     ArrayList<Integer> repetition;
@@ -27,6 +28,7 @@ public class PinTaskDataModel {
     ArrayList<Long> timestamp;
 
     public PinTaskDataModel () {
+        this.participantList = new ArrayList<>();
         this.pin = new ArrayList<>();
         this.eventType = new ArrayList<>();
         this.repetition = new ArrayList<>();
@@ -48,6 +50,7 @@ public class PinTaskDataModel {
 
     public PinTaskDataModel (String participantID) {
         this.participantId = participantID;
+        this.participantList = new ArrayList<>();
         this.pin = new ArrayList<>();
         this.eventType = new ArrayList<>();
         this.repetition = new ArrayList<>();
@@ -140,6 +143,10 @@ public class PinTaskDataModel {
         this.timestamp.add(timestamp);
     }
 
+    public void setParticipantList(String participant) {
+        this.participantList.add(participant);
+    }
+
     //GETTER
     public ArrayList<Long> getTimestamp() {
         return timestamp;
@@ -211,6 +218,10 @@ public class PinTaskDataModel {
 
     public ArrayList<Float> getTouchMinor() {
         return touchMinor;
+    }
+
+    public ArrayList<String> getParticipantList() {
+        return participantList;
     }
 
     public int length() {

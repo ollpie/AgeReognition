@@ -2,8 +2,10 @@ package com.example.olive.agerecognitionstudy;
 
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -46,22 +48,15 @@ public class MainActivity extends AppCompatActivity {
 
     public void logData(View view) {
         // Getting all Participants
-        LoggingModule loggingModule = new LoggingModule(db.getAllParticipants(),
-                db.getAllGenericTaskData(),
-                null,
-                null,
-                null,
-                db.getMotionSensorData());
-        loggingModule.generateParticipantExcelFile();
-        loggingModule.generateGenericTaskExcelFile();
-        loggingModule.generateMotionSensorExcelFile();
-        Toast.makeText(getApplication(),
-                "Data Exported in a Excel Sheet", Toast.LENGTH_SHORT).show();
+        MainActivity.AsyncTaskRunner runner = new MainActivity.AsyncTaskRunner();
+        runner.execute();
     }
 
     public void clearData(View view) {
         Log.d("Clear Data", "Deleting all Participants");
         db.deleteAllTables();
+        Toast.makeText(getApplication(),
+                "Tables cleared", Toast.LENGTH_SHORT).show();
     }
 
     private void setupUI() {
@@ -108,5 +103,43 @@ public class MainActivity extends AppCompatActivity {
 
     public static DatabaseHandler getDbHandler() {
         return db;
+    }
+
+    private class AsyncTaskRunner extends AsyncTask<String, String, String> {
+
+        ProgressDialog progressDialog;
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                LoggingModule loggingModule = new LoggingModule(db.getAllParticipants(),
+                        db.getAllGenericTaskData(),
+                        null,
+                        null,
+                        null,
+                        db.getMotionSensorData());
+                loggingModule.generateParticipantExcelFile();
+                loggingModule.generateGenericTaskExcelFile();
+                loggingModule.generateMotionSensorExcelFile();
+                Toast.makeText(getApplication(),
+                        "Data Exported in a Excel Sheet", Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+
+        @Override
+        protected void onPostExecute(String params) {
+            progressDialog.dismiss();
+        }
+
+
+        @Override
+        protected void onPreExecute() {
+            progressDialog = ProgressDialog.show(MainActivity.this,
+                    "Exportiere Daten...", "Bitte warten.");
+        }
     }
 }

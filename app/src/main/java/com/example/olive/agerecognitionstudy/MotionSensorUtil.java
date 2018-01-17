@@ -11,6 +11,19 @@ import android.hardware.SensorManager;
 
 public class MotionSensorUtil implements SensorEventListener {
 
+    float xAcc = 0.0F;
+    float yAcc = 0.0F;
+    float zAcc = 0.0F;
+    float xGrav = 0.0F;
+    float yGrav = 0.0F;
+    float zGrav = 0.0F;
+    float xGyro = 0.0F;
+    float yGyro = 0.0F;
+    float zGyro = 0.0F;
+    float xRot = 0.0F;
+    float yRot = 0.0F;
+    float zRot = 0.0F;
+
     MotionSensorDataModel motionSensorData;
     private SensorManager sensorManager;
 
@@ -21,19 +34,6 @@ public class MotionSensorUtil implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        float xAcc = 0.0F;
-        float yAcc = 0.0F;
-        float zAcc = 0.0F;
-        float xGrav = 0.0F;
-        float yGrav = 0.0F;
-        float zGrav = 0.0F;
-        float xGyro = 0.0F;
-        float yGyro = 0.0F;
-        float zGyro = 0.0F;
-        float xRot = 0.0F;
-        float yRot = 0.0F;
-        float zRot = 0.0F;
-
         motionSensorData.setTimestamp(System.currentTimeMillis());
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             xAcc = event.values[0];

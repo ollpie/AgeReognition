@@ -28,8 +28,11 @@ public class MotionSensorDataModel {
     private ArrayList<Float> yRotation;
     private ArrayList<Float> zRotation;
 
+    private ArrayList<String> participantList;
+
     public MotionSensorDataModel() {
         this.timestamp = new ArrayList<>();
+        this.participantList = new ArrayList<>();
         this.xAcc = new ArrayList<>();
         this.yAcc = new ArrayList<>();
         this.zAcc = new ArrayList<>();
@@ -49,6 +52,7 @@ public class MotionSensorDataModel {
 
     public MotionSensorDataModel(String participantID, String taskID) {
         this.participantID = participantID;
+        this.participantList = new ArrayList<>();
         this.taskID = taskID;
 
         this.timestamp = new ArrayList<>();
@@ -126,6 +130,10 @@ public class MotionSensorDataModel {
         this.participantID = participantID;
     }
 
+    public void setParticipantList (String participant){
+        this.participantList.add(participant);
+    }
+
     public void setTaskID (String taskID){
         this.taskID = taskID;
     }
@@ -185,6 +193,10 @@ public class MotionSensorDataModel {
 
     public String getParticipantID (){
         return this.participantID;
+    }
+
+    public ArrayList<String> getParticipantList (){
+        return this.participantList;
     }
 
     public String getTaskID (){

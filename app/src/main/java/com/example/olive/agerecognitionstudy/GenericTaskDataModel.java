@@ -9,6 +9,7 @@ import java.util.ArrayList;
 public class GenericTaskDataModel {
 
     String participantId;
+    ArrayList<String> participantList;
     ArrayList<Integer> targetId;
     ArrayList<String> eventType;
     ArrayList<Float> xTarget;
@@ -23,6 +24,7 @@ public class GenericTaskDataModel {
     ArrayList<Long> timestamp;
 
     public GenericTaskDataModel () {
+        this.participantList = new ArrayList<>();
         this.targetId = new ArrayList<>();
         this.eventType = new ArrayList<>();
         this.xTarget = new ArrayList<>();
@@ -38,6 +40,7 @@ public class GenericTaskDataModel {
     }
 
     public GenericTaskDataModel (String participantID) {
+        this.participantList = new ArrayList<>();
         this.participantId = participantID;
         this.targetId = new ArrayList<>();
         this.eventType = new ArrayList<>();
@@ -106,6 +109,11 @@ public class GenericTaskDataModel {
         this.touchMinor.add(minor);
     }
 
+    public void setParticipantList (String participant){
+        this.participantList.add(participant);
+    }
+
+
     //Getter Methods
     public String getParticipantId(){
         return this.participantId;
@@ -157,6 +165,10 @@ public class GenericTaskDataModel {
 
     public ArrayList<Float> getTouchMinor (){
         return this.touchMinor;
+    }
+
+    public ArrayList<String> getParticipantList (){
+        return this.participantList;
     }
 
 

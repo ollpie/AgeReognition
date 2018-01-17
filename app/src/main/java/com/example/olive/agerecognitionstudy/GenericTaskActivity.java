@@ -1,9 +1,14 @@
 package com.example.olive.agerecognitionstudy;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Point;
 import android.hardware.SensorManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -14,10 +19,10 @@ import java.util.Random;
 public class GenericTaskActivity extends AppCompatActivity {
 
     private static final int MIN = 0;
-    private static final int MAX_X = 14;
-    private static final int MAX_Y = 25;
-    private static final int TOUCH_AMOUNT = 8;
     private static final int OFFSET = 13;
+    private static final int X_AMOUNT = 5;
+    private static final int Y_AMOUNT = 2;
+    private static final int PADDING = 80;
     private static final String TASK_ID = "Generic Task";
 
     DatabaseHandler database;
@@ -27,6 +32,8 @@ public class GenericTaskActivity extends AppCompatActivity {
 
     private Random randomX;
     private Random randomY;
+    private int randomXValue;
+    private int randomYValue;
 
     private float xTouch = 0.0F;
     private float yTouch = 0.0F;
@@ -43,13 +50,21 @@ public class GenericTaskActivity extends AppCompatActivity {
     private GenericTaskDataModel taskmodel;
     private MotionSensorUtil motionSensorUtil;
 
-    private float xPositions[] = new float[]{30.0F, 42.0F, 74.0F, 102.0F, 134.0F, 166.0F, 198.0F, 230.0F, 262.0F, 294.0F, 326.0F, 358.0F, 390.0F, 422.0F, 454.0F};
-    private float yPositions[] = new float[]{30.0F, 55.0F, 100.0F, 145.0F, 190.0F, 235.0F, 280.0F, 325.0F, 370.0F, 415.0F, 460.0F, 505.0F, 550.0F, 595.0F, 640.0F, 685.0F, 735.0F, 780.0F, 825.0F, 870.0F, 915.0F, 960.0F, 1005.0F, 1050.0F, 1095.0F, 1140.0F, 1185.0F};
+    private float xPositions[];
+    private float yPositions[];
+    private int maxX;
+    private int maxY;
+
+    private boolean positionChecker[][] = new boolean[X_AMOUNT][Y_AMOUNT];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupUI();
+        initPositions();
+        initPositionChecker();
+        maxX = xPositions.length-1;
+        maxY = yPositions.length-1;
         userID = MainActivity.currentUserID;
         database = MainActivity.getDbHandler();
         taskmodel = new GenericTaskDataModel(userID);
@@ -57,24 +72,36 @@ public class GenericTaskActivity extends AppCompatActivity {
 
         randomX = new Random();
         randomY = new Random();
-
-        target.setX(xPositions[randomX.nextInt(((MAX_X - MIN) +1)+MIN)]);
-        target.setY(yPositions[randomY.nextInt(((MAX_Y - MIN) +1)+MIN)]);
+        randomXValue = randomX.nextInt(((maxX - MIN) +1)+MIN);
+        randomYValue = randomY.nextInt(((maxY - MIN) +1)+MIN);
+        target.setX(xPositions[randomXValue]);
+        target.setY(yPositions[randomYValue]);
+        positionChecker[randomXValue][randomYValue] = true;
+        touch_counter++;
+        Log.d("Total Positions", String.valueOf(xPositions.length*yPositions.length));
     }
 
     public void targetClicked(View view) {
-        touch_counter++;
-
-        if (touch_counter > TOUCH_AMOUNT){
+        if (didTouchEveryPosition()){
             target.setVisibility(View.GONE);
             motionSensorUtil.stop();
-            database.createGenericTaskData(taskmodel);
-            database.createMotionSensorData(motionSensorUtil.getMotionSensorData());
-            database.closeDB();
-            nextButton.setVisibility(View.VISIBLE);
+            AsyncTaskRunner runner = new AsyncTaskRunner();
+            runner.execute();
         } else {
-            target.setX(xPositions[randomX.nextInt(((MAX_X - MIN) +1)+MIN)]);
-            target.setY(yPositions[randomY.nextInt(((MAX_Y - MIN) +1)+MIN)]);
+            randomXValue = randomX.nextInt(((maxX - MIN) +1)+MIN);
+            randomYValue = randomY.nextInt(((maxY - MIN) +1)+MIN);
+            if (positionChecker[randomXValue][randomYValue]){
+                do {
+                    randomXValue = randomX.nextInt(((maxX - MIN) +1)+MIN);
+                    randomYValue = randomY.nextInt(((maxY - MIN) +1)+MIN);
+                } while (positionChecker[randomXValue][randomYValue]);
+            }
+            positionChecker[randomXValue][randomYValue] = true;
+            touch_counter++;
+            Log.d("Positions", String.valueOf(touch_counter));
+            target.setX(xPositions[randomXValue]-OFFSET);
+            target.setY(yPositions[randomYValue]-OFFSET);
+            Log.d("X, Y", String.valueOf(target.getX()) + ", " + String.valueOf(target.getY()));
         }
     }
 
@@ -92,7 +119,6 @@ public class GenericTaskActivity extends AppCompatActivity {
         touchOrientation = event.getOrientation();
         touchMajor = event.getTouchMajor();
         touchMinor = event.getTouchMinor();
-
         switch(eventAction) {
             case MotionEvent.ACTION_DOWN:
                 writeDataIntoLists("Down");
@@ -117,8 +143,8 @@ public class GenericTaskActivity extends AppCompatActivity {
         taskmodel.setTargetId(touch_counter);
         taskmodel.setTimestamp(System.currentTimeMillis());
         taskmodel.setEventType(eventType);
-        taskmodel.setXTarget(target.getX() + OFFSET);
-        taskmodel.setYTarget(target.getY() + OFFSET);
+        taskmodel.setXTarget(target.getX());
+        taskmodel.setYTarget(target.getY());
         taskmodel.setXTouch(xTouch);
         taskmodel.setYTouch(yTouch);
         taskmodel.setTouchPressure(touchPressure);
@@ -126,6 +152,46 @@ public class GenericTaskActivity extends AppCompatActivity {
         taskmodel.setTouchOrientation(touchOrientation);
         taskmodel.setTouchMajor(touchMajor);
         taskmodel.setTouchMinor(touchMinor);
+    }
+
+    private void initPositions(){
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int width = size.x;
+        int height = size.y-MainActivity.statusbarOffset;
+        Log.d("Size", String.valueOf(width) + " x " + String.valueOf(height));
+        xPositions = new float[X_AMOUNT];
+        yPositions = new float[Y_AMOUNT];
+        xPositions[0] = ((width-PADDING*2)/X_AMOUNT)+PADDING;
+        yPositions[0] = ((height-PADDING*2)/Y_AMOUNT)+PADDING;
+        for (int i = 1; i<X_AMOUNT; i++){
+            xPositions[i] = xPositions[i-1] + ((width-PADDING*2)/X_AMOUNT);
+            Log.d("X Werte", String.valueOf(xPositions[i]));
+        }
+        for (int i = 1; i<Y_AMOUNT; i++){
+            yPositions[i] = yPositions[i-1] + ((height-PADDING*2)/Y_AMOUNT);
+            Log.d("Y Werte", String.valueOf(yPositions[i]));
+        }
+    }
+
+    private void initPositionChecker() {
+        for (int i = 0; i<X_AMOUNT; i++){
+            for (int j = 0; j<Y_AMOUNT; j++){
+                positionChecker[i][j] = false;
+            }
+        }
+    }
+
+    private boolean didTouchEveryPosition() {
+        for (int i = 0; i<X_AMOUNT; i++){
+            for (int j = 0; j<Y_AMOUNT; j++){
+                if (!positionChecker[i][j]){
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
        @Override
@@ -145,5 +211,36 @@ public class GenericTaskActivity extends AppCompatActivity {
         setContentView(R.layout.activity_generic_task);
         nextButton = findViewById(R.id.next_btn);
         target = findViewById(R.id.targetBtn);
+    }
+
+    private class AsyncTaskRunner extends AsyncTask<String, String, String> {
+
+        ProgressDialog progressDialog;
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                database.createGenericTaskData(taskmodel);
+                database.createMotionSensorData(motionSensorUtil.getMotionSensorData());
+                database.closeDB();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+
+        @Override
+        protected void onPostExecute(String params) {
+            progressDialog.dismiss();
+            nextButton.setVisibility(View.VISIBLE);
+        }
+
+
+        @Override
+        protected void onPreExecute() {
+            progressDialog = ProgressDialog.show(GenericTaskActivity.this,
+                    "Sichere Daten...", "Bitte warten.");
+        }
     }
 }

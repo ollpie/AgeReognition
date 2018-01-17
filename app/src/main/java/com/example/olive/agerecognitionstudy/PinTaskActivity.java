@@ -5,9 +5,6 @@ import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -18,11 +15,12 @@ import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.TextView;
 
-public class PinTaskActivity extends AppCompatActivity implements SensorEventListener {
+public class PinTaskActivity extends AppCompatActivity{
 
     private static final int REPETITIONS = 2;
     private static final String[] PINS = {"0537", "8683"};
     private static final String TABLE_PIN_TASK = "pin_task";
+    private static final String TASK_NAME = "Pin Task";
 
     private GridLayout layout;
     private TextView pinView;
@@ -32,23 +30,6 @@ public class PinTaskActivity extends AppCompatActivity implements SensorEventLis
     private int pinIndex = 0;
     private boolean didStartIntent = false;
     private GenericTaskDataModel taskmodel;
-    private SensorManager sensorManager;
-
-    private float x_Acc = 0.0F;
-    private float y_Acc = 0.0F;
-    private float z_Acc = 0.0F;
-
-    private float x_Gravity = 0.0F;
-    private float y_Gravity = 0.0F;
-    private float z_Gravity = 0.0F;
-
-    private float x_Gyroscope = 0.0F;
-    private float y_Gyroscope = 0.0F;
-    private float z_Gyroscope = 0.0F;
-
-    private float x_Rotation = 0.0F;
-    private float y_Rotation = 0.0F;
-    private float z_Rotation = 0.0F;
 
     private float xTarget;
     private float yTarget;
@@ -57,6 +38,7 @@ public class PinTaskActivity extends AppCompatActivity implements SensorEventLis
     private String userID = "";
 
     DatabaseHandler database;
+    private MotionSensorUtil motionSensorUtil;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,33 +50,9 @@ public class PinTaskActivity extends AppCompatActivity implements SensorEventLis
         layout = findViewById(R.id.gridLayout);
         database = MainActivity.getDbHandler();
         taskmodel = new GenericTaskDataModel();
-        sensorManager=(SensorManager) getSystemService(SENSOR_SERVICE);
         userID = MainActivity.currentUserID;
+        motionSensorUtil = new MotionSensorUtil(userID, TASK_NAME, (SensorManager) getSystemService(SENSOR_SERVICE));
         showAlertDialog();
-    }
-
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            x_Acc = event.values[0];
-            y_Acc = event.values[1];
-            z_Acc = event.values[2];
-        }
-        if (event.sensor.getType() == Sensor.TYPE_GRAVITY) {
-            x_Gravity = event.values[0];
-            y_Gravity = event.values[1];
-            z_Gravity = event.values[2];
-        }
-        if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
-            x_Gyroscope = event.values[0];
-            y_Gyroscope = event.values[1];
-            z_Gyroscope = event.values[2];
-        }
-        if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
-            x_Rotation = event.values[0];
-            y_Rotation = event.values[1];
-            z_Rotation = event.values[2];
-        }
     }
 
     public void buttonPressed(View view) {
@@ -111,7 +69,9 @@ public class PinTaskActivity extends AppCompatActivity implements SensorEventLis
             if (receivedDigits.equals(PINS[PINS.length-1]) && repetitionCount == REPETITIONS-1) {
                 didStartIntent = true;
                 pinView.setText("FERTIG");
-                database.createGenericTaskData(taskmodel);
+                /*database.createGenericTaskData(taskmodel);
+                database.createMotionSensorData(motionSensorUtil.getMotionSensorData());
+                database.close();*/
                 Intent intent = new Intent(this, UnlockActivityTask.class);
                 startActivity(intent);
             }
@@ -191,34 +151,16 @@ public class PinTaskActivity extends AppCompatActivity implements SensorEventLis
     }
 
     @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
-        // register this class as a listener for the orientation and
-        // accelerometer sensors
-        sensorManager.registerListener(this,
-                sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-                SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(this,
-                sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY),
-                SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(this,
-                sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE),
-                SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(this,
-                sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR),
-                SensorManager.SENSOR_DELAY_NORMAL);
+        //motionSensorUtil.registerListeners();
     }
 
     @Override
     protected void onPause() {
         // unregister listener
         super.onPause();
-        sensorManager.unregisterListener(this);
+        //motionSensorUtil.stop();
     }
 
 }

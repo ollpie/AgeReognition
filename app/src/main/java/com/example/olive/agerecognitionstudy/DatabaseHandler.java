@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -206,7 +207,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         for (int i = 0; i < taskModel.length(); i++) {
             ContentValues values = new ContentValues();
-
             values.put(KEY_PARTICIPANT_ID, taskModel.getParticipantId());
             values.put(KEY_TARGET_ID, taskModel.getTargetId().get(i));
             values.put(KEY_EVENT_TYPE, taskModel.getEventType().get(i));
@@ -360,11 +360,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
-
+        Log.d("Generic Column Count", String.valueOf(c.getColumnCount()));
         // looping through all rows and adding to list
         if (c.moveToFirst()) {
+
             do {
-                model.setParticipantId(c.getString((c.getColumnIndex(KEY_PARTICIPANT_ID))));
+                model.setParticipantList(c.getString((c.getColumnIndex(KEY_PARTICIPANT_ID))));
                 model.setTargetId(c.getInt((c.getColumnIndex(KEY_TARGET_ID))));
                 model.setEventType(c.getString((c.getColumnIndex(KEY_EVENT_TYPE))));
                 model.setXTarget(c.getFloat((c.getColumnIndex(KEY_X_TARGET))));
@@ -392,7 +393,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // looping through all rows and adding to list
         if (c.moveToFirst()) {
             do {
-                model.setParticipantId(c.getString((c.getColumnIndex(KEY_PARTICIPANT_ID))));
+                model.setParticipantList(c.getString((c.getColumnIndex(KEY_PARTICIPANT_ID))));
                 model.setPin(c.getString((c.getColumnIndex(KEY_PIN))));
                 model.setEventType(c.getString((c.getColumnIndex(KEY_EVENT_TYPE))));
                 model.setRepetition(c.getInt((c.getColumnIndex(KEY_REPETITION))));
@@ -481,12 +482,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
-
+        Log.d("Motion Column Count", String.valueOf(c.getColumnCount()));
 
         // looping through all rows and adding to list
         if (c.moveToFirst()) {
             do {
-                model.setParticipantID(c.getString(c.getColumnIndex(KEY_PARTICIPANT_ID)));
+                model.setParticipantList(c.getString(c.getColumnIndex(KEY_PARTICIPANT_ID)));
                 model.setTaskID(c.getString(c.getColumnIndex(KEY_TASK_ID)));
                 model.setTimestamp(c.getLong((c.getColumnIndex(KEY_TIMESTAMP))));
                 model.setXAcc(c.getFloat((c.getColumnIndex(KEY_X_ACC))));

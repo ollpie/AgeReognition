@@ -1,7 +1,6 @@
 package com.example.olive.agerecognitionstudy;
 
 import android.os.Environment;
-import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
@@ -122,7 +121,7 @@ public class LoggingModule {
             GenericTaskDataModel model = genericModel;
 
             for (int i = 0; i < model.length(); i++) {
-                sheet.addCell(new Label(0, i + 1, model.getParticipantId()));
+                sheet.addCell(new Label(0, i + 1, model.getParticipantList().get(i)));
                 sheet.addCell(new Label(1, i + 1, String.valueOf(model.getTargetId().get(i))));
                 sheet.addCell(new Label(2, i + 1, model.getEventType().get(i)));
                 sheet.addCell(new Label(3, i + 1, String.valueOf(model.getXTarget().get(i))));
@@ -193,7 +192,7 @@ public class LoggingModule {
             MotionSensorDataModel model = motionSensorModel;
 
             for (int i = 0; i < model.length(); i++) {
-                sheet.addCell(new Label(0, i+1, model.getParticipantID()));
+                sheet.addCell(new Label(0, i+1, model.getParticipantList().get(i)));
                 sheet.addCell(new Label(1, i+1, model.getTaskID()));
                 sheet.addCell(new Label(2, i+1, String.valueOf(model.getTimestamp().get(i))));
                 sheet.addCell(new Label(3, i+1, String.valueOf(model.getXAcc().get(i))));
