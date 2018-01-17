@@ -123,7 +123,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             + TABLE_PIN_TASK + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
             + KEY_PARTICIPANT_ID + " TEXT,"
             + KEY_PIN + " TEXT," + KEY_EVENT_TYPE + " TEXT," + KEY_REPETITION + " Text," + KEY_PROGRESS + " TEXT,"
-            + KEY_CURRENT_DIGIT + " TEXT," + KEY_ACTUAL_DIGIT + " TEXT,"
+            + KEY_CURRENT_DIGIT + " TEXT," + KEY_ACTUAL_DIGIT + " TEXT," + KEY_SEQUENCE_CORRECTNESS + " TEXT,"
             + KEY_X_BUTTON_CENTER + " REAL," + KEY_Y_BUTTON_CENTER + " REAL,"
             + KEY_X_TOUCH + " REAL," + KEY_Y_TOUCH + " REAL," + KEY_TOUCH_PRESSURE + " REAL,"
             + KEY_TOUCH_SIZE + " REAL," + KEY_ORIENTATION + " REAL," + KEY_TOUCH_MAJOR + " REAL,"

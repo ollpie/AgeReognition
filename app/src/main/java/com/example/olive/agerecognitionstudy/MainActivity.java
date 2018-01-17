@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
             db.createParticipant(p);
             db.closeDB();
             ageEntry.setText("");
-            Intent intent = new Intent(this, GenericTaskActivity.class);
+            Intent intent = new Intent(this, PinTaskActivity.class);
             startActivity(intent);
         }
     }
@@ -114,12 +114,13 @@ public class MainActivity extends AppCompatActivity {
             try {
                 LoggingModule loggingModule = new LoggingModule(db.getAllParticipants(),
                         db.getAllGenericTaskData(),
-                        null,
+                        db.getAllPinTaskData(),
                         null,
                         null,
                         db.getMotionSensorData());
                 loggingModule.generateParticipantExcelFile();
                 loggingModule.generateGenericTaskExcelFile();
+                loggingModule.generatePinTaskExcelFile();
                 loggingModule.generateMotionSensorExcelFile();
                 Toast.makeText(getApplication(),
                         "Data Exported in a Excel Sheet", Toast.LENGTH_SHORT).show();
