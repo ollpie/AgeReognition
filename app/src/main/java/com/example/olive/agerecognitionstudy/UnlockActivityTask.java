@@ -1,9 +1,5 @@
 package com.example.olive.agerecognitionstudy;
 
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -13,54 +9,57 @@ import android.widget.ImageView;
 import com.andrognito.patternlockview.PatternLockView;
 import com.andrognito.patternlockview.PatternLockView.Dot;
 import com.andrognito.patternlockview.listener.PatternLockViewListener;
-import com.andrognito.patternlockview.utils.PatternLockUtils;
 import com.andrognito.patternlockview.utils.ResourceUtils;
 
 import java.util.List;
 
-public class UnlockActivityTask extends AppCompatActivity implements SensorEventListener{
+public class UnlockActivityTask extends AppCompatActivity {
 
-    private SensorManager sensorManager;
+    private static final String TASK_ID = "Unlock Pattern";
+
+    private MotionSensorUtil motionSensorUtil;
     private ImageView cross;
+    private String userID;
+    private DatabaseHandler database;
+    private UnlockTaskDataModel unlockDataModel;
 
-    private float x_Acc = 0.0F;
-    private float y_Acc = 0.0F;
-    private float z_Acc = 0.0F;
-
-    private float x_Gravity = 0.0F;
-    private float y_Gravity = 0.0F;
-    private float z_Gravity = 0.0F;
-
-    private float x_Gyroscope = 0.0F;
-    private float y_Gyroscope = 0.0F;
-    private float z_Gyroscope = 0.0F;
-
-    private float x_Rotation = 0.0F;
-    private float y_Rotation = 0.0F;
-    private float z_Rotation = 0.0F;
+    private int repetitionCount = 0;
+    private String progress = "";
+    private float xTarget;
+    private float yTarget;
+    private float xTouch = 0.0F;
+    private float yTouch = 0.0F;
+    private float touchPressure = 0.0F;
+    private float touchSize = 0.0F;
+    private float touchOrientation = 0.0F;
+    private float touchMajor = 0.0F;
+    private float touchMinor = 0.0F;
+    private long timestamp;
 
     private PatternLockView mPatternLockView;
     private PatternLockViewListener mPatternLockViewListener = new PatternLockViewListener() {
         @Override
         public void onStarted() {
-            Log.d(getClass().getName(), "Pattern drawing started");
+            //Log.d(getClass().getName(), "Pattern drawing started");
         }
 
         @Override
         public void onProgress(List<Dot> progressPattern) {
-            Log.d(getClass().getName(), "Pattern progress: " +
-                    PatternLockUtils.patternToString(mPatternLockView, progressPattern));
+            /*Log.d(getClass().getName(), "Pattern progress: " +
+                    PatternLockUtils.patternToString(mPatternLockView, progressPattern));*/
+            Dot d = progressPattern.get(0);
+            Log.d("Dot", "Row: " + String.valueOf(d.getRow()) + ", Column: " + String.valueOf(d.getColumn()));
         }
 
         @Override
         public void onComplete(List<Dot> pattern) {
-            Log.d(getClass().getName(), "Pattern complete: " +
-                    PatternLockUtils.patternToString(mPatternLockView, pattern));
+            /*Log.d(getClass().getName(), "Pattern complete: " +
+                    PatternLockUtils.patternToString(mPatternLockView, pattern));*/
         }
 
         @Override
         public void onCleared() {
-            Log.d(getClass().getName(), "Pattern has been cleared");
+            //Log.d(getClass().getName(), "Pattern has been cleared");
         }
     };
 
@@ -68,33 +67,62 @@ public class UnlockActivityTask extends AppCompatActivity implements SensorEvent
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_unlock_task);
-        setupPatternUnlock();
         cross = findViewById(R.id.cross);
-        sensorManager=(SensorManager) getSystemService(SENSOR_SERVICE);
+        userID = MainActivity.currentUserID;
+        database = MainActivity.getDbHandler();
+        unlockDataModel = new UnlockTaskDataModel(userID);
+        setupPatternUnlock();
+        //motionSensorUtil = new MotionSensorUtil(userID, TASK_ID, (SensorManager) getSystemService(SENSOR_SERVICE));
     }
 
     public boolean dispatchTouchEvent(MotionEvent event) {
         int eventAction = event.getAction();
-
+        xTouch = event.getRawX();
+        yTouch = event.getRawY()-MainActivity.statusbarOffset;
+        touchPressure = event.getPressure();
+        touchSize = event.getSize();
+        touchOrientation = event.getOrientation();
+        touchMajor = event.getTouchMajor();
+        touchMinor = event.getTouchMinor();
+        timestamp = event.getEventTime();
         switch(eventAction) {
             case MotionEvent.ACTION_DOWN:
-                //writeDataIntoLists("Down", event.getX(), event.getY());
+                writeDataIntoLists("Down");
                 break;
 
             case MotionEvent.ACTION_MOVE:
-                //writeDataIntoLists("Move", event.getX(), event.getY());
+                writeDataIntoLists("Move");
                 cross.setX(event.getX()- 13);
                 cross.setY(event.getY() - MainActivity.statusbarOffset -13);
                 break;
 
             case MotionEvent.ACTION_UP:
-                //writeDataIntoLists("Up", event.getX(), event.getY());
+                writeDataIntoLists("Up");
                 break;
             default:
                 break;
         }
 
         return super.dispatchTouchEvent(event);
+    }
+
+    private void writeDataIntoLists(String eventType) {
+        unlockDataModel.setParticipantId(userID);
+        unlockDataModel.setPattern("");
+        unlockDataModel.setEventType(eventType);
+        unlockDataModel.setRepetition(repetitionCount);
+        unlockDataModel.setProgress(progress);
+        unlockDataModel.setSequenceCorrect("true");
+        unlockDataModel.setxButtonCenter(xTarget);
+        unlockDataModel.setyButtonCenter(yTarget);
+        unlockDataModel.setxTouch(xTouch);
+        unlockDataModel.setyTouch(yTouch);
+        unlockDataModel.setTouchPressure(touchPressure);
+        unlockDataModel.setTouchSize(touchSize);
+        unlockDataModel.setTouchOrientation(touchOrientation);
+        unlockDataModel.setTouchMajor(touchMajor);
+        unlockDataModel.setTouchMinor(touchMinor);
+        unlockDataModel.setTimestamp(timestamp);
     }
 
     private void setupPatternUnlock () {
@@ -116,57 +144,14 @@ public class UnlockActivityTask extends AppCompatActivity implements SensorEvent
     }
 
     @Override
-    public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            x_Acc = event.values[0];
-            y_Acc = event.values[1];
-            z_Acc = event.values[2];
-        }
-        if (event.sensor.getType() == Sensor.TYPE_GRAVITY) {
-            x_Gravity = event.values[0];
-            y_Gravity = event.values[1];
-            z_Gravity = event.values[2];
-        }
-        if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
-            x_Gyroscope = event.values[0];
-            y_Gyroscope = event.values[1];
-            z_Gyroscope = event.values[2];
-        }
-        if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
-            x_Rotation = event.values[0];
-            y_Rotation = event.values[1];
-            z_Rotation = event.values[2];
-        }
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
-        // register this class as a listener for the orientation and
-        // accelerometer sensors
-        sensorManager.registerListener(this,
-                sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-                SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(this,
-                sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY),
-                SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(this,
-                sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE),
-                SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(this,
-                sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR),
-                SensorManager.SENSOR_DELAY_NORMAL);
+        //motionSensorUtil.registerListeners();
     }
 
     @Override
     protected void onPause() {
-        // unregister listener
         super.onPause();
-        sensorManager.unregisterListener(this);
+        //motionSensorUtil.stop();
     }
 }

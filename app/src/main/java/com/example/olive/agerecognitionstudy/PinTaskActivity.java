@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.TextView;
@@ -24,6 +25,18 @@ public class PinTaskActivity extends AppCompatActivity{
     private GridLayout layout;
     private TextView pinView;
     private TextView pinDisplay;
+    private Button button1;
+    private Button button2;
+    private Button button3;
+    private Button button4;
+    private Button button5;
+    private Button button6;
+    private Button button7;
+    private Button button8;
+    private Button button9;
+    private Button button0;
+    private Button buttonDelete;
+    private Button buttonDone;
 
     private int repetitionCount = 0;
     private int currentIndexCount = 0;
@@ -31,18 +44,16 @@ public class PinTaskActivity extends AppCompatActivity{
     private int pinIndex = 0;
     private boolean didStartIntent = false;
     private PinTaskDataModel taskmodel;
-
     private float xTarget;
     private float yTarget;
-
     private float xTouch = 0.0F;
     private float yTouch = 0.0F;
-
     private float touchPressure = 0.0F;
     private float touchSize = 0.0F;
     private float touchOrientation = 0.0F;
     private float touchMajor = 0.0F;
     private float touchMinor = 0.0F;
+    private long timestamp;
 
     private String currentButtonPress = "";
     private String userID = "";
@@ -55,13 +66,7 @@ public class PinTaskActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pin_task);
-        pinView = findViewById(R.id.pin_text_view);
-        pinDisplay = findViewById(R.id.pin_display);
-        LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.activity_pin_task, null);
-        layout = findViewById(R.id.gridLayout);
-        database = MainActivity.getDbHandler();
+        setupUI();
         taskmodel = new PinTaskDataModel(userID);
         userID = MainActivity.currentUserID;
         motionSensorUtil = new MotionSensorUtil(userID, TASK_NAME, (SensorManager) getSystemService(SENSOR_SERVICE));
@@ -69,11 +74,42 @@ public class PinTaskActivity extends AppCompatActivity{
         currentDigit = PINS[pinIndex].charAt(0);
     }
 
-    public void buttonPressed(View view) {
-        Button b = (Button) view;
-        xTarget = (layout.getX() + b.getX() + b.getWidth()/2);
-        yTarget = (layout.getY() + b.getY() + b.getHeight()/2);
+    OnTouchListener listener = new OnTouchListener() {
+        @Override
+        public boolean onTouch(View view, MotionEvent event) {
+            int eventAction = event.getAction();
+            Button b = (Button) view;
+            xTarget = (layout.getX() + b.getX() + b.getWidth()/2);
+            yTarget = (layout.getY() + b.getY() + b.getHeight()/2);
+            xTouch = event.getRawX();
+            yTouch = event.getRawY()-MainActivity.statusbarOffset;
+            touchPressure = event.getPressure();
+            touchSize = event.getSize();
+            touchOrientation = event.getOrientation();
+            touchMajor = event.getTouchMajor();
+            touchMinor = event.getTouchMinor();
+            timestamp = event.getEventTime();
+            switch(eventAction) {
+                case MotionEvent.ACTION_DOWN:
+                    processButtonPress(b);
+                    writeDataIntoLists("Down");
+                    break;
 
+                case MotionEvent.ACTION_MOVE:
+                    writeDataIntoLists("Move");
+                    break;
+
+                case MotionEvent.ACTION_UP:
+                    writeDataIntoLists("Up");
+                    break;
+                default:
+                    break;
+            }
+            return false;
+        }
+    };
+
+     private void processButtonPress(Button b) {
         if (!(receivedDigits.length() > PINS[0].length()-1) || b.getText().equals("Delete") || b.getText().equals("Done")){
             if (!b.getText().equals("Done") && !b.getText().equals("Delete")){
                 currentDigit = PINS[pinIndex].charAt(currentIndexCount);
@@ -82,18 +118,20 @@ public class PinTaskActivity extends AppCompatActivity{
             if (b.getText().equals("Delete") && !receivedDigits.equals("")){
                 receivedDigits = receivedDigits.substring(0, receivedDigits.length()-1);
                 pinView.setText(receivedDigits);
+                currentDigit = 'D';
                 currentIndexCount--;
             }
             if (b.getText().equals("Done")) {
+                Log.d("Done", "Nur done");
                 if (receivedDigits.equals(PINS[PINS.length-1]) && repetitionCount == REPETITIONS-1) {
                     motionSensorUtil.stop();
                     didStartIntent = true;
                     pinView.setText("FERTIG");
-                    Intent intent = new Intent(this, UnlockActivityTask.class);
                     PinTaskActivity.AsyncTaskRunner runner = new PinTaskActivity.AsyncTaskRunner();
                     runner.execute();
                 }
                 if (receivedDigits.equals(PINS[pinIndex]) && !didStartIntent){
+                    Log.d("Done", "Pin Correct");
                     repetitionCount++;
                     if (repetitionCount == REPETITIONS){
                         repetitionCount = 0;
@@ -103,6 +141,8 @@ public class PinTaskActivity extends AppCompatActivity{
                     }
                     currentIndexCount = 0;
                     receivedDigits = "";
+                    currentDigit = ' ';
+                    actualDigit = ' ';
                     pinView.setText(receivedDigits);
                     pinDisplay.setText("Pin: " + PINS[pinIndex]);
                 }
@@ -115,40 +155,6 @@ public class PinTaskActivity extends AppCompatActivity{
                 }
             }
         }
-    }
-
-    public boolean dispatchTouchEvent(MotionEvent event) {
-        int eventAction = event.getAction();
-        xTouch = event.getX();
-        yTouch = event.getY()-MainActivity.statusbarOffset;
-        touchPressure = event.getPressure();
-        touchSize = event.getSize();
-        touchOrientation = event.getOrientation();
-        touchMajor = event.getTouchMajor();
-        touchMinor = event.getTouchMinor();
-        switch(eventAction) {
-            case MotionEvent.ACTION_DOWN:
-                writeDataIntoLists("Down");
-                Log.d("Pin", PINS[pinIndex]);
-                Log.d("Repetition", String.valueOf(repetitionCount));
-                Log.d("Progress", receivedDigits);
-                Log.d("Current Digit", String.valueOf(currentDigit));
-                Log.d("Actual Digit", String.valueOf(actualDigit));
-                Log.d("-------", "----------------------------------");
-                break;
-
-            case MotionEvent.ACTION_MOVE:
-                writeDataIntoLists("Move");
-                break;
-
-            case MotionEvent.ACTION_UP:
-                writeDataIntoLists("Up");
-                break;
-            default:
-                break;
-        }
-
-        return super.dispatchTouchEvent(event);
     }
 
     private void writeDataIntoLists(String eventType) {
@@ -169,7 +175,41 @@ public class PinTaskActivity extends AppCompatActivity{
         taskmodel.setTouchOrientation(touchOrientation);
         taskmodel.setTouchMajor(touchMajor);
         taskmodel.setTouchMinor(touchMinor);
-        taskmodel.setTimestamp(System.currentTimeMillis());
+        taskmodel.setTimestamp(timestamp);
+    }
+
+    private void setupUI() {
+        setContentView(R.layout.activity_pin_task);
+        pinView = findViewById(R.id.pin_text_view);
+        pinDisplay = findViewById(R.id.pin_display);
+        button1 = findViewById(R.id.button1);
+        button2 = findViewById(R.id.button2);
+        button3 = findViewById(R.id.button3);
+        button4 = findViewById(R.id.button4);
+        button5 = findViewById(R.id.button5);
+        button6 = findViewById(R.id.button6);
+        button7 = findViewById(R.id.button7);
+        button8 = findViewById(R.id.button8);
+        button9 = findViewById(R.id.button9);
+        button0 = findViewById(R.id.button0);
+        buttonDelete = findViewById(R.id.buttonDelete);
+        buttonDone = findViewById(R.id.buttonDone);
+        button1.setOnTouchListener(listener);
+        button2.setOnTouchListener(listener);
+        button3.setOnTouchListener(listener);
+        button4.setOnTouchListener(listener);
+        button5.setOnTouchListener(listener);
+        button6.setOnTouchListener(listener);
+        button7.setOnTouchListener(listener);
+        button8.setOnTouchListener(listener);
+        button9.setOnTouchListener(listener);
+        button0.setOnTouchListener(listener);
+        buttonDone.setOnTouchListener(listener);
+        buttonDelete.setOnTouchListener(listener);
+        LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.activity_pin_task, null);
+        layout = findViewById(R.id.gridLayout);
+        database = MainActivity.getDbHandler();
     }
 
     private class AsyncTaskRunner extends AsyncTask<String, String, String> {
@@ -191,8 +231,8 @@ public class PinTaskActivity extends AppCompatActivity{
         @Override
         protected void onPostExecute(String params) {
             progressDialog.dismiss();
-
-            //startActivity(intent);
+            Intent intent = new Intent(getApplicationContext(), UnlockActivityTask.class);
+            startActivity(intent);
         }
 
 

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 public class UnlockTaskDataModel {
     String participantId;
+    ArrayList<String> participantIDList;
     ArrayList<String> pattern;
     ArrayList<String> eventType;
     ArrayList<Integer> repetition;
@@ -25,6 +26,7 @@ public class UnlockTaskDataModel {
     ArrayList<Long> timestamp;
 
     public UnlockTaskDataModel () {
+        this.participantIDList = new ArrayList<>();
         this.pattern = new ArrayList<>();
         this.eventType = new ArrayList<>();
         this.repetition = new ArrayList<>();
@@ -43,6 +45,7 @@ public class UnlockTaskDataModel {
     }
 
     public UnlockTaskDataModel (String participantID) {
+        this.participantIDList = new ArrayList<>();
         this.participantId = participantID;
         this.pattern = new ArrayList<>();
         this.eventType = new ArrayList<>();
@@ -126,10 +129,18 @@ public class UnlockTaskDataModel {
         this.timestamp.add(timestamp);
     }
 
+    public void setParticipantIDList(String participant) {
+        this.participantIDList.add(participant);
+    }
+
     //GETTER
 
     public String getParticipantId() {
         return participantId;
+    }
+
+    public ArrayList<String> getParticipantIDList() {
+        return participantIDList;
     }
 
     public ArrayList<String> getPattern() {

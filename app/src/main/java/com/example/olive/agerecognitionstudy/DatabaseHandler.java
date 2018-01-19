@@ -205,127 +205,165 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public void createGenericTaskData(GenericTaskDataModel taskModel) {
         SQLiteDatabase db = this.getWritableDatabase();
-        for (int i = 0; i < taskModel.length(); i++) {
-            ContentValues values = new ContentValues();
-            values.put(KEY_PARTICIPANT_ID, taskModel.getParticipantId());
-            values.put(KEY_TARGET_ID, taskModel.getTargetId().get(i));
-            values.put(KEY_EVENT_TYPE, taskModel.getEventType().get(i));
-            values.put(KEY_X_TARGET, taskModel.getXTarget().get(i));
-            values.put(KEY_Y_TARGET, taskModel.getYTarget().get(i));
-            values.put(KEY_X_TOUCH, taskModel.getXTouch().get(i));
-            values.put(KEY_Y_TOUCH, taskModel.getYTouch().get(i));
-            values.put(KEY_TOUCH_PRESSURE, taskModel.getTouchPressure().get(i));
-            values.put(KEY_TOUCH_SIZE, taskModel.getTouchSize().get(i));
-            values.put(KEY_ORIENTATION, taskModel.getTouchOrientation().get(i));
-            values.put(KEY_TOUCH_MAJOR, taskModel.getTouchMajor().get(i));
-            values.put(KEY_TOUCH_MINOR, taskModel.getTouchMinor().get(i));
-            values.put(KEY_TIMESTAMP, taskModel.getTimestamp().get(i));
-
-            db.insert(TABLE_GENERIC_TASK, null, values);
+        db.beginTransaction();
+        try{
+            for (int i = 0; i < taskModel.length(); i++) {
+                ContentValues values = new ContentValues();
+                values.put(KEY_PARTICIPANT_ID, taskModel.getParticipantId());
+                values.put(KEY_TARGET_ID, taskModel.getTargetId().get(i));
+                values.put(KEY_EVENT_TYPE, taskModel.getEventType().get(i));
+                values.put(KEY_X_TARGET, taskModel.getXTarget().get(i));
+                values.put(KEY_Y_TARGET, taskModel.getYTarget().get(i));
+                values.put(KEY_X_TOUCH, taskModel.getXTouch().get(i));
+                values.put(KEY_Y_TOUCH, taskModel.getYTouch().get(i));
+                values.put(KEY_TOUCH_PRESSURE, taskModel.getTouchPressure().get(i));
+                values.put(KEY_TOUCH_SIZE, taskModel.getTouchSize().get(i));
+                values.put(KEY_ORIENTATION, taskModel.getTouchOrientation().get(i));
+                values.put(KEY_TOUCH_MAJOR, taskModel.getTouchMajor().get(i));
+                values.put(KEY_TOUCH_MINOR, taskModel.getTouchMinor().get(i));
+                values.put(KEY_TIMESTAMP, taskModel.getTimestamp().get(i));
+                db.insert(TABLE_GENERIC_TASK, null, values);
+            }
+            db.setTransactionSuccessful();
+        }catch(Exception e){
+            Log.e("Error in Transaction",e.toString());
+        }finally{
+            db.endTransaction();
         }
     }
 
     public void createPinTaskData(PinTaskDataModel taskModel) {
         SQLiteDatabase db = this.getWritableDatabase();
-        for (int i = 0; i < taskModel.length(); i++) {
-            ContentValues values = new ContentValues();
-
-            values.put(KEY_PARTICIPANT_ID, taskModel.getParticipantId());
-            values.put(KEY_PIN, taskModel.getPin().get(i));
-            values.put(KEY_EVENT_TYPE, taskModel.getEventType().get(i));
-            values.put(KEY_REPETITION, taskModel.getRepetition().get(i));
-            values.put(KEY_PROGRESS, taskModel.getProgress().get(i));
-            values.put(KEY_CURRENT_DIGIT, taskModel.getCurrentDigit().get(i).toString());
-            values.put(KEY_ACTUAL_DIGIT, taskModel.getActualDigit().get(i).toString());
-            values.put(KEY_SEQUENCE_CORRECTNESS, taskModel.getSequenceCorrect().get(i));
-            values.put(KEY_X_BUTTON_CENTER, taskModel.getxButtonCenter().get(i));
-            values.put(KEY_Y_BUTTON_CENTER, taskModel.getyButtonCenter().get(i));
-            values.put(KEY_X_TOUCH, taskModel.getxTouch().get(i));
-            values.put(KEY_Y_TOUCH, taskModel.getyTouch().get(i));
-            values.put(KEY_TOUCH_PRESSURE, taskModel.getTouchPressure().get(i));
-            values.put(KEY_TOUCH_SIZE, taskModel.getTouchSize().get(i));
-            values.put(KEY_ORIENTATION, taskModel.getTouchOrientation().get(i));
-            values.put(KEY_TOUCH_MAJOR, taskModel.getTouchMajor().get(i));
-            values.put(KEY_TOUCH_MINOR, taskModel.getTouchMinor().get(i));
-            values.put(KEY_TIMESTAMP, taskModel.getTimestamp().get(i));
-
-            db.insert(TABLE_PIN_TASK, null, values);
+        db.beginTransaction();
+        try{
+            for (int i = 0; i < taskModel.length(); i++) {
+                ContentValues values = new ContentValues();
+                values.put(KEY_PARTICIPANT_ID, taskModel.getParticipantId());
+                values.put(KEY_PIN, taskModel.getPin().get(i));
+                values.put(KEY_EVENT_TYPE, taskModel.getEventType().get(i));
+                values.put(KEY_REPETITION, taskModel.getRepetition().get(i));
+                values.put(KEY_PROGRESS, taskModel.getProgress().get(i));
+                values.put(KEY_CURRENT_DIGIT, taskModel.getCurrentDigit().get(i).toString());
+                values.put(KEY_ACTUAL_DIGIT, taskModel.getActualDigit().get(i).toString());
+                values.put(KEY_SEQUENCE_CORRECTNESS, taskModel.getSequenceCorrect().get(i));
+                values.put(KEY_X_BUTTON_CENTER, taskModel.getxButtonCenter().get(i));
+                values.put(KEY_Y_BUTTON_CENTER, taskModel.getyButtonCenter().get(i));
+                values.put(KEY_X_TOUCH, taskModel.getxTouch().get(i));
+                values.put(KEY_Y_TOUCH, taskModel.getyTouch().get(i));
+                values.put(KEY_TOUCH_PRESSURE, taskModel.getTouchPressure().get(i));
+                values.put(KEY_TOUCH_SIZE, taskModel.getTouchSize().get(i));
+                values.put(KEY_ORIENTATION, taskModel.getTouchOrientation().get(i));
+                values.put(KEY_TOUCH_MAJOR, taskModel.getTouchMajor().get(i));
+                values.put(KEY_TOUCH_MINOR, taskModel.getTouchMinor().get(i));
+                values.put(KEY_TIMESTAMP, taskModel.getTimestamp().get(i));
+                db.insert(TABLE_PIN_TASK, null, values);
+            }
+            db.setTransactionSuccessful();
+        }catch(Exception e){
+            Log.e("Error in Transaction",e.toString());
+        }finally{
+            db.endTransaction();
         }
     }
 
     public void createUnlockTaskData(UnlockTaskDataModel taskModel) {
         SQLiteDatabase db = this.getWritableDatabase();
-        for (int i = 0; i < taskModel.length(); i++) {
-            ContentValues values = new ContentValues();
 
-            values.put(KEY_PARTICIPANT_ID, taskModel.getParticipantId());
-            values.put(KEY_UNLOCK_PATTERN, taskModel.getPattern().get(i));
-            values.put(KEY_EVENT_TYPE, taskModel.getEventType().get(i));
-            values.put(KEY_REPETITION, taskModel.getRepetition().get(i));
-            values.put(KEY_PROGRESS, taskModel.getProgress().get(i));
-            values.put(KEY_SEQUENCE_CORRECTNESS, taskModel.getSequenceCorrect().get(i));
-            values.put(KEY_X_BUTTON_CENTER, taskModel.getxButtonCenter().get(i));
-            values.put(KEY_Y_BUTTON_CENTER, taskModel.getyButtonCenter().get(i));
-            values.put(KEY_X_TOUCH, taskModel.getxTouch().get(i));
-            values.put(KEY_Y_TOUCH, taskModel.getyTouch().get(i));
-            values.put(KEY_TOUCH_PRESSURE, taskModel.getTouchPressure().get(i));
-            values.put(KEY_TOUCH_SIZE, taskModel.getTouchSize().get(i));
-            values.put(KEY_ORIENTATION, taskModel.getTouchOrientation().get(i));
-            values.put(KEY_TOUCH_MAJOR, taskModel.getTouchMajor().get(i));
-            values.put(KEY_TOUCH_MINOR, taskModel.getTouchMinor().get(i));
-            values.put(KEY_TIMESTAMP, taskModel.getTimestamp().get(i));
+        db.beginTransaction();
+        try{
+            for (int i = 0; i < taskModel.length(); i++) {
+                ContentValues values = new ContentValues();
 
-            db.insert(TABLE_UNLOCK_PATTERN_TASK, null, values);
+                values.put(KEY_PARTICIPANT_ID, taskModel.getParticipantId());
+                values.put(KEY_UNLOCK_PATTERN, taskModel.getPattern().get(i));
+                values.put(KEY_EVENT_TYPE, taskModel.getEventType().get(i));
+                values.put(KEY_REPETITION, taskModel.getRepetition().get(i));
+                values.put(KEY_PROGRESS, taskModel.getProgress().get(i));
+                values.put(KEY_SEQUENCE_CORRECTNESS, taskModel.getSequenceCorrect().get(i));
+                values.put(KEY_X_BUTTON_CENTER, taskModel.getxButtonCenter().get(i));
+                values.put(KEY_Y_BUTTON_CENTER, taskModel.getyButtonCenter().get(i));
+                values.put(KEY_X_TOUCH, taskModel.getxTouch().get(i));
+                values.put(KEY_Y_TOUCH, taskModel.getyTouch().get(i));
+                values.put(KEY_TOUCH_PRESSURE, taskModel.getTouchPressure().get(i));
+                values.put(KEY_TOUCH_SIZE, taskModel.getTouchSize().get(i));
+                values.put(KEY_ORIENTATION, taskModel.getTouchOrientation().get(i));
+                values.put(KEY_TOUCH_MAJOR, taskModel.getTouchMajor().get(i));
+                values.put(KEY_TOUCH_MINOR, taskModel.getTouchMinor().get(i));
+                values.put(KEY_TIMESTAMP, taskModel.getTimestamp().get(i));
+
+                db.insert(TABLE_UNLOCK_PATTERN_TASK, null, values);
+            }
+            db.setTransactionSuccessful();
+        }catch(Exception e){
+            Log.e("Error in Transaction",e.toString());
+        }finally{
+            db.endTransaction();
         }
     }
 
     public void createReadingTaskData(ReadingTaskDataModel taskModel) {
         SQLiteDatabase db = this.getWritableDatabase();
-        for (int i = 0; i < taskModel.length(); i++) {
-            ContentValues values = new ContentValues();
 
-            values.put(KEY_PARTICIPANT_ID, taskModel.getParticipantId());
-            values.put(KEY_EVENT_TYPE, taskModel.getEventType().get(i));
-            values.put(KEY_X_TOUCH, taskModel.getxTouch().get(i));
-            values.put(KEY_Y_TOUCH, taskModel.getyTouch().get(i));
-            values.put(KEY_X_VIEWPORT, taskModel.getxViewport().get(i));
-            values.put(KEY_Y_VIEWPORT, taskModel.getyViewport().get(i));
-            values.put(KEY_FONT, taskModel.getFont().get(i));
-            values.put(KEY_FONT_SIZE, taskModel.getFontSize().get(i));
-            values.put(KEY_TOUCH_PRESSURE, taskModel.getTouchPressure().get(i));
-            values.put(KEY_TOUCH_SIZE, taskModel.getTouchSize().get(i));
-            values.put(KEY_ORIENTATION, taskModel.getTouchOrientation().get(i));
-            values.put(KEY_TOUCH_MAJOR, taskModel.getTouchMajor().get(i));
-            values.put(KEY_TOUCH_MINOR, taskModel.getTouchMinor().get(i));
-            values.put(KEY_TIMESTAMP, taskModel.getTimestamp().get(i));
+        db.beginTransaction();
+        try{
+            for (int i = 0; i < taskModel.length(); i++) {
+                ContentValues values = new ContentValues();
 
-            db.insert(TABLE_READING_TASK, null, values);
+                values.put(KEY_PARTICIPANT_ID, taskModel.getParticipantId());
+                values.put(KEY_EVENT_TYPE, taskModel.getEventType().get(i));
+                values.put(KEY_X_TOUCH, taskModel.getxTouch().get(i));
+                values.put(KEY_Y_TOUCH, taskModel.getyTouch().get(i));
+                values.put(KEY_X_VIEWPORT, taskModel.getxViewport().get(i));
+                values.put(KEY_Y_VIEWPORT, taskModel.getyViewport().get(i));
+                values.put(KEY_FONT, taskModel.getFont().get(i));
+                values.put(KEY_FONT_SIZE, taskModel.getFontSize().get(i));
+                values.put(KEY_TOUCH_PRESSURE, taskModel.getTouchPressure().get(i));
+                values.put(KEY_TOUCH_SIZE, taskModel.getTouchSize().get(i));
+                values.put(KEY_ORIENTATION, taskModel.getTouchOrientation().get(i));
+                values.put(KEY_TOUCH_MAJOR, taskModel.getTouchMajor().get(i));
+                values.put(KEY_TOUCH_MINOR, taskModel.getTouchMinor().get(i));
+                values.put(KEY_TIMESTAMP, taskModel.getTimestamp().get(i));
+
+                db.insert(TABLE_READING_TASK, null, values);
+            }
+            db.setTransactionSuccessful();
+        }catch(Exception e){
+            Log.e("Error in Transaction",e.toString());
+        }finally{
+            db.endTransaction();
         }
     }
 
     public void createMotionSensorData(MotionSensorDataModel dataModel) {
         SQLiteDatabase db = this.getWritableDatabase();
 
-        for (int i = 0; i < dataModel.length(); i++) {
-            ContentValues values = new ContentValues();
+        db.beginTransaction();
+        try{
+            for (int i = 0; i < dataModel.length(); i++) {
+                ContentValues values = new ContentValues();
+                values.put(KEY_PARTICIPANT_ID, dataModel.getParticipantID());
+                values.put(KEY_TASK_ID, dataModel.getTaskID());
+                values.put(KEY_TIMESTAMP, dataModel.getTimestamp().get(i));
+                values.put(KEY_X_ACC, dataModel.getXAcc().get(i));
+                values.put(KEY_Y_ACC, dataModel.getYAcc().get(i));
+                values.put(KEY_Z_ACC, dataModel.getZAcc().get(i));
+                values.put(KEY_X_GRAVITY, dataModel.getXGravity().get(i));
+                values.put(KEY_Y_GRAVITY, dataModel.getYGravity().get(i));
+                values.put(KEY_Z_GRAVITY, dataModel.getZGravity().get(i));
+                values.put(KEY_X_GYRO, dataModel.getXGyroscope().get(i));
+                values.put(KEY_Y_GYRO, dataModel.getYGyroscope().get(i));
+                values.put(KEY_Z_GYRO, dataModel.getZGyroscope().get(i));
+                values.put(KEY_X_ROTATION, dataModel.getXRotation().get(i));
+                values.put(KEY_Y_ROTATION, dataModel.getYRotation().get(i));
+                values.put(KEY_Z_ROTATION, dataModel.getZRotation().get(i));
 
-            values.put(KEY_PARTICIPANT_ID, dataModel.getParticipantID());
-            values.put(KEY_TASK_ID, dataModel.getTaskID());
-            values.put(KEY_TIMESTAMP, dataModel.getTimestamp().get(i));
-            values.put(KEY_X_ACC, dataModel.getXAcc().get(i));
-            values.put(KEY_Y_ACC, dataModel.getYAcc().get(i));
-            values.put(KEY_Z_ACC, dataModel.getZAcc().get(i));
-            values.put(KEY_X_GRAVITY, dataModel.getXGravity().get(i));
-            values.put(KEY_Y_GRAVITY, dataModel.getYGravity().get(i));
-            values.put(KEY_Z_GRAVITY, dataModel.getZGravity().get(i));
-            values.put(KEY_X_GYRO, dataModel.getXGyroscope().get(i));
-            values.put(KEY_Y_GYRO, dataModel.getYGyroscope().get(i));
-            values.put(KEY_Z_GYRO, dataModel.getZGyroscope().get(i));
-            values.put(KEY_X_ROTATION, dataModel.getXRotation().get(i));
-            values.put(KEY_Y_ROTATION, dataModel.getYRotation().get(i));
-            values.put(KEY_Z_ROTATION, dataModel.getZRotation().get(i));
-
-            db.insert(TABLE_MOTION_SENSOR, null, values);
+                db.insert(TABLE_MOTION_SENSOR, null, values);
+            }
+            db.setTransactionSuccessful();
+        }catch(Exception e){
+            Log.e("Error in Transaction",e.toString());
+        }finally{
+            db.endTransaction();
         }
     }
 
@@ -488,7 +526,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         if (c.moveToFirst()) {
             do {
                 model.setParticipantList(c.getString(c.getColumnIndex(KEY_PARTICIPANT_ID)));
-                model.setTaskID(c.getString(c.getColumnIndex(KEY_TASK_ID)));
+                model.setTaskIDList(c.getString(c.getColumnIndex(KEY_TASK_ID)));
                 model.setTimestamp(c.getLong((c.getColumnIndex(KEY_TIMESTAMP))));
                 model.setXAcc(c.getFloat((c.getColumnIndex(KEY_X_ACC))));
                 model.setYAcc(c.getFloat((c.getColumnIndex(KEY_Y_ACC))));

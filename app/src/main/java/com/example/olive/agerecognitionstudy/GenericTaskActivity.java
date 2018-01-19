@@ -20,8 +20,8 @@ public class GenericTaskActivity extends AppCompatActivity {
 
     private static final int MIN = 0;
     private static final int OFFSET = 13;
-    private static final int X_AMOUNT = 5;
-    private static final int Y_AMOUNT = 2;
+    private static final int X_AMOUNT = 15;
+    private static final int Y_AMOUNT = 25;
     private static final int PADDING = 80;
     private static final String TASK_ID = "Generic Task";
 
@@ -43,6 +43,7 @@ public class GenericTaskActivity extends AppCompatActivity {
     private float touchOrientation = 0.0F;
     private float touchMajor = 0.0F;
     private float touchMinor = 0.0F;
+    private long timestamp;
 
     private int touch_counter = 0;
     private String userID = "";
@@ -119,6 +120,7 @@ public class GenericTaskActivity extends AppCompatActivity {
         touchOrientation = event.getOrientation();
         touchMajor = event.getTouchMajor();
         touchMinor = event.getTouchMinor();
+        timestamp = event.getEventTime();
         switch(eventAction) {
             case MotionEvent.ACTION_DOWN:
                 writeDataIntoLists("Down");
@@ -141,7 +143,7 @@ public class GenericTaskActivity extends AppCompatActivity {
     private void writeDataIntoLists(String eventType) {
         taskmodel.setParticipantId(userID);
         taskmodel.setTargetId(touch_counter);
-        taskmodel.setTimestamp(System.currentTimeMillis());
+        taskmodel.setTimestamp(timestamp);
         taskmodel.setEventType(eventType);
         taskmodel.setXTarget(target.getX());
         taskmodel.setYTarget(target.getY());

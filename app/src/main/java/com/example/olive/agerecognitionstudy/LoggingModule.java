@@ -272,7 +272,7 @@ public class LoggingModule {
 
             for (int i = 0; i < model.length(); i++) {
                 sheet.addCell(new Label(0, i+1, model.getParticipantList().get(i)));
-                sheet.addCell(new Label(1, i+1, model.getTaskID()));
+                sheet.addCell(new Label(1, i+1, model.getTaskIDList().get(i)));
                 sheet.addCell(new Label(2, i+1, String.valueOf(model.getTimestamp().get(i))));
                 sheet.addCell(new Label(3, i+1, String.valueOf(model.getXAcc().get(i))));
                 sheet.addCell(new Label(4, i+1, String.valueOf(model.getYAcc().get(i))));
