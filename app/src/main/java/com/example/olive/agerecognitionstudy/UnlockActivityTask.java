@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnTouchListener;
 import android.widget.ImageView;
 
 import com.andrognito.patternlockview.PatternLockView;
@@ -37,31 +39,7 @@ public class UnlockActivityTask extends AppCompatActivity {
     private long timestamp;
 
     private PatternLockView mPatternLockView;
-    private PatternLockViewListener mPatternLockViewListener = new PatternLockViewListener() {
-        @Override
-        public void onStarted() {
-            //Log.d(getClass().getName(), "Pattern drawing started");
-        }
-
-        @Override
-        public void onProgress(List<Dot> progressPattern) {
-            /*Log.d(getClass().getName(), "Pattern progress: " +
-                    PatternLockUtils.patternToString(mPatternLockView, progressPattern));*/
-            Dot d = progressPattern.get(0);
-            Log.d("Dot", "Row: " + String.valueOf(d.getRow()) + ", Column: " + String.valueOf(d.getColumn()));
-        }
-
-        @Override
-        public void onComplete(List<Dot> pattern) {
-            /*Log.d(getClass().getName(), "Pattern complete: " +
-                    PatternLockUtils.patternToString(mPatternLockView, pattern));*/
-        }
-
-        @Override
-        public void onCleared() {
-            //Log.d(getClass().getName(), "Pattern has been cleared");
-        }
-    };
+    private PatternLockViewListener mPatternLockViewListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,40 +49,54 @@ public class UnlockActivityTask extends AppCompatActivity {
         userID = MainActivity.currentUserID;
         database = MainActivity.getDbHandler();
         unlockDataModel = new UnlockTaskDataModel(userID);
+        setupPatternLockViewListener();
         setupPatternUnlock();
         //motionSensorUtil = new MotionSensorUtil(userID, TASK_ID, (SensorManager) getSystemService(SENSOR_SERVICE));
     }
 
-    public boolean dispatchTouchEvent(MotionEvent event) {
-        int eventAction = event.getAction();
-        xTouch = event.getRawX();
-        yTouch = event.getRawY()-MainActivity.statusbarOffset;
-        touchPressure = event.getPressure();
-        touchSize = event.getSize();
-        touchOrientation = event.getOrientation();
-        touchMajor = event.getTouchMajor();
-        touchMinor = event.getTouchMinor();
-        timestamp = event.getEventTime();
-        switch(eventAction) {
-            case MotionEvent.ACTION_DOWN:
-                writeDataIntoLists("Down");
-                break;
-
-            case MotionEvent.ACTION_MOVE:
-                writeDataIntoLists("Move");
-                cross.setX(event.getX()- 13);
-                cross.setY(event.getY() - MainActivity.statusbarOffset -13);
-                break;
-
-            case MotionEvent.ACTION_UP:
-                writeDataIntoLists("Up");
-                break;
-            default:
-                break;
-        }
-
-        return super.dispatchTouchEvent(event);
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        Log.d("On Resume", String.valueOf(mPatternLockView.getWidth()));
+        cross.setX((mPatternLockView.getWidth() / 3)/2 + mPatternLockView.getX());
+        cross.setY((mPatternLockView.getHeight() / 3)/2 + mPatternLockView.getY());
     }
+
+    OnTouchListener listener = new OnTouchListener() {
+        @Override
+        public boolean onTouch(View view, MotionEvent event) {
+            int eventAction = event.getAction();
+            xTarget = (mPatternLockView.getWidth() / 3)/2 + mPatternLockView.getX();
+            yTarget = (mPatternLockView.getHeight() / 3)/2 + mPatternLockView.getY();
+            xTouch = event.getRawX();
+            yTouch = event.getRawY()-MainActivity.statusbarOffset;
+            touchPressure = event.getPressure();
+            touchSize = event.getSize();
+            touchOrientation = event.getOrientation();
+            touchMajor = event.getTouchMajor();
+            touchMinor = event.getTouchMinor();
+            timestamp = event.getEventTime();
+            switch(eventAction) {
+                case MotionEvent.ACTION_DOWN:
+                    writeDataIntoLists("Down");
+                    //Log.d("Down", "bitch");
+                    break;
+
+                case MotionEvent.ACTION_MOVE:
+                    writeDataIntoLists("Move");
+                    //Log.d("Move", "bitch");
+                    break;
+
+                case MotionEvent.ACTION_UP:
+                    writeDataIntoLists("Up");
+                    //Log.d("Up", "bitch");
+                    break;
+                default:
+                    break;
+            }
+            return false;
+        }
+    };
 
     private void writeDataIntoLists(String eventType) {
         unlockDataModel.setParticipantId(userID);
@@ -131,8 +123,6 @@ public class UnlockActivityTask extends AppCompatActivity {
         mPatternLockView.setDotNormalSize((int) ResourceUtils.getDimensionInPx(this, R.dimen.pattern_lock_dot_size));
         mPatternLockView.setDotSelectedSize((int) ResourceUtils.getDimensionInPx(this, R.dimen.pattern_lock_dot_selected_size));
         mPatternLockView.setPathWidth((int) ResourceUtils.getDimensionInPx(this, R.dimen.pattern_lock_path_width));
-        mPatternLockView.setAspectRatioEnabled(true);
-        mPatternLockView.setAspectRatio(PatternLockView.AspectRatio.ASPECT_RATIO_HEIGHT_BIAS);
         mPatternLockView.setViewMode(PatternLockView.PatternViewMode.CORRECT);
         mPatternLockView.setDotAnimationDuration(150);
         mPatternLockView.setPathEndAnimationDuration(100);
@@ -141,6 +131,35 @@ public class UnlockActivityTask extends AppCompatActivity {
         mPatternLockView.setTactileFeedbackEnabled(true);
         mPatternLockView.setInputEnabled(true);
         mPatternLockView.addPatternLockListener(mPatternLockViewListener);
+        mPatternLockView.setOnTouchListener(listener);
+    }
+
+    void setupPatternLockViewListener() {
+        mPatternLockViewListener = new PatternLockViewListener() {
+            @Override
+            public void onStarted() {
+                Log.d(getClass().getName(), "Pattern drawing started");
+            }
+
+            @Override
+            public void onProgress(List<Dot> progressPattern) {
+            /*Log.d(getClass().getName(), "Pattern progress: " +
+                    PatternLockUtils.patternToString(mPatternLockView, progressPattern));*/
+                Dot d = progressPattern.get(0);
+                Log.d("Dot", "Row: " + String.valueOf(d.getRow()) + ", Column: " + String.valueOf(d.getColumn()));
+            }
+
+            @Override
+            public void onComplete(List<Dot> pattern) {
+            /*Log.d(getClass().getName(), "Pattern complete: " +
+                    PatternLockUtils.patternToString(mPatternLockView, pattern));*/
+            }
+
+            @Override
+            public void onCleared() {
+                //Log.d(getClass().getName(), "Pattern has been cleared");
+            }
+        };
     }
 
     @Override

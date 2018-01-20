@@ -38,10 +38,10 @@ public class MainActivity extends AppCompatActivity {
         }else{
             Participant p = new Participant(Integer.parseInt(ageEntry.getText().toString()), checkGender());
             currentUserID = p.getId();
-            db.createParticipant(p);
-            db.closeDB();
+            /*db.createParticipant(p);
+            db.closeDB();*/
             ageEntry.setText("");
-            Intent intent = new Intent(this, GenericTaskActivity.class);
+            Intent intent = new Intent(this, UnlockActivityTask.class);
             startActivity(intent);
         }
     }
