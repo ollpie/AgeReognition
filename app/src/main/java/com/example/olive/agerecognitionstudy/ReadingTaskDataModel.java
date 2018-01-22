@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 public class ReadingTaskDataModel {
     String participantId;
+    ArrayList<String> participantIDList;
     ArrayList<String> eventType;
     ArrayList<Float> xTouch;
     ArrayList<Float> yTouch;
@@ -24,6 +25,7 @@ public class ReadingTaskDataModel {
 
     public ReadingTaskDataModel () {
         this.eventType = new ArrayList<>();
+        this.participantIDList = new ArrayList<>();
         this.xTouch = new ArrayList<>();
         this.yTouch = new ArrayList<>();
         this.xViewport = new ArrayList<>();
@@ -40,6 +42,7 @@ public class ReadingTaskDataModel {
 
     public ReadingTaskDataModel (String participantID) {
         this.participantId = participantID;
+        this.participantIDList = new ArrayList<>();
         this.eventType = new ArrayList<>();
         this.xTouch = new ArrayList<>();
         this.yTouch = new ArrayList<>();
@@ -58,6 +61,10 @@ public class ReadingTaskDataModel {
     //SETTER
     public void setParticipantId(String participantId) {
         this.participantId = participantId;
+    }
+
+    public void setParticipantIDList(String participant) {
+        this.participantIDList.add(participant);
     }
 
     public void setEventType(String eventType) {
@@ -115,6 +122,10 @@ public class ReadingTaskDataModel {
     //GETTER
     public String getParticipantId() {
         return participantId;
+    }
+
+    public ArrayList<String> getParticipantIDList() {
+        return participantIDList;
     }
 
     public ArrayList<String> getEventType() {

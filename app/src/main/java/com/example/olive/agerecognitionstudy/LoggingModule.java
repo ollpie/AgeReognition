@@ -1,6 +1,7 @@
 package com.example.olive.agerecognitionstudy;
 
 import android.os.Environment;
+import android.util.Log;
 
 import java.io.File;
 import java.io.IOException;
@@ -217,6 +218,80 @@ public class LoggingModule {
                 sheet.addCell(new Label(15, i + 1, String.valueOf(model.getTouchMajor().get(i))));
                 sheet.addCell(new Label(16, i + 1, String.valueOf(model.getTouchMinor().get(i))));
                 sheet.addCell(new Label(17, i + 1, String.valueOf(model.getTimestamp().get(i))));
+
+            }
+
+            workbook.write();
+            workbook.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (RowsExceededException e) {
+            e.printStackTrace();
+        } catch (WriteException e) {
+            e.printStackTrace();
+        }
+    }
+    void generateUnlockTaskExcelFile() {
+        File sd = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        String csvFile = "Unlock Pattern Task.xls";
+
+        File directory = new File(sd.getAbsolutePath());
+        //create directory if not exist
+        if (!directory.isDirectory()) {
+            directory.mkdirs();
+        }
+        try {
+
+            //file path
+            File file = new File(directory, csvFile);
+            WorkbookSettings wbSettings = new WorkbookSettings();
+            wbSettings.setLocale(new Locale("en", "EN"));
+            WritableWorkbook workbook;
+            workbook = Workbook.createWorkbook(file, wbSettings);
+            //Excel sheet name. 0 represents first sheet
+            WritableSheet sheet = workbook.createSheet("unlockPatternDataList", 0);
+            // column and row
+            sheet.addCell(new Label(0, 0, "Participant ID"));
+            sheet.addCell(new Label(1, 0, "Pattern"));
+            sheet.addCell(new Label(2, 0, "Event Type"));
+            sheet.addCell(new Label(3, 0, "Repetition"));
+            sheet.addCell(new Label(4, 0, "Progress"));
+            sheet.addCell(new Label(5, 0, "Sequence Correctnness"));
+            sheet.addCell(new Label(6, 0, "X Button Center"));
+            sheet.addCell(new Label(7, 0, "Y Button Center"));
+            sheet.addCell(new Label(8, 0, "X Touch"));
+            sheet.addCell(new Label(9, 0, "Y Touch"));
+            sheet.addCell(new Label(10, 0, "Touch Pressure"));
+            sheet.addCell(new Label(11, 0, "Touch Size"));
+            sheet.addCell(new Label(12, 0, "Touch Orientation"));
+            sheet.addCell(new Label(13, 0, "Touch Major"));
+            sheet.addCell(new Label(14, 0, "Touch Minor"));
+            sheet.addCell(new Label(15, 0, "Timestamp"));
+
+            UnlockTaskDataModel model = unlockModel;
+            Log.d("Model Length Logger", String.valueOf(model.length()));
+            for (int i = 0; i < model.length(); i++) {
+                sheet.addCell(new Label(0, i + 1, model.getParticipantIDList().get(i)));
+                sheet.addCell(new Label(1, i + 1, String.valueOf(model.getPattern().get(i))));
+                sheet.addCell(new Label(2, i + 1, model.getEventType().get(i)));
+                sheet.addCell(new Label(3, i + 1, String.valueOf(model.getRepetition().get(i))));
+                sheet.addCell(new Label(4, i + 1, model.getProgress().get(i)));
+                sheet.addCell(new Label(5, i + 1, model.getSequenceCorrect().get(i)));
+                sheet.addCell(new Label(6, i + 1, String.valueOf(model.getxButtonCenter().get(i))));
+                sheet.addCell(new Label(7, i + 1, String.valueOf(model.getyButtonCenter().get(i))));
+                sheet.addCell(new Label(8, i + 1, String.valueOf(model.getxTouch().get(i))));
+                sheet.addCell(new Label(9, i + 1, String.valueOf(model.getyTouch().get(i))));
+                sheet.addCell(new Label(10, i + 1, String.valueOf(model.getTouchPressure().get(i))));
+                sheet.addCell(new Label(11, i + 1, String.valueOf(model.getTouchSize().get(i))));
+                if (model.getTouchOrientation().size() == 0) {
+                    sheet.addCell(new Label(12, i + 1, "N.A."));
+                } else {
+                    sheet.addCell(new Label(12, i + 1, String.valueOf(model.getTouchOrientation().get(i))));
+                }
+                sheet.addCell(new Label(13, i + 1, String.valueOf(model.getTouchMajor().get(i))));
+                sheet.addCell(new Label(14, i + 1, String.valueOf(model.getTouchMinor().get(i))));
+                sheet.addCell(new Label(15, i + 1, String.valueOf(model.getTimestamp().get(i))));
 
             }
 

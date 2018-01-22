@@ -460,11 +460,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
-
+        Log.d("Unlock Column Count", String.valueOf(c.getColumnCount()));
         // looping through all rows and adding to list
         if (c.moveToFirst()) {
             do {
-                model.setParticipantId(c.getString((c.getColumnIndex(KEY_PARTICIPANT_ID))));
+                model.setParticipantIDList(c.getString((c.getColumnIndex(KEY_PARTICIPANT_ID))));
                 model.setPattern(c.getString((c.getColumnIndex(KEY_UNLOCK_PATTERN))));
                 model.setEventType(c.getString((c.getColumnIndex(KEY_EVENT_TYPE))));
                 model.setRepetition(c.getInt((c.getColumnIndex(KEY_REPETITION))));
@@ -495,7 +495,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // looping through all rows and adding to list
         if (c.moveToFirst()) {
             do {
-                model.setParticipantId(c.getString((c.getColumnIndex(KEY_PARTICIPANT_ID))));
+                model.setParticipantIDList(c.getString((c.getColumnIndex(KEY_PARTICIPANT_ID))));
                 model.setEventType(c.getString((c.getColumnIndex(KEY_EVENT_TYPE))));
                 model.setxTouch(c.getFloat((c.getColumnIndex(KEY_X_TOUCH))));
                 model.setyTouch(c.getFloat((c.getColumnIndex(KEY_Y_TOUCH))));

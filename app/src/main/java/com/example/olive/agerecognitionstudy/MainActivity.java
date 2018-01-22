@@ -38,10 +38,10 @@ public class MainActivity extends AppCompatActivity {
         }else{
             Participant p = new Participant(Integer.parseInt(ageEntry.getText().toString()), checkGender());
             currentUserID = p.getId();
-            /*db.createParticipant(p);
-            db.closeDB();*/
+            db.createParticipant(p);
+            db.closeDB();
             ageEntry.setText("");
-            Intent intent = new Intent(this, UnlockActivityTask.class);
+            Intent intent = new Intent(this, ReadingTaskActivity.class);
             startActivity(intent);
         }
     }
@@ -115,15 +115,14 @@ public class MainActivity extends AppCompatActivity {
                 LoggingModule loggingModule = new LoggingModule(db.getAllParticipants(),
                         db.getAllGenericTaskData(),
                         db.getAllPinTaskData(),
-                        null,
+                        db.getAllUnlockTaskData(),
                         null,
                         db.getMotionSensorData());
                 loggingModule.generateParticipantExcelFile();
                 loggingModule.generateGenericTaskExcelFile();
                 loggingModule.generatePinTaskExcelFile();
                 loggingModule.generateMotionSensorExcelFile();
-                Toast.makeText(getApplication(),
-                        "Data Exported in a Excel Sheet", Toast.LENGTH_SHORT).show();
+                loggingModule.generateUnlockTaskExcelFile();
             } catch (Exception e) {
                 e.printStackTrace();
             }
