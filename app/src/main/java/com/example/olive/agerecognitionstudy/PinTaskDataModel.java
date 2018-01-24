@@ -99,8 +99,8 @@ public class PinTaskDataModel {
         this.actualDigit.add(actualDigit);
     }
 
-    public void setSequenceCorrect(String sequenceCorrect) {
-        this.sequenceCorrect.add(sequenceCorrect);
+    public void setSequenceCorrect(String value) {
+        this.sequenceCorrect.add(value);
     }
 
     public void setxButtonCenter(Float xButtonCenter) {

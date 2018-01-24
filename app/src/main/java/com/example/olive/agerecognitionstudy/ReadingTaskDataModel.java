@@ -71,11 +71,11 @@ public class ReadingTaskDataModel {
         this.eventType.add(eventType);
     }
 
-    public void setxViewport(Float x) {
+    public void setyViewportTop(Float x) {
         this.xViewport.add(x);
     }
 
-    public void setyViewport(Float y) {
+    public void setyViewportBottom(Float y) {
         this.yViewport.add(y);
     }
 
@@ -140,11 +140,11 @@ public class ReadingTaskDataModel {
         return yTouch;
     }
 
-    public ArrayList<Float> getxViewport() {
+    public ArrayList<Float> getyViewport() {
         return xViewport;
     }
 
-    public ArrayList<Float> getyViewport() {
+    public ArrayList<Float> getyViewportBottom() {
         return yViewport;
     }
 

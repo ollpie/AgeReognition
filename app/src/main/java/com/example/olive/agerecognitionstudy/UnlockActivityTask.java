@@ -35,8 +35,6 @@ public class UnlockActivityTask extends AppCompatActivity {
     private String userID;
     private DatabaseHandler database;
     private UnlockTaskDataModel unlockDataModel;
-    private int counter = 0;
-
 
     private int repetitionCount = 0;
     private String progress = "";

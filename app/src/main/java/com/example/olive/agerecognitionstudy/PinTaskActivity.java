@@ -7,7 +7,6 @@ import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -15,6 +14,7 @@ import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class PinTaskActivity extends AppCompatActivity{
 
@@ -55,10 +55,11 @@ public class PinTaskActivity extends AppCompatActivity{
     private float touchMinor = 0.0F;
     private long timestamp;
 
-    private String currentButtonPress = "";
     private String userID = "";
     private char actualDigit;
     private char currentDigit;
+    private boolean sequenceCorrect = true;
+    private int formerSize = 0;
 
     DatabaseHandler database;
     private MotionSensorUtil motionSensorUtil;
@@ -67,8 +68,9 @@ public class PinTaskActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupUI();
-        taskmodel = new PinTaskDataModel(userID);
         userID = MainActivity.currentUserID;
+        database = MainActivity.getDbHandler();
+        taskmodel = new PinTaskDataModel(userID);
         motionSensorUtil = new MotionSensorUtil(userID, TASK_NAME, (SensorManager) getSystemService(SENSOR_SERVICE));
         pinDisplay.setText("Pin: " + PINS[pinIndex]);
         currentDigit = PINS[pinIndex].charAt(0);
@@ -114,25 +116,28 @@ public class PinTaskActivity extends AppCompatActivity{
             if (!b.getText().equals("Done") && !b.getText().equals("Delete")){
                 currentDigit = PINS[pinIndex].charAt(currentIndexCount);
             }
-
             if (b.getText().equals("Delete") && !receivedDigits.equals("")){
                 receivedDigits = receivedDigits.substring(0, receivedDigits.length()-1);
                 pinView.setText(receivedDigits);
+                actualDigit = 'D';
                 currentDigit = 'D';
                 currentIndexCount--;
+                sequenceCorrect = false;
             }
             if (b.getText().equals("Done")) {
-                Log.d("Done", "Nur done");
-                if (receivedDigits.equals(PINS[PINS.length-1]) && repetitionCount == REPETITIONS-1) {
+                if (receivedDigits.equals(PINS[PINS.length-1]) && repetitionCount == REPETITIONS-1 && sequenceCorrect) {
                     motionSensorUtil.stop();
                     didStartIntent = true;
                     pinView.setText("FERTIG");
+                    //setSequenceCorrectness();
+
                     PinTaskActivity.AsyncTaskRunner runner = new PinTaskActivity.AsyncTaskRunner();
                     runner.execute();
                 }
                 if (receivedDigits.equals(PINS[pinIndex]) && !didStartIntent){
-                    Log.d("Done", "Pin Correct");
-                    repetitionCount++;
+                    if (sequenceCorrect) {
+                        repetitionCount++;
+                    }
                     if (repetitionCount == REPETITIONS){
                         repetitionCount = 0;
                         if (pinIndex != PINS.length - 1) {
@@ -141,11 +146,25 @@ public class PinTaskActivity extends AppCompatActivity{
                     }
                     currentIndexCount = 0;
                     receivedDigits = "";
-                    currentDigit = ' ';
-                    actualDigit = ' ';
+                    currentDigit = 'd';
+                    actualDigit = 'd';
                     pinView.setText(receivedDigits);
                     pinDisplay.setText("Pin: " + PINS[pinIndex]);
+                    setSequenceCorrectness();
+                    Toast.makeText(getApplication(),
+                            "Eingabe korrekt.", Toast.LENGTH_SHORT).show();
+                }else{
+                    currentIndexCount = 0;
+                    receivedDigits = "";
+                    currentDigit = 'd';
+                    actualDigit = 'd';
+                    pinView.setText(receivedDigits);
+                    sequenceCorrect = false;
+                    setSequenceCorrectness();
+                    Toast.makeText(getApplication(),
+                            "Eingabe falsch.", Toast.LENGTH_SHORT).show();
                 }
+                sequenceCorrect = true;
             }else{
                 if(!b.getText().equals("Delete") && !b.getText().equals("Done")){
                     currentIndexCount++;
@@ -157,6 +176,23 @@ public class PinTaskActivity extends AppCompatActivity{
         }
     }
 
+    private void setSequenceCorrectness(){
+        int size = taskmodel.pin.size();
+        for (int i = 0; i < size-formerSize; i++){
+            if(!sequenceCorrect){
+                taskmodel.setSequenceCorrect("false");
+            }else {
+                taskmodel.setSequenceCorrect("true");
+            }
+        }
+        formerSize = size;
+        /*for (int i = 0; i < taskmodel.length(); i++){
+            Log.d("Pin", String.valueOf(taskmodel.getPin().get(i)));
+            Log.d("Progress", String.valueOf(taskmodel.getProgress().get(i)));
+            Log.d("Correct", String.valueOf(taskmodel.getSequenceCorrect().get(i)));
+        }*/
+    }
+
     private void writeDataIntoLists(String eventType) {
         taskmodel.setParticipantId(userID);
         taskmodel.setPin(PINS[pinIndex]);
@@ -165,7 +201,7 @@ public class PinTaskActivity extends AppCompatActivity{
         taskmodel.setProgress(receivedDigits);
         taskmodel.setCurrentDigit(currentDigit);
         taskmodel.setActualDigit(actualDigit);
-        taskmodel.setSequenceCorrect("true");
+        //taskmodel.setSequenceCorrect("true");
         taskmodel.setxButtonCenter(xTarget);
         taskmodel.setyButtonCenter(yTarget);
         taskmodel.setxTouch(xTouch);

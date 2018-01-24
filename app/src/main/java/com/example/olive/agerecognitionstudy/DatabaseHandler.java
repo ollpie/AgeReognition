@@ -234,6 +234,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public void createPinTaskData(PinTaskDataModel taskModel) {
         SQLiteDatabase db = this.getWritableDatabase();
+        Log.d("Pin Model Length", String.valueOf(taskModel.length()));
         db.beginTransaction();
         try{
             for (int i = 0; i < taskModel.length(); i++) {
@@ -313,8 +314,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 values.put(KEY_EVENT_TYPE, taskModel.getEventType().get(i));
                 values.put(KEY_X_TOUCH, taskModel.getxTouch().get(i));
                 values.put(KEY_Y_TOUCH, taskModel.getyTouch().get(i));
-                values.put(KEY_X_VIEWPORT, taskModel.getxViewport().get(i));
-                values.put(KEY_Y_VIEWPORT, taskModel.getyViewport().get(i));
+                values.put(KEY_X_VIEWPORT, taskModel.getyViewport().get(i));
+                values.put(KEY_Y_VIEWPORT, taskModel.getyViewportBottom().get(i));
                 values.put(KEY_FONT, taskModel.getFont().get(i));
                 values.put(KEY_FONT_SIZE, taskModel.getFontSize().get(i));
                 values.put(KEY_TOUCH_PRESSURE, taskModel.getTouchPressure().get(i));
@@ -451,6 +452,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 model.setTimestamp(c.getLong((c.getColumnIndex(KEY_TIMESTAMP))));
             } while (c.moveToNext());
         }
+        Log.d("Pin Model Length", String.valueOf(model.length()));
         return model;
     }
 
@@ -499,8 +501,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 model.setEventType(c.getString((c.getColumnIndex(KEY_EVENT_TYPE))));
                 model.setxTouch(c.getFloat((c.getColumnIndex(KEY_X_TOUCH))));
                 model.setyTouch(c.getFloat((c.getColumnIndex(KEY_Y_TOUCH))));
-                model.setxViewport(c.getFloat((c.getColumnIndex(KEY_X_VIEWPORT))));
-                model.setyViewport(c.getFloat((c.getColumnIndex(KEY_Y_VIEWPORT))));
+                model.setyViewportTop(c.getFloat((c.getColumnIndex(KEY_X_VIEWPORT))));
+                model.setyViewportBottom(c.getFloat((c.getColumnIndex(KEY_Y_VIEWPORT))));
                 model.setFont(c.getString((c.getColumnIndex(KEY_FONT))));
                 model.setFontSize(c.getInt((c.getColumnIndex(KEY_FONT_SIZE))));
                 model.setTouchPressure(c.getFloat((c.getColumnIndex(KEY_TOUCH_PRESSURE))));

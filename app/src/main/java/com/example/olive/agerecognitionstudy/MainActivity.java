@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -31,9 +30,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startSession(View view) {
-        if (ageEntry.getText().equals("")) {
-            showAlertDialog();
-        }else if (!male.isChecked() && !female.isChecked()){
+        if (ageEntry.getText().equals("") || (!male.isChecked() && !female.isChecked())) {
             showAlertDialog();
         }else{
             Participant p = new Participant(Integer.parseInt(ageEntry.getText().toString()), checkGender());
@@ -53,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void clearData(View view) {
-        Log.d("Clear Data", "Deleting all Participants");
         db.deleteAllTables();
         Toast.makeText(getApplication(),
                 "Tables cleared", Toast.LENGTH_SHORT).show();
@@ -116,13 +112,14 @@ public class MainActivity extends AppCompatActivity {
                         db.getAllGenericTaskData(),
                         db.getAllPinTaskData(),
                         db.getAllUnlockTaskData(),
-                        null,
+                        db.getAllReadingTaskData(),
                         db.getMotionSensorData());
                 loggingModule.generateParticipantExcelFile();
                 loggingModule.generateGenericTaskExcelFile();
                 loggingModule.generatePinTaskExcelFile();
-                loggingModule.generateMotionSensorExcelFile();
                 loggingModule.generateUnlockTaskExcelFile();
+                loggingModule.generateReadingTaskExcelFile();
+                loggingModule.generateMotionSensorExcelFile();
             } catch (Exception e) {
                 e.printStackTrace();
             }

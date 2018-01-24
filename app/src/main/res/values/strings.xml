@@ -4,6 +4,7 @@
     <string name="age_hint">Alter</string>
     <string name="radio_male">Männlich</string>
     <string name="radio_female">Weiblich</string>
+    <string name="done_button">Fertig</string>
     <string name="unlock_hint">Gib das angezeigte Muster auf dem Eingabefeld ein.</string>
     <string name="title_activity_reading_task">ReadingTaskActivity</string>
     <string name="large_text">
