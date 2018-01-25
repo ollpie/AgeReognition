@@ -7,6 +7,7 @@ import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -129,8 +130,7 @@ public class PinTaskActivity extends AppCompatActivity{
                     motionSensorUtil.stop();
                     didStartIntent = true;
                     pinView.setText("FERTIG");
-                    //setSequenceCorrectness();
-
+                    setSequenceCorrectness();
                     PinTaskActivity.AsyncTaskRunner runner = new PinTaskActivity.AsyncTaskRunner();
                     runner.execute();
                 }
@@ -186,11 +186,6 @@ public class PinTaskActivity extends AppCompatActivity{
             }
         }
         formerSize = size;
-        /*for (int i = 0; i < taskmodel.length(); i++){
-            Log.d("Pin", String.valueOf(taskmodel.getPin().get(i)));
-            Log.d("Progress", String.valueOf(taskmodel.getProgress().get(i)));
-            Log.d("Correct", String.valueOf(taskmodel.getSequenceCorrect().get(i)));
-        }*/
     }
 
     private void writeDataIntoLists(String eventType) {
@@ -201,7 +196,6 @@ public class PinTaskActivity extends AppCompatActivity{
         taskmodel.setProgress(receivedDigits);
         taskmodel.setCurrentDigit(currentDigit);
         taskmodel.setActualDigit(actualDigit);
-        //taskmodel.setSequenceCorrect("true");
         taskmodel.setxButtonCenter(xTarget);
         taskmodel.setyButtonCenter(yTarget);
         taskmodel.setxTouch(xTouch);
@@ -255,6 +249,7 @@ public class PinTaskActivity extends AppCompatActivity{
         @Override
         protected String doInBackground(String... params) {
             try {
+                Log.d("Length bf db", String.valueOf(taskmodel.length()));
                 database.createPinTaskData(taskmodel);
                 database.createMotionSensorData(motionSensorUtil.getMotionSensorData());
                 database.close();

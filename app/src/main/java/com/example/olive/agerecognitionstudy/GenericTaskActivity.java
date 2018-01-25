@@ -20,8 +20,8 @@ public class GenericTaskActivity extends AppCompatActivity {
 
     private static final int MIN = 0;
     private static final int OFFSET = 13;
-    private static final int X_AMOUNT = 15;
-    private static final int Y_AMOUNT = 25;
+    private static final int X_AMOUNT = 5;
+    private static final int Y_AMOUNT = 3;
     private static final int PADDING = 80;
     private static final String TASK_ID = "Generic Task";
 

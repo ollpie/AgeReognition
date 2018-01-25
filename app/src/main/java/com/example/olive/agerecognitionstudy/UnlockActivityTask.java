@@ -7,7 +7,6 @@ import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
@@ -97,8 +96,6 @@ public class UnlockActivityTask extends AppCompatActivity {
             cross.setY(yTarget);
             xTouch = event.getRawX();
             yTouch = event.getRawY()-MainActivity.statusbarOffset;
-            Log.d("Touch", String.valueOf(xTouch) + ", " + String.valueOf(yTouch));
-            Log.d("Target", String.valueOf(xTarget) + ", " + String.valueOf(yTarget));
             touchPressure = event.getPressure();
             touchSize = event.getSize();
             touchOrientation = event.getOrientation();
@@ -174,7 +171,6 @@ public class UnlockActivityTask extends AppCompatActivity {
             public void onProgress(List<Dot> progressPattern) {
                 progress = PatternLockUtils.patternToString(mPatternLockView, progressPattern);
                 dotProgress = progressPattern;
-                Log.d("Progress Began", String.valueOf(progressBegan));
                 if (sequenceCorrect && (dotProgress.get(dotProgress.size()-1) == PatternLockUtils.stringToPattern(mPatternLockView, PINS[pinIndex]).get(target))) {
                         target++;
                 }else {
