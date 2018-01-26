@@ -45,11 +45,13 @@ public class ReadingTaskActivity extends AppCompatActivity {
     private int fontIndex = 0;
     private int fontSizeIndex = 0;
     private boolean end = false;
+    private LatinSquareUtil latinSquareUtil;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupUI();
+        latinSquareUtil = MainActivity.latinSquareUtil;
         textView.setTextSize(FONT_SIZES[fontSizeIndex]);
         userID = MainActivity.currentUserID;
         database = MainActivity.getDbHandler();
@@ -144,6 +146,33 @@ public class ReadingTaskActivity extends AppCompatActivity {
         readingTaskModel.setTimestamp(timestamp);
     }
 
+    private void startIntent(){
+        int activity = latinSquareUtil.getNext();
+        Intent intent;
+        switch (activity){
+            case 0:
+                intent = new Intent(this, GenericTaskActivity.class);
+                startActivity(intent);
+                break;
+            case 1:
+                intent = new Intent(this, PinTaskActivity.class);
+                startActivity(intent);
+                break;
+            case 2:
+                intent = new Intent(this, UnlockActivityTask.class);
+                startActivity(intent);
+                break;
+            case 3:
+                intent = new Intent(this, ReadingTaskActivity.class);
+                startActivity(intent);
+                break;
+            default:
+                intent = new Intent(this, MainActivity.class);
+                startActivity(intent);
+                break;
+        }
+    }
+
     private class AsyncTaskRunner extends AsyncTask<String, String, String> {
 
         ProgressDialog progressDialog;
@@ -163,8 +192,7 @@ public class ReadingTaskActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String params) {
             progressDialog.dismiss();
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-            startActivity(intent);
+            startIntent();
         }
 
 

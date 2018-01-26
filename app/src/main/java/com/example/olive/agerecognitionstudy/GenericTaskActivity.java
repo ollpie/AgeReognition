@@ -12,7 +12,7 @@ import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import java.util.Random;
 
@@ -28,7 +28,7 @@ public class GenericTaskActivity extends AppCompatActivity {
     DatabaseHandler database;
 
     private Button nextButton;
-    private ImageButton target;
+    private ImageView target;
 
     private Random randomX;
     private Random randomY;
@@ -55,6 +55,7 @@ public class GenericTaskActivity extends AppCompatActivity {
     private float yPositions[];
     private int maxX;
     private int maxY;
+    private LatinSquareUtil latinSquareUtil;
 
     private boolean positionChecker[][] = new boolean[X_AMOUNT][Y_AMOUNT];
 
@@ -64,6 +65,7 @@ public class GenericTaskActivity extends AppCompatActivity {
         setupUI();
         initPositions();
         initPositionChecker();
+        latinSquareUtil = MainActivity.latinSquareUtil;
         maxX = xPositions.length-1;
         maxY = yPositions.length-1;
         userID = MainActivity.currentUserID;
@@ -82,7 +84,7 @@ public class GenericTaskActivity extends AppCompatActivity {
         Log.d("Total Positions", String.valueOf(xPositions.length*yPositions.length));
     }
 
-    public void targetClicked(View view) {
+    public void targetClicked() {
         if (didTouchEveryPosition()){
             target.setVisibility(View.GONE);
             motionSensorUtil.stop();
@@ -107,8 +109,7 @@ public class GenericTaskActivity extends AppCompatActivity {
     }
 
     public void nextButtonClicked(View view) {
-        Intent intent = new Intent(this, PinTaskActivity.class);
-        startActivity(intent);
+        startIntent();
     }
 
     public boolean dispatchTouchEvent(MotionEvent event) {
@@ -132,6 +133,7 @@ public class GenericTaskActivity extends AppCompatActivity {
 
             case MotionEvent.ACTION_UP:
                 writeDataIntoLists("Up");
+                targetClicked();
                 break;
             default:
                 break;
@@ -212,7 +214,34 @@ public class GenericTaskActivity extends AppCompatActivity {
     private void setupUI () {
         setContentView(R.layout.activity_generic_task);
         nextButton = findViewById(R.id.next_btn);
-        target = findViewById(R.id.targetBtn);
+        target = findViewById(R.id.targetView);
+    }
+
+    private void startIntent(){
+        int activity = latinSquareUtil.getNext();
+        Intent intent;
+        switch (activity){
+            case 0:
+                intent = new Intent(this, GenericTaskActivity.class);
+                startActivity(intent);
+                break;
+            case 1:
+                intent = new Intent(this, PinTaskActivity.class);
+                startActivity(intent);
+                break;
+            case 2:
+                intent = new Intent(this, UnlockActivityTask.class);
+                startActivity(intent);
+                break;
+            case 3:
+                intent = new Intent(this, ReadingTaskActivity.class);
+                startActivity(intent);
+                break;
+            default:
+                intent = new Intent(this, MainActivity.class);
+                startActivity(intent);
+                break;
+        }
     }
 
     private class AsyncTaskRunner extends AsyncTask<String, String, String> {

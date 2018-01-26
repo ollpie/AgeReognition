@@ -64,11 +64,13 @@ public class PinTaskActivity extends AppCompatActivity{
 
     DatabaseHandler database;
     private MotionSensorUtil motionSensorUtil;
+    private LatinSquareUtil latinSquareUtil;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupUI();
+        latinSquareUtil = MainActivity.latinSquareUtil;
         userID = MainActivity.currentUserID;
         database = MainActivity.getDbHandler();
         taskmodel = new PinTaskDataModel(userID);
@@ -242,6 +244,33 @@ public class PinTaskActivity extends AppCompatActivity{
         database = MainActivity.getDbHandler();
     }
 
+    private void startIntent(){
+        int activity = latinSquareUtil.getNext();
+        Intent intent;
+        switch (activity){
+            case 0:
+                intent = new Intent(this, GenericTaskActivity.class);
+                startActivity(intent);
+                break;
+            case 1:
+                intent = new Intent(this, PinTaskActivity.class);
+                startActivity(intent);
+                break;
+            case 2:
+                intent = new Intent(this, UnlockActivityTask.class);
+                startActivity(intent);
+                break;
+            case 3:
+                intent = new Intent(this, ReadingTaskActivity.class);
+                startActivity(intent);
+                break;
+            default:
+                intent = new Intent(this, MainActivity.class);
+                startActivity(intent);
+                break;
+        }
+    }
+
     private class AsyncTaskRunner extends AsyncTask<String, String, String> {
 
         ProgressDialog progressDialog;
@@ -262,8 +291,7 @@ public class PinTaskActivity extends AppCompatActivity{
         @Override
         protected void onPostExecute(String params) {
             progressDialog.dismiss();
-            Intent intent = new Intent(getApplicationContext(), UnlockActivityTask.class);
-            startActivity(intent);
+            startIntent();
         }
 
 

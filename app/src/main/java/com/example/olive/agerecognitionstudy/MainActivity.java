@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -22,16 +21,15 @@ public class MainActivity extends AppCompatActivity {
     private RadioButton female;
     public static String currentUserID;
     public static int statusbarOffset;
+    public static LatinSquareUtil latinSquareUtil;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupUI();
         db = new DatabaseHandler(getApplicationContext());
-        LatinSquareUtil l = new LatinSquareUtil();
-
-        for (int i = 0; i < 32; i++){
-            Log.d("Hi", String.valueOf(l.get()));
+        if (latinSquareUtil == null){
+            latinSquareUtil = new LatinSquareUtil();
         }
     }
 
@@ -44,13 +42,11 @@ public class MainActivity extends AppCompatActivity {
             db.createParticipant(p);
             db.closeDB();
             ageEntry.setText("");
-            Intent intent = new Intent(this, PinTaskActivity.class);
-            startActivity(intent);
+            startIntent();
         }
     }
 
     public void logData(View view) {
-        // Getting all Participants
         MainActivity.AsyncTaskRunner runner = new MainActivity.AsyncTaskRunner();
         runner.execute();
     }
@@ -79,6 +75,31 @@ public class MainActivity extends AppCompatActivity {
             return "Männlich";
         } else {
             return "Weiblich";
+        }
+    }
+
+    private void startIntent(){
+        int activity = latinSquareUtil.getNext();
+        Intent intent;
+        switch (activity){
+            case 0:
+                intent = new Intent(this, GenericTaskActivity.class);
+                startActivity(intent);
+                break;
+            case 1:
+                intent = new Intent(this, PinTaskActivity.class);
+                startActivity(intent);
+                break;
+            case 2:
+                intent = new Intent(this, UnlockActivityTask.class);
+                startActivity(intent);
+                break;
+            case 3:
+                intent = new Intent(this, ReadingTaskActivity.class);
+                startActivity(intent);
+                break;
+            default:
+                break;
         }
     }
 

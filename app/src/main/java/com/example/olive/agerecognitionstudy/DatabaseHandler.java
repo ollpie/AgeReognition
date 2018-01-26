@@ -377,18 +377,25 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
-
+        db.beginTransaction();
+        try{
         // looping through all rows and adding to list
-        if (c.moveToFirst()) {
-            do {
-                Participant pt = new Participant();
-                pt.setId(c.getString((c.getColumnIndex(KEY_PARTICIPANT_ID))));
-                pt.setAge((c.getInt(c.getColumnIndex(KEY_AGE))));
-                pt.setGender(c.getString(c.getColumnIndex(KEY_GENDER)));
+            if (c.moveToFirst()) {
+                do {
+                    Participant pt = new Participant();
+                    pt.setId(c.getString((c.getColumnIndex(KEY_PARTICIPANT_ID))));
+                    pt.setAge((c.getInt(c.getColumnIndex(KEY_AGE))));
+                    pt.setGender(c.getString(c.getColumnIndex(KEY_GENDER)));
 
-                // adding to participant list
-                participants.add(pt);
-            } while (c.moveToNext());
+                    // adding to participant list
+                    participants.add(pt);
+                } while (c.moveToNext());
+            }
+            db.setTransactionSuccessful();
+        }catch(Exception e){
+            Log.e("Error in Transaction",e.toString());
+        }finally{
+            db.endTransaction();
         }
         return participants;
     }
@@ -399,25 +406,31 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
-        Log.d("Generic Column Count", String.valueOf(c.getColumnCount()));
-        // looping through all rows and adding to list
-        if (c.moveToFirst()) {
+        db.beginTransaction();
+        try{
+            if (c.moveToFirst()) {
 
-            do {
-                model.setParticipantList(c.getString((c.getColumnIndex(KEY_PARTICIPANT_ID))));
-                model.setTargetId(c.getInt((c.getColumnIndex(KEY_TARGET_ID))));
-                model.setEventType(c.getString((c.getColumnIndex(KEY_EVENT_TYPE))));
-                model.setXTarget(c.getFloat((c.getColumnIndex(KEY_X_TARGET))));
-                model.setYTarget(c.getFloat((c.getColumnIndex(KEY_Y_TARGET))));
-                model.setXTouch(c.getFloat((c.getColumnIndex(KEY_X_TOUCH))));
-                model.setYTouch(c.getFloat((c.getColumnIndex(KEY_Y_TOUCH))));
-                model.setTouchPressure(c.getFloat((c.getColumnIndex(KEY_TOUCH_PRESSURE))));
-                model.setTouchSize(c.getFloat((c.getColumnIndex(KEY_TOUCH_SIZE))));
-                model.setYTouch(c.getFloat((c.getColumnIndex(KEY_ORIENTATION))));
-                model.setTouchMajor(c.getFloat((c.getColumnIndex(KEY_TOUCH_MAJOR))));
-                model.setTouchMinor(c.getFloat((c.getColumnIndex(KEY_TOUCH_MINOR))));
-                model.setTimestamp(c.getLong((c.getColumnIndex(KEY_TIMESTAMP))));
-            } while (c.moveToNext());
+                do {
+                    model.setParticipantList(c.getString((c.getColumnIndex(KEY_PARTICIPANT_ID))));
+                    model.setTargetId(c.getInt((c.getColumnIndex(KEY_TARGET_ID))));
+                    model.setEventType(c.getString((c.getColumnIndex(KEY_EVENT_TYPE))));
+                    model.setXTarget(c.getFloat((c.getColumnIndex(KEY_X_TARGET))));
+                    model.setYTarget(c.getFloat((c.getColumnIndex(KEY_Y_TARGET))));
+                    model.setXTouch(c.getFloat((c.getColumnIndex(KEY_X_TOUCH))));
+                    model.setYTouch(c.getFloat((c.getColumnIndex(KEY_Y_TOUCH))));
+                    model.setTouchPressure(c.getFloat((c.getColumnIndex(KEY_TOUCH_PRESSURE))));
+                    model.setTouchSize(c.getFloat((c.getColumnIndex(KEY_TOUCH_SIZE))));
+                    model.setYTouch(c.getFloat((c.getColumnIndex(KEY_ORIENTATION))));
+                    model.setTouchMajor(c.getFloat((c.getColumnIndex(KEY_TOUCH_MAJOR))));
+                    model.setTouchMinor(c.getFloat((c.getColumnIndex(KEY_TOUCH_MINOR))));
+                    model.setTimestamp(c.getLong((c.getColumnIndex(KEY_TIMESTAMP))));
+                } while (c.moveToNext());
+            }
+            db.setTransactionSuccessful();
+        }catch(Exception e){
+            Log.e("Error in Transaction",e.toString());
+        }finally{
+            db.endTransaction();
         }
         return model;
     }
@@ -428,29 +441,36 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
-
+        db.beginTransaction();
+        try{
         // looping through all rows and adding to list
-        if (c.moveToFirst()) {
-            do {
-                model.setParticipantList(c.getString((c.getColumnIndex(KEY_PARTICIPANT_ID))));
-                model.setPin(c.getString((c.getColumnIndex(KEY_PIN))));
-                model.setEventType(c.getString((c.getColumnIndex(KEY_EVENT_TYPE))));
-                model.setRepetition(c.getInt((c.getColumnIndex(KEY_REPETITION))));
-                model.setProgress(c.getString((c.getColumnIndex(KEY_PROGRESS))));
-                model.setCurrentDigit(c.getString((c.getColumnIndex(KEY_CURRENT_DIGIT))).charAt(0));
-                model.setActualDigit(c.getString((c.getColumnIndex(KEY_ACTUAL_DIGIT))).charAt(0));
-                model.setSequenceCorrect(c.getString((c.getColumnIndex(KEY_SEQUENCE_CORRECTNESS))));
-                model.setxButtonCenter(c.getFloat((c.getColumnIndex(KEY_X_BUTTON_CENTER))));
-                model.setyButtonCenter(c.getFloat((c.getColumnIndex(KEY_Y_BUTTON_CENTER))));
-                model.setxTouch(c.getFloat((c.getColumnIndex(KEY_X_TOUCH))));
-                model.setyTouch(c.getFloat((c.getColumnIndex(KEY_Y_TOUCH))));
-                model.setTouchPressure(c.getFloat((c.getColumnIndex(KEY_TOUCH_PRESSURE))));
-                model.setTouchSize(c.getFloat((c.getColumnIndex(KEY_TOUCH_SIZE))));
-                model.setTouchOrientation(c.getFloat((c.getColumnIndex(KEY_ORIENTATION))));
-                model.setTouchMajor(c.getFloat((c.getColumnIndex(KEY_TOUCH_MAJOR))));
-                model.setTouchMinor(c.getFloat((c.getColumnIndex(KEY_TOUCH_MINOR))));
-                model.setTimestamp(c.getLong((c.getColumnIndex(KEY_TIMESTAMP))));
-            } while (c.moveToNext());
+            if (c.moveToFirst()) {
+                do {
+                    model.setParticipantList(c.getString((c.getColumnIndex(KEY_PARTICIPANT_ID))));
+                    model.setPin(c.getString((c.getColumnIndex(KEY_PIN))));
+                    model.setEventType(c.getString((c.getColumnIndex(KEY_EVENT_TYPE))));
+                    model.setRepetition(c.getInt((c.getColumnIndex(KEY_REPETITION))));
+                    model.setProgress(c.getString((c.getColumnIndex(KEY_PROGRESS))));
+                    model.setCurrentDigit(c.getString((c.getColumnIndex(KEY_CURRENT_DIGIT))).charAt(0));
+                    model.setActualDigit(c.getString((c.getColumnIndex(KEY_ACTUAL_DIGIT))).charAt(0));
+                    model.setSequenceCorrect(c.getString((c.getColumnIndex(KEY_SEQUENCE_CORRECTNESS))));
+                    model.setxButtonCenter(c.getFloat((c.getColumnIndex(KEY_X_BUTTON_CENTER))));
+                    model.setyButtonCenter(c.getFloat((c.getColumnIndex(KEY_Y_BUTTON_CENTER))));
+                    model.setxTouch(c.getFloat((c.getColumnIndex(KEY_X_TOUCH))));
+                    model.setyTouch(c.getFloat((c.getColumnIndex(KEY_Y_TOUCH))));
+                    model.setTouchPressure(c.getFloat((c.getColumnIndex(KEY_TOUCH_PRESSURE))));
+                    model.setTouchSize(c.getFloat((c.getColumnIndex(KEY_TOUCH_SIZE))));
+                    model.setTouchOrientation(c.getFloat((c.getColumnIndex(KEY_ORIENTATION))));
+                    model.setTouchMajor(c.getFloat((c.getColumnIndex(KEY_TOUCH_MAJOR))));
+                    model.setTouchMinor(c.getFloat((c.getColumnIndex(KEY_TOUCH_MINOR))));
+                    model.setTimestamp(c.getLong((c.getColumnIndex(KEY_TIMESTAMP))));
+                } while (c.moveToNext());
+            }
+            db.setTransactionSuccessful();
+        }catch(Exception e){
+            Log.e("Error in Transaction",e.toString());
+        }finally{
+            db.endTransaction();
         }
         Log.d("Pin Model Length", String.valueOf(model.length()));
         return model;
@@ -463,26 +483,35 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
         Log.d("Unlock Column Count", String.valueOf(c.getColumnCount()));
+
+        db.beginTransaction();
+        try{
         // looping through all rows and adding to list
-        if (c.moveToFirst()) {
-            do {
-                model.setParticipantIDList(c.getString((c.getColumnIndex(KEY_PARTICIPANT_ID))));
-                model.setPattern(c.getString((c.getColumnIndex(KEY_UNLOCK_PATTERN))));
-                model.setEventType(c.getString((c.getColumnIndex(KEY_EVENT_TYPE))));
-                model.setRepetition(c.getInt((c.getColumnIndex(KEY_REPETITION))));
-                model.setProgress(c.getString((c.getColumnIndex(KEY_PROGRESS))));
-                model.setSequenceCorrect(c.getString((c.getColumnIndex(KEY_SEQUENCE_CORRECTNESS))));
-                model.setxButtonCenter(c.getFloat((c.getColumnIndex(KEY_X_BUTTON_CENTER))));
-                model.setyButtonCenter(c.getFloat((c.getColumnIndex(KEY_Y_BUTTON_CENTER))));
-                model.setxTouch(c.getFloat((c.getColumnIndex(KEY_X_TOUCH))));
-                model.setyTouch(c.getFloat((c.getColumnIndex(KEY_Y_TOUCH))));
-                model.setTouchPressure(c.getFloat((c.getColumnIndex(KEY_TOUCH_PRESSURE))));
-                model.setTouchSize(c.getFloat((c.getColumnIndex(KEY_TOUCH_SIZE))));
-                model.setTouchOrientation(c.getFloat((c.getColumnIndex(KEY_ORIENTATION))));
-                model.setTouchMajor(c.getFloat((c.getColumnIndex(KEY_TOUCH_MAJOR))));
-                model.setTouchMinor(c.getFloat((c.getColumnIndex(KEY_TOUCH_MINOR))));
-                model.setTimestamp(c.getLong((c.getColumnIndex(KEY_TIMESTAMP))));
-            } while (c.moveToNext());
+            if (c.moveToFirst()) {
+                do {
+                    model.setParticipantIDList(c.getString((c.getColumnIndex(KEY_PARTICIPANT_ID))));
+                    model.setPattern(c.getString((c.getColumnIndex(KEY_UNLOCK_PATTERN))));
+                    model.setEventType(c.getString((c.getColumnIndex(KEY_EVENT_TYPE))));
+                    model.setRepetition(c.getInt((c.getColumnIndex(KEY_REPETITION))));
+                    model.setProgress(c.getString((c.getColumnIndex(KEY_PROGRESS))));
+                    model.setSequenceCorrect(c.getString((c.getColumnIndex(KEY_SEQUENCE_CORRECTNESS))));
+                    model.setxButtonCenter(c.getFloat((c.getColumnIndex(KEY_X_BUTTON_CENTER))));
+                    model.setyButtonCenter(c.getFloat((c.getColumnIndex(KEY_Y_BUTTON_CENTER))));
+                    model.setxTouch(c.getFloat((c.getColumnIndex(KEY_X_TOUCH))));
+                    model.setyTouch(c.getFloat((c.getColumnIndex(KEY_Y_TOUCH))));
+                    model.setTouchPressure(c.getFloat((c.getColumnIndex(KEY_TOUCH_PRESSURE))));
+                    model.setTouchSize(c.getFloat((c.getColumnIndex(KEY_TOUCH_SIZE))));
+                    model.setTouchOrientation(c.getFloat((c.getColumnIndex(KEY_ORIENTATION))));
+                    model.setTouchMajor(c.getFloat((c.getColumnIndex(KEY_TOUCH_MAJOR))));
+                    model.setTouchMinor(c.getFloat((c.getColumnIndex(KEY_TOUCH_MINOR))));
+                    model.setTimestamp(c.getLong((c.getColumnIndex(KEY_TIMESTAMP))));
+                } while (c.moveToNext());
+            }
+            db.setTransactionSuccessful();
+        }catch(Exception e){
+            Log.e("Error in Transaction",e.toString());
+        }finally{
+            db.endTransaction();
         }
         return model;
     }
@@ -494,24 +523,32 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
 
+        db.beginTransaction();
+        try{
         // looping through all rows and adding to list
-        if (c.moveToFirst()) {
-            do {
-                model.setParticipantIDList(c.getString((c.getColumnIndex(KEY_PARTICIPANT_ID))));
-                model.setEventType(c.getString((c.getColumnIndex(KEY_EVENT_TYPE))));
-                model.setxTouch(c.getFloat((c.getColumnIndex(KEY_X_TOUCH))));
-                model.setyTouch(c.getFloat((c.getColumnIndex(KEY_Y_TOUCH))));
-                model.setyViewportTop(c.getFloat((c.getColumnIndex(KEY_X_VIEWPORT))));
-                model.setyViewportBottom(c.getFloat((c.getColumnIndex(KEY_Y_VIEWPORT))));
-                model.setFont(c.getString((c.getColumnIndex(KEY_FONT))));
-                model.setFontSize(c.getInt((c.getColumnIndex(KEY_FONT_SIZE))));
-                model.setTouchPressure(c.getFloat((c.getColumnIndex(KEY_TOUCH_PRESSURE))));
-                model.setTouchSize(c.getFloat((c.getColumnIndex(KEY_TOUCH_SIZE))));
-                model.setTouchOrientation(c.getFloat((c.getColumnIndex(KEY_ORIENTATION))));
-                model.setTouchMajor(c.getFloat((c.getColumnIndex(KEY_TOUCH_MAJOR))));
-                model.setTouchMinor(c.getFloat((c.getColumnIndex(KEY_TOUCH_MINOR))));
-                model.setTimestamp(c.getLong((c.getColumnIndex(KEY_TIMESTAMP))));
-            } while (c.moveToNext());
+            if (c.moveToFirst()) {
+                do {
+                    model.setParticipantIDList(c.getString((c.getColumnIndex(KEY_PARTICIPANT_ID))));
+                    model.setEventType(c.getString((c.getColumnIndex(KEY_EVENT_TYPE))));
+                    model.setxTouch(c.getFloat((c.getColumnIndex(KEY_X_TOUCH))));
+                    model.setyTouch(c.getFloat((c.getColumnIndex(KEY_Y_TOUCH))));
+                    model.setyViewportTop(c.getFloat((c.getColumnIndex(KEY_X_VIEWPORT))));
+                    model.setyViewportBottom(c.getFloat((c.getColumnIndex(KEY_Y_VIEWPORT))));
+                    model.setFont(c.getString((c.getColumnIndex(KEY_FONT))));
+                    model.setFontSize(c.getInt((c.getColumnIndex(KEY_FONT_SIZE))));
+                    model.setTouchPressure(c.getFloat((c.getColumnIndex(KEY_TOUCH_PRESSURE))));
+                    model.setTouchSize(c.getFloat((c.getColumnIndex(KEY_TOUCH_SIZE))));
+                    model.setTouchOrientation(c.getFloat((c.getColumnIndex(KEY_ORIENTATION))));
+                    model.setTouchMajor(c.getFloat((c.getColumnIndex(KEY_TOUCH_MAJOR))));
+                    model.setTouchMinor(c.getFloat((c.getColumnIndex(KEY_TOUCH_MINOR))));
+                    model.setTimestamp(c.getLong((c.getColumnIndex(KEY_TIMESTAMP))));
+                } while (c.moveToNext());
+            }
+            db.setTransactionSuccessful();
+        }catch(Exception e){
+            Log.e("Error in Transaction",e.toString());
+        }finally{
+            db.endTransaction();
         }
         return model;
     }

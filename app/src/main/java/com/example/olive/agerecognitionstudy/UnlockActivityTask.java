@@ -26,7 +26,7 @@ public class UnlockActivityTask extends AppCompatActivity {
 
     private static final String TASK_ID = "Unlock Pattern";
     private static final int DOT_MATRIX_DIMENSION = 3;
-    private static final String[] PINS = {"1547", "2587", "3457"};
+    private static final String[] PINS = {"1547", "2587"};
     private static final int CORRECT_REPETITIONS = 3;
 
     private MotionSensorUtil motionSensorUtil;
@@ -60,11 +60,13 @@ public class UnlockActivityTask extends AppCompatActivity {
 
     private PatternLockView mPatternLockView;
     private PatternLockViewListener mPatternLockViewListener;
+    private LatinSquareUtil latinSquareUtil;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_unlock_task);
+        latinSquareUtil = MainActivity.latinSquareUtil;
         cross = findViewById(R.id.cross);
         userID = MainActivity.currentUserID;
         database = MainActivity.getDbHandler();
@@ -245,6 +247,33 @@ public class UnlockActivityTask extends AppCompatActivity {
         formerSize = size;
     }
 
+    private void startIntent(){
+        int activity = latinSquareUtil.getNext();
+        Intent intent;
+        switch (activity){
+            case 0:
+                intent = new Intent(this, GenericTaskActivity.class);
+                startActivity(intent);
+                break;
+            case 1:
+                intent = new Intent(this, PinTaskActivity.class);
+                startActivity(intent);
+                break;
+            case 2:
+                intent = new Intent(this, UnlockActivityTask.class);
+                startActivity(intent);
+                break;
+            case 3:
+                intent = new Intent(this, ReadingTaskActivity.class);
+                startActivity(intent);
+                break;
+            default:
+                intent = new Intent(this, MainActivity.class);
+                startActivity(intent);
+                break;
+        }
+    }
+
     private class AsyncTaskRunner extends AsyncTask<String, String, String> {
 
         ProgressDialog progressDialog;
@@ -264,8 +293,7 @@ public class UnlockActivityTask extends AppCompatActivity {
         @Override
         protected void onPostExecute(String params) {
             progressDialog.dismiss();
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-            startActivity(intent);
+            startIntent();
         }
 
 
