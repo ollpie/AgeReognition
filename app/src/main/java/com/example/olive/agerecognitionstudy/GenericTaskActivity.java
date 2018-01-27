@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 
 import java.util.Random;
@@ -27,7 +26,6 @@ public class GenericTaskActivity extends AppCompatActivity {
 
     DatabaseHandler database;
 
-    private Button nextButton;
     private ImageView target;
 
     private Random randomX;
@@ -35,6 +33,8 @@ public class GenericTaskActivity extends AppCompatActivity {
     private int randomXValue;
     private int randomYValue;
 
+    private float xTarget = 0.0F;
+    private float yTarget = 0.0F;
     private float xTouch = 0.0F;
     private float yTouch = 0.0F;
 
@@ -108,12 +108,10 @@ public class GenericTaskActivity extends AppCompatActivity {
         }
     }
 
-    public void nextButtonClicked(View view) {
-        startIntent();
-    }
-
     public boolean dispatchTouchEvent(MotionEvent event) {
         int eventAction = event.getAction();
+        xTarget = target.getX();
+        yTarget = target.getY();
         xTouch = event.getX();
         yTouch = event.getY()-MainActivity.statusbarOffset;
         touchPressure = event.getPressure();
@@ -146,16 +144,17 @@ public class GenericTaskActivity extends AppCompatActivity {
         taskmodel.setParticipantId(userID);
         taskmodel.setTargetId(touch_counter);
         taskmodel.setTimestamp(timestamp);
-        taskmodel.setEventType(eventType);
-        taskmodel.setXTarget(target.getX());
-        taskmodel.setYTarget(target.getY());
+        taskmodel.setXTarget(xTarget);
+        taskmodel.setYTarget(yTarget);
         taskmodel.setXTouch(xTouch);
         taskmodel.setYTouch(yTouch);
+        Log.d("Touches", "X: "+String.valueOf(xTouch)+" y: "+String.valueOf(yTouch) + " Event: "+eventType);
         taskmodel.setTouchPressure(touchPressure);
         taskmodel.setTouchSize(touchSize);
         taskmodel.setTouchOrientation(touchOrientation);
         taskmodel.setTouchMajor(touchMajor);
         taskmodel.setTouchMinor(touchMinor);
+        taskmodel.setEventType(eventType);
     }
 
     private void initPositions(){
@@ -213,7 +212,6 @@ public class GenericTaskActivity extends AppCompatActivity {
 
     private void setupUI () {
         setContentView(R.layout.activity_generic_task);
-        nextButton = findViewById(R.id.next_btn);
         target = findViewById(R.id.targetView);
     }
 
@@ -264,7 +262,7 @@ public class GenericTaskActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String params) {
             progressDialog.dismiss();
-            nextButton.setVisibility(View.VISIBLE);
+            startIntent();
         }
 
 

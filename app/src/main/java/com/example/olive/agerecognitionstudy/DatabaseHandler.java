@@ -420,7 +420,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     model.setYTouch(c.getFloat((c.getColumnIndex(KEY_Y_TOUCH))));
                     model.setTouchPressure(c.getFloat((c.getColumnIndex(KEY_TOUCH_PRESSURE))));
                     model.setTouchSize(c.getFloat((c.getColumnIndex(KEY_TOUCH_SIZE))));
-                    model.setYTouch(c.getFloat((c.getColumnIndex(KEY_ORIENTATION))));
+                    model.setTouchOrientation(c.getFloat((c.getColumnIndex(KEY_ORIENTATION))));
                     model.setTouchMajor(c.getFloat((c.getColumnIndex(KEY_TOUCH_MAJOR))));
                     model.setTouchMinor(c.getFloat((c.getColumnIndex(KEY_TOUCH_MINOR))));
                     model.setTimestamp(c.getLong((c.getColumnIndex(KEY_TIMESTAMP))));
