@@ -7,6 +7,98 @@
     <string name="done_button">Fertig</string>
     <string name="unlock_hint">Gib das angezeigte Muster auf dem Eingabefeld ein.</string>
     <string name="title_activity_reading_task">ReadingTaskActivity</string>
+    <string name="empty"></string>
+    <string name="maus_part1">Die Sendung mit der Maus \n\n Die Sendung mit der Maus ist eine der erfolgreichsten Kindersendungen im deutschen Fernsehen. Kern der Sendung sind sogenannte Lach- und Sachgeschichten, zu denen neben kurzen Zeichentrickfilmen auch jeweils ein Wissensfilm, beispielsweise über die Herstellung oder Funktionsweise eines Alltagsgegenstandes, zählt. Sie wird seit 1971 am Sonntagvormittag ausgestrahlt. Produziert wird die Sendung vom WDR in Zusammenarbeit mit anderen Mitgliedssendern der ARD.
+    \n\nKonzept und Inhalt \n\n Die Sendung mit der Maus besteht aus drei Grundelementen, die scharf voneinander abgetrennt sind:\n\n
+
+Die Sachgeschichten sollen den Kindern Wissen vermitteln.\n\n
+Die Lachgeschichten dienen der Unterhaltung und dem Nachdenken.\n\n
+Die animierten Maus-Spots fungieren als Trennelemente.\n\n
+Im Vorspann werden die Themen der Sendung vorgestellt. Dies geschieht zuerst auf Deutsch, danach in einer Fremdsprache (gefolgt von der Erklärung, z. B.: „Das war Norwegisch.“). Die Titelmusik komponierte Hans Posegga im Jahre 1971, den Text im Vorspann spricht Günter Dybus.\n\n
+Lachgeschichten\n\n
+        Bei den sogenannten Lachgeschichten handelt es sich um kurze Bildergeschichten, Zeichentrickfilme
+        oder Realtrickfilme. Inhalt sind z. B. Kinderlieder, filmische Umsetzungen von Gedichten
+        (beispielsweise fünfter sein von Ernst Jandl, realisiert von Norman Junge), und wechselnde
+        Mini-Serien wie Der kleine Maulwurf, Petzi, Nulli und Priesemut, Käpt’n Blaubär oder Shaun
+        das Schaf. Einige Folgen von Janoschs Traumstunde liefen zunächst in der Sendung mit der Maus.
+        Eine Lachgeschichte dauert in etwa 5 Minuten und hat immer eine „runde“, in sich abgeschlossene Handlung.
+    </string>
+
+    <string name="maus_part2">Sachgeschichten\n\n Pro Sendung gibt es meistens zwei Sachgeschichten
+        von und mit Armin, Christoph, Ralph oder Malin. Seltener werden die Sachgeschichten auch von
+        anderen Moderatoren wie z. B. Johannes Büchs, Siham El-Maimouni, Fulgencio Morente Gómez oder
+        Urs Wehrli präsentiert. Diese Geschichten werden in der Regel in einer Folge abgeschlossen.
+        Bei längeren Filmen werden sie oft von einem Maus-Spot unterbrochen. Besonders komplexe Themen
+        werden auf mehrere Folgen verteilt, zum Beispiel der Bau eines Airbus, den ein Kamerateam
+        über lange Zeit verfolgte, oder ein Biobauernhof im Laufe des Jahres.\n\n
+
+        Die Themen der Sachgeschichten sind sehr vielfältig: Das Alte Rom, Brennnesseln, das Archimedische
+        Prinzip, die Bundestagswahl, Tschernobyl, Kettenreaktion, Internet, Nachkriegszeit, die
+        Weltraumstation Mir, die Herstellung unzähliger Produkte (von der Milch und den Brötchen
+        über Bleistift und Tennisball bis hin zum Flugzeug) und vieles mehr wurden und werden dem
+        Zuschauer auf sehr anschauliche Weise nähergebracht. Dazu gehören auch Fragen wie „Wer malt
+        die Streifen in die Zahnpasta?“, „Wie macht man Kaugummi – und wie ihn später auf dem Bürgersteig
+        wieder weg?“ und „Wie kommen die Löcher in den Käse?“\n\n
+
+        Dass Christoph immer in einem grünen Pullover auftritt, hat einen einfachen Grund: Für einen
+        längeren Film, in dem er immer wieder zu sehen war, brauchte er identische Kleidung, um
+        immer gleich auszusehen und so beim Filmschnitt Anschlussfehler zu vermeiden. Da er zwei
+        grüne Pullover besaß, die er bei Bedarf unbemerkt wechseln konnte, wurde der grüne Pulli
+        zu seinem Markenzeichen.\n\n</string>
+
+
+    <string name="regensburg1">
+        Regensburger Dom \n\n
+        Der Regensburger Dom (auch: Dom St. Petrus) ist die bedeutendste Kirche der Stadt Regensburg
+        und Kathedrale des Bistums Regensburg. Er gehört neben dem Kölner Dom zu den bedeutendsten
+        gotischen Kathedralen in Deutschland.
+    </string>
+    <string name="regensburg2">
+        Geschichte des Vorgängerbaus \n\n
+        Die kanonische Errichtung des Bistums durch den heiligen Bonifatius geht etwa auf das Jahr 739 zurück.
+        Bis 975 übte der Abt der Benediktinerabtei St. Emmeram gleichzeitig das Amt des Bischofs von
+        Regensburg aus. Er wählte als Bischofsresidenz den Bereich der Porta Praetoria (Nordtor) des
+        alten Römerkastells; dieser Dombezirk wurde nie mehr geändert. Zum ersten Dombau gibt es keine
+        verlässlichen Hinweise. In der zweiten Hälfte des 10. Jahrhunderts – wahrscheinlich im Rahmen
+        der Ämtertrennung zwischen Abt und Bischof – entstand ein neuer Dombau, als dreischiffige
+        Basilika mit halbrunder Chorapsis und ohne Querhaus, wahrscheinlich auch ohne Türme, die 58
+        Meter lang war. Eine große Erweiterung nach Westen folgte um 1000 mit einem etwa 15 Meter
+        tiefen Querhaus, zwei Türmen und einem Atrium, das den Dom mit der westlich gelegenen Taufkirche
+        St. Johann verband. Die Gesamtanlage erstreckte sich nun über 128 Meter. Der nördliche Turm,
+        der sog. Eselsturm, prägt bis heute die Nordquerhausfassade mit. Der Dom brannte in den
+        Jahren 1156 und 1172 zweimal aus und wurde wiederhergestellt.
+    </string>
+
+    <string name="borschtsch">
+        Borschtsch \n\n
+        Borschtsch ist eine Suppe, die traditionell mit Roter Bete zubereitet wird und deren Zubereitung
+        vor allem in Ost- und Ostmitteleuropa sehr verbreitet ist. Die Herkunft des Wortes „Borschtsch“
+        beziehungsweise „Barszcz“ liegt höchstwahrscheinlich im slawischen Namen für das Kraut Bärenklau.
+        Von diesem waren im Mittelalter die ungiftigen Sprossen und jungen Blätter ein fester Bestandteil
+        der Suppe.\n\n
+
+        Beschreibung \n\n
+        Der sogenannte Borschtsch-Gürtel zieht sich von Polen über Galizien, Rumänien, die Ukraine,
+        Weißrussland bis hin zu Wolga und Don in Russland. Dort und in der Ukraine wird Borschtsch
+        allerdings nicht unbedingt als eigenständige Mahlzeit, sondern oft als Vorsuppe oder Zwischengericht
+        zum Mittag- oder Abendessen gegessen. In Upstate New York existierte analog der von russischen
+        Emigranten begründete Borscht Belt.\n\n
+
+        Charakteristisch für die Zubereitung ist (wie bei vielen osteuropäischen Suppengerichten)
+        die lange Garzeit bei geringer Hitze. Vor dem Servieren sollte Borschtsch mit Schmand
+        (oder auch saurer Sahne) und frischen Küchenkräutern (meist Dill, auch Knoblauchblättern
+        oder Petersilie) verfeinert werden. Zum ukrainischen Borschtsch wird gern auch ein (gesalzener)
+        Knoblauch-Öl-Dip sowie in jedem Fall frisches Brot gegessen. Die ostpreußische Version Beetenbartsch
+        wird zusammen mit Schmand und Rindfleisch serviert.
+    </string>
+
+    <string name="borschtsch2">
+        Kalter Borschtsch ist ebenfalls eine Rote-Bete-Suppe, wird aber völlig anders zubereitet und vor allem im Sommer
+        gegessen. Sie enthält weder Fleisch noch Kohl; Grundlage ist Kefir oder saure Sahne. Die Suppe
+        wird nicht gekocht, sondern kalt zubereitet – die Rote Bete separat gekocht. Auch hier gibt
+        es regionale Varianten.
+    </string>
+
     <string name="large_text">
         "Material is the metaphor.\n\n"
 

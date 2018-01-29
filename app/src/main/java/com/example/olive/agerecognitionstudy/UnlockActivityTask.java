@@ -173,12 +173,14 @@ public class UnlockActivityTask extends AppCompatActivity {
             public void onProgress(List<Dot> progressPattern) {
                 progress = PatternLockUtils.patternToString(mPatternLockView, progressPattern);
                 dotProgress = progressPattern;
-                if (sequenceCorrect && (dotProgress.get(dotProgress.size()-1) == PatternLockUtils.stringToPattern(mPatternLockView, PINS[pinIndex]).get(target))) {
+                if (dotProgress.size()<PINS[0].length()) {
+                    if (sequenceCorrect && (dotProgress.get(dotProgress.size() - 1) == PatternLockUtils.stringToPattern(mPatternLockView, PINS[pinIndex]).get(target))) {
                         target++;
-                }else {
-                    sequenceCorrect = false;
+                    } else {
+                        sequenceCorrect = false;
+                    }
+                    progressBegan = true;
                 }
-                progressBegan = true;
             }
 
             @Override

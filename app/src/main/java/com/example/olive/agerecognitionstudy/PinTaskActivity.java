@@ -43,7 +43,6 @@ public class PinTaskActivity extends AppCompatActivity{
     private int currentIndexCount = 0;
     private String receivedDigits = "";
     private int pinIndex = 0;
-    private boolean didStartIntent = false;
     private PinTaskDataModel taskmodel;
     private float xTarget;
     private float yTarget;
@@ -61,6 +60,8 @@ public class PinTaskActivity extends AppCompatActivity{
     private char currentDigit;
     private boolean sequenceCorrect = true;
     private int formerSize = 0;
+    private boolean writeSequence = false;
+    private boolean end = false;
 
     DatabaseHandler database;
     private MotionSensorUtil motionSensorUtil;
@@ -106,6 +107,17 @@ public class PinTaskActivity extends AppCompatActivity{
 
                 case MotionEvent.ACTION_UP:
                     writeDataIntoLists("Up");
+                    if (writeSequence){
+                        setSequenceCorrectness();
+                        sequenceCorrect = true;
+                        writeSequence = false;
+                    }
+                    if (end){
+                        motionSensorUtil.stop();
+                        pinView.setText("FERTIG");
+                        PinTaskActivity.AsyncTaskRunner runner = new PinTaskActivity.AsyncTaskRunner();
+                        runner.execute();
+                    }
                     break;
                 default:
                     break;
@@ -129,14 +141,12 @@ public class PinTaskActivity extends AppCompatActivity{
             }
             if (b.getText().equals("Done")) {
                 if (receivedDigits.equals(PINS[PINS.length-1]) && repetitionCount == REPETITIONS-1 && sequenceCorrect) {
-                    motionSensorUtil.stop();
-                    didStartIntent = true;
-                    pinView.setText("FERTIG");
-                    setSequenceCorrectness();
-                    PinTaskActivity.AsyncTaskRunner runner = new PinTaskActivity.AsyncTaskRunner();
-                    runner.execute();
+                    writeSequence = true;
+                    end = true;
+                    //setSequenceCorrectness();
+
                 }
-                if (receivedDigits.equals(PINS[pinIndex]) && !didStartIntent){
+                if (receivedDigits.equals(PINS[pinIndex])){
                     if (sequenceCorrect) {
                         repetitionCount++;
                     }
@@ -146,27 +156,29 @@ public class PinTaskActivity extends AppCompatActivity{
                             pinIndex++;
                         }
                     }
+                    writeSequence = true;
+                    //setSequenceCorrectness();
                     currentIndexCount = 0;
                     receivedDigits = "";
                     currentDigit = 'd';
                     actualDigit = 'd';
                     pinView.setText(receivedDigits);
                     pinDisplay.setText("Pin: " + PINS[pinIndex]);
-                    setSequenceCorrectness();
                     Toast.makeText(getApplication(),
                             "Eingabe korrekt.", Toast.LENGTH_SHORT).show();
                 }else{
+                    sequenceCorrect = false;
+                    writeSequence = true;
+                    //setSequenceCorrectness();
                     currentIndexCount = 0;
                     receivedDigits = "";
                     currentDigit = 'd';
                     actualDigit = 'd';
                     pinView.setText(receivedDigits);
-                    sequenceCorrect = false;
-                    setSequenceCorrectness();
                     Toast.makeText(getApplication(),
                             "Eingabe falsch.", Toast.LENGTH_SHORT).show();
                 }
-                sequenceCorrect = true;
+
             }else{
                 if(!b.getText().equals("Delete") && !b.getText().equals("Done")){
                     currentIndexCount++;
@@ -180,6 +192,7 @@ public class PinTaskActivity extends AppCompatActivity{
 
     private void setSequenceCorrectness(){
         int size = taskmodel.pin.size();
+        Log.d("Sequence Size", String.valueOf(size));
         for (int i = 0; i < size-formerSize; i++){
             if(!sequenceCorrect){
                 taskmodel.setSequenceCorrect("false");
@@ -208,6 +221,7 @@ public class PinTaskActivity extends AppCompatActivity{
         taskmodel.setTouchMajor(touchMajor);
         taskmodel.setTouchMinor(touchMinor);
         taskmodel.setTimestamp(timestamp);
+        Log.d("Pin Size", String.valueOf(taskmodel.pin.size())+" Eventtype: "+eventType);
     }
 
     private void setupUI() {
@@ -278,6 +292,24 @@ public class PinTaskActivity extends AppCompatActivity{
         @Override
         protected String doInBackground(String... params) {
             try {
+                Log.d("Pin", String.valueOf(taskmodel.pin.size()));
+                Log.d("Type", String.valueOf(taskmodel.eventType.size()));
+                Log.d("Rep", String.valueOf(taskmodel.repetition.size()));
+                Log.d("Prog", String.valueOf(taskmodel.progress.size()));
+                Log.d("Curr", String.valueOf(taskmodel.currentDigit.size()));
+                Log.d("Act", String.valueOf(taskmodel.actualDigit.size()));
+                Log.d("sequ", String.valueOf(taskmodel.sequenceCorrect.size()));
+                Log.d("x b", String.valueOf(taskmodel.xButtonCenter.size()));
+                Log.d("y b", String.valueOf(taskmodel.yButtonCenter.size()));
+                Log.d("x t", String.valueOf(taskmodel.xTouch.size()));
+                Log.d("y t", String.valueOf(taskmodel.yTouch.size()));
+                Log.d("orient", String.valueOf(taskmodel.touchOrientation.size()));
+                Log.d("press", String.valueOf(taskmodel.touchPressure.size()));
+                Log.d("size", String.valueOf(taskmodel.touchSize.size()));
+                Log.d("maj", String.valueOf(taskmodel.touchMajor.size()));
+                Log.d("min", String.valueOf(taskmodel.touchMinor.size()));
+                Log.d("timest", String.valueOf(taskmodel.timestamp.size()));
+
                 Log.d("Length bf db", String.valueOf(taskmodel.length()));
                 database.createPinTaskData(taskmodel);
                 database.createMotionSensorData(motionSensorUtil.getMotionSensorData());

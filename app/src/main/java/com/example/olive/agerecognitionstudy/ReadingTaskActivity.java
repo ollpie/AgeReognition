@@ -3,7 +3,6 @@ package com.example.olive.agerecognitionstudy;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Point;
-import android.graphics.Typeface;
 import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,18 +11,25 @@ import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
 public class ReadingTaskActivity extends AppCompatActivity {
 
     private static final String TASK_ID = "Reading Task";
-    private static final String[] FONTS = {"arial.ttf", "times.ttf", "segoesc.ttf"};
-    private static final int[] FONT_SIZES = {18, 14, 10};
+    private static final int TEXT_SIZE = 14;
+    private static final int[] FIRST_TEXTS = {R.string.regensburg1, R.string.borschtsch};
+    private static final int[] SECOND_TEXTS = {R.string.regensburg2, R.string.borschtsch2};
+    private static final int[] FIRST_IMAGE = {R.drawable.regensburger_dom, R.drawable.borschtsch};
+    private static final int[] SECOND_IMAGE = {0,0};
 
     ScrollView scrollView;
     Button doneButton;
-    TextView textView;
+    TextView textView1;
+    TextView textView2;
+    ImageView image1;
+    ImageView image2;
 
     private DatabaseHandler database;
     private MotionSensorUtil motionSensorUtil;
@@ -42,17 +48,15 @@ public class ReadingTaskActivity extends AppCompatActivity {
     private long timestamp;
 
     private int displayHeight;
-    private int fontIndex = 0;
-    private int fontSizeIndex = 0;
     private boolean end = false;
     private LatinSquareUtil latinSquareUtil;
+    private int clickCounter = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupUI();
         latinSquareUtil = MainActivity.latinSquareUtil;
-        textView.setTextSize(FONT_SIZES[fontSizeIndex]);
         userID = MainActivity.currentUserID;
         database = MainActivity.getDbHandler();
         readingTaskModel = new ReadingTaskDataModel(userID);
@@ -63,9 +67,12 @@ public class ReadingTaskActivity extends AppCompatActivity {
         setContentView(R.layout.activity_reading_task);
         scrollView = findViewById(R.id.scrollView);
         doneButton = findViewById(R.id.doneButton);
-        textView = findViewById(R.id.textView);
-        Typeface typeface = Typeface.createFromAsset(getAssets(), "font/"+FONTS[fontIndex]);
-        textView.setTypeface(typeface);
+        image1 = findViewById(R.id.readingImage1);
+        image2 = findViewById(R.id.readingImage2);
+        textView1 = findViewById(R.id.textView1);
+        textView2 = findViewById(R.id.textView2);
+        textView1.setTextSize(TEXT_SIZE);
+        textView2.setTextSize(TEXT_SIZE);
     }
 
     @Override
@@ -82,19 +89,23 @@ public class ReadingTaskActivity extends AppCompatActivity {
     }
 
     private void setFontSize(){
-        if (fontSizeIndex < FONT_SIZES.length-1){
-            fontSizeIndex++;
-        }
-        scrollView.scrollTo(0,0);
-        textView.setTextSize(FONT_SIZES[fontSizeIndex]);
-        Typeface tf = Typeface.createFromAsset(getAssets(), "font/"+FONTS[fontIndex]);
-        textView.setTypeface(tf);
-        if (end){
+        if (clickCounter == FIRST_TEXTS.length){
             ReadingTaskActivity.AsyncTaskRunner asyncTask = new ReadingTaskActivity.AsyncTaskRunner();
             asyncTask.execute();
-        }
-        if (fontSizeIndex == FONT_SIZES.length-1){
-            end = true;
+        }else{
+            scrollView.scrollTo(0,0);
+            textView1.setText(getResources().getString(FIRST_TEXTS[clickCounter]));
+            textView2.setText(getResources().getString(SECOND_TEXTS[clickCounter]));
+            /*LinearLayout.LayoutParams parameter = (LinearLayout.LayoutParams) image1.getLayoutParams();
+            parameter.setMargins(0,0,0,0);
+            image1.setLayoutParams(parameter);*/
+            image1.setImageResource(FIRST_IMAGE[clickCounter]);
+
+/*            LinearLayout.LayoutParams parameter2 = (LinearLayout.LayoutParams) image2.getLayoutParams();
+            parameter.setMargins(0,0,0,0);
+            image2.setLayoutParams(parameter2);*/
+            image2.setImageResource(SECOND_IMAGE[clickCounter]);
+            clickCounter++;
         }
     }
 
@@ -134,8 +145,8 @@ public class ReadingTaskActivity extends AppCompatActivity {
         readingTaskModel.setEventType(eventType);
         readingTaskModel.setyViewportTop(yViewPort);
         readingTaskModel.setyViewportBottom(yViewPortBottom);
-        readingTaskModel.setFont(FONTS[fontIndex]);
-        readingTaskModel.setFontSize(FONT_SIZES[fontSizeIndex]);
+        readingTaskModel.setFont("Default");
+        readingTaskModel.setFontSize(TEXT_SIZE);
         readingTaskModel.setxTouch(xTouch);
         readingTaskModel.setyTouch(yTouch);
         readingTaskModel.setTouchPressure(touchPressure);

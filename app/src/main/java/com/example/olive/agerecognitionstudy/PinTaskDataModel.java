@@ -225,6 +225,6 @@ public class PinTaskDataModel {
     }
 
     public int length() {
-        return sequenceCorrect.size();
+        return pin.size();
     }
 }

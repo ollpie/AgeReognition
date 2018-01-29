@@ -237,7 +237,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         Log.d("Pin Model Length", String.valueOf(taskModel.length()));
         db.beginTransaction();
         try{
-            for (int i = 0; i < taskModel.length()-2; i++) {
+            for (int i = 0; i < taskModel.length(); i++) {
                 ContentValues values = new ContentValues();
                 values.put(KEY_PARTICIPANT_ID, taskModel.getParticipantId());
                 values.put(KEY_PIN, taskModel.getPin().get(i));

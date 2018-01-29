@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
     private void startIntent(){
         int activity = latinSquareUtil.getNext();
         Intent intent;
-        switch (activity){
+        switch (2){
             case 0:
                 intent = new Intent(this, GenericTaskActivity.class);
                 startActivity(intent);
