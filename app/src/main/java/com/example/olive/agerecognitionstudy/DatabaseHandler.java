@@ -32,13 +32,21 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String TABLE_UNLOCK_PATTERN_TASK = "unlock_pattern_task";
     private static final String TABLE_READING_TASK = "reading_task";
     private static final String TABLE_MOTION_SENSOR = "motion_sensor";
+    private static final String TABLE_LATIN_UTIL = "latin_util";
 
-    private static final String KEY_ID = "id";
+    private static final String KEY_ID = "key_id";
 
     // PARTICIPANTS Table - column names
     private static final String KEY_PARTICIPANT_ID = "participant_id";
     private static final String KEY_AGE = "age";
     private static final String KEY_GENDER = "gender";
+
+    // LATIN_UTIL - column names
+    private static final String KEY_INDEX = "latin_index";
+    private static final String KEY_ARRAY_FIRST = "array_first";
+    private static final String KEY_ARRAY_SECOND = "array_second";
+    private static final String KEY_ARRAY_THIRD = "array_third";
+    private static final String KEY_ARRAY_FOURTH = "array_fourth";
 
     // GENERIC_TASK Table - column names
     private static final String KEY_TARGET_ID = "target_id";
@@ -107,7 +115,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             + TABLE_PARTICIPANTS + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_PARTICIPANT_ID + " TEXT," + KEY_AGE
             + " INTEGER," + KEY_GENDER + " TEXT)";
 
-    //FOREIGN KEY (" + KEY_PARTICIPANT_ID + ") REFERENCES " + TABLE_PARTICIPANTS + "(" + KEY_PARTICIPANT_ID + "),
+    private static final String CREATE_TABLE_LATIN_UTIL = "CREATE TABLE IF NOT EXISTS "
+            + TABLE_LATIN_UTIL + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_INDEX + " INTEGER," + KEY_ARRAY_FIRST
+            + " INTEGER," + KEY_ARRAY_SECOND + " INTEGER," + KEY_ARRAY_THIRD  + " INTEGER,"
+            + KEY_ARRAY_FOURTH + " INTEGER)";
 
     // Generic task table create statement
     private static final String CREATE_TABLE_GENERIC_TASK = "CREATE TABLE IF NOT EXISTS "
@@ -169,6 +180,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_UNLOCK_PATTERN_TASK);
         db.execSQL(CREATE_TABLE_READING_TASK);
         db.execSQL(CREATE_TABLE_MOTION_SENSOR);
+        db.execSQL(CREATE_TABLE_LATIN_UTIL);
     }
 
     @Override
@@ -180,6 +192,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_UNLOCK_PATTERN_TASK);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_READING_TASK);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_MOTION_SENSOR);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_LATIN_UTIL);
 
         // create new tables
         onCreate(db);
@@ -192,6 +205,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      */
     public long createParticipant(Participant participant) {
         SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("delete from "+ TABLE_LATIN_UTIL);
 
         ContentValues values = new ContentValues();
         values.put(KEY_PARTICIPANT_ID, participant.getId());
@@ -201,6 +215,19 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         long participant_id = db.insert(TABLE_PARTICIPANTS, null, values);
         return participant_id;
 
+    }
+
+    public void createLatinUtil(int[] latinSquareValues) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_INDEX, latinSquareValues[0]);
+        values.put(KEY_ARRAY_FIRST, latinSquareValues[1]);
+        values.put(KEY_ARRAY_SECOND, latinSquareValues[2]);
+        values.put(KEY_ARRAY_THIRD, latinSquareValues[3]);
+        values.put(KEY_ARRAY_FOURTH, latinSquareValues[4]);
+
+        db.insert(TABLE_LATIN_UTIL, null, values);
     }
 
     public void createGenericTaskData(GenericTaskDataModel taskModel) {
@@ -400,6 +427,33 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return participants;
     }
 
+    public int[] getLatinSquareValues() {
+        int[] values = new int[5];
+        String selectQuery = "SELECT * FROM " + TABLE_LATIN_UTIL;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+        db.beginTransaction();
+        try{
+            // looping through all rows and adding to list
+            if (c.moveToFirst()) {
+                do {
+                    values[0] = c.getInt(c.getColumnIndex(KEY_INDEX));
+                    values[1] = c.getInt(c.getColumnIndex(KEY_ARRAY_FIRST));
+                    values[2] = c.getInt(c.getColumnIndex(KEY_ARRAY_SECOND));
+                    values[3] = c.getInt(c.getColumnIndex(KEY_ARRAY_THIRD));
+                    values[4] = c.getInt(c.getColumnIndex(KEY_ARRAY_FOURTH));
+                } while (c.moveToNext());
+            }
+            db.setTransactionSuccessful();
+        }catch(Exception e){
+            Log.e("Error in Transaction",e.toString());
+        }finally{
+            db.endTransaction();
+        }
+        return values;
+    }
+
     public GenericTaskDataModel getAllGenericTaskData() {
         GenericTaskDataModel model = new GenericTaskDataModel();
         String selectQuery = "SELECT * FROM " + TABLE_GENERIC_TASK;
@@ -593,6 +647,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_UNLOCK_PATTERN_TASK);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_READING_TASK);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_MOTION_SENSOR);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_LATIN_UTIL);
         onCreate(db);
     }
 

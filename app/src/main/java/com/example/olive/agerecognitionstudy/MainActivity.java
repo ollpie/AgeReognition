@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setupUI();
         db = new DatabaseHandler(getApplicationContext());
+
         if (latinSquareUtil == null){
             latinSquareUtil = new LatinSquareUtil();
         }
@@ -81,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
     private void startIntent(){
         int activity = latinSquareUtil.getNext();
         Intent intent;
-        switch (2){
+        switch (activity){
             case 0:
                 intent = new Intent(this, GenericTaskActivity.class);
                 startActivity(intent);
