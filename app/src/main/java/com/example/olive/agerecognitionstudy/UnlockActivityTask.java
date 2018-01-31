@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -66,6 +67,7 @@ public class UnlockActivityTask extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_unlock_task);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         latinSquareUtil = MainActivity.latinSquareUtil;
         cross = findViewById(R.id.cross);
         userID = MainActivity.currentUserID;
@@ -149,11 +151,9 @@ public class UnlockActivityTask extends AppCompatActivity {
         mPatternLockView.setDotNormalSize((int) ResourceUtils.getDimensionInPx(this, R.dimen.pattern_lock_dot_size));
         mPatternLockView.setDotSelectedSize((int) ResourceUtils.getDimensionInPx(this, R.dimen.pattern_lock_dot_selected_size));
         mPatternLockView.setPathWidth((int) ResourceUtils.getDimensionInPx(this, R.dimen.pattern_lock_path_width));
-        mPatternLockView.setDotAnimationDuration(150);
-        mPatternLockView.setPathEndAnimationDuration(100);
-        mPatternLockView.setNormalStateColor(ResourceUtils.getColor(this, R.color.colorAccent));
+        mPatternLockView.setDotAnimationDuration(10);
+        mPatternLockView.setPathEndAnimationDuration(10);
         mPatternLockView.setInStealthMode(false);
-        mPatternLockView.setTactileFeedbackEnabled(true);
         mPatternLockView.setInputEnabled(true);
         mPatternLockView.addPatternLockListener(mPatternLockViewListener);
         mPatternLockView.setOnTouchListener(listener);
@@ -274,6 +274,11 @@ public class UnlockActivityTask extends AppCompatActivity {
                 startActivity(intent);
                 break;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+
     }
 
     private class AsyncTaskRunner extends AsyncTask<String, String, String> {

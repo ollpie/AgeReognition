@@ -28,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setupUI();
         db = new DatabaseHandler(getApplicationContext());
-
         if (latinSquareUtil == null){
             latinSquareUtil = new LatinSquareUtil();
         }

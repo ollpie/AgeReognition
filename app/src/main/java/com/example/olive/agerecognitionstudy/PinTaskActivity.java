@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.TextView;
@@ -62,6 +63,8 @@ public class PinTaskActivity extends AppCompatActivity{
     private int formerSize = 0;
     private boolean writeSequence = false;
     private boolean end = false;
+    private int deleteID;
+    private int doneID;
 
     DatabaseHandler database;
     private MotionSensorUtil motionSensorUtil;
@@ -127,11 +130,11 @@ public class PinTaskActivity extends AppCompatActivity{
     };
 
      private void processButtonPress(Button b) {
-        if (!(receivedDigits.length() > PINS[0].length()-1) || b.getText().equals("Delete") || b.getText().equals("Done")){
-            if (!b.getText().equals("Done") && !b.getText().equals("Delete")){
+        if (!(receivedDigits.length() > PINS[0].length()-1) || b.getId() == deleteID || b.getId() == doneID){
+            if (b.getId() != doneID && b.getId() != deleteID){
                 currentDigit = PINS[pinIndex].charAt(currentIndexCount);
             }
-            if (b.getText().equals("Delete") && !receivedDigits.equals("")){
+            if (b.getId() == deleteID && !receivedDigits.equals("")){
                 receivedDigits = receivedDigits.substring(0, receivedDigits.length()-1);
                 pinView.setText(receivedDigits);
                 actualDigit = 'D';
@@ -139,12 +142,10 @@ public class PinTaskActivity extends AppCompatActivity{
                 currentIndexCount--;
                 sequenceCorrect = false;
             }
-            if (b.getText().equals("Done")) {
+            if (b.getId() == doneID) {
                 if (receivedDigits.equals(PINS[PINS.length-1]) && repetitionCount == REPETITIONS-1 && sequenceCorrect) {
                     writeSequence = true;
                     end = true;
-                    //setSequenceCorrectness();
-
                 }
                 if (receivedDigits.equals(PINS[pinIndex])){
                     if (sequenceCorrect) {
@@ -157,7 +158,6 @@ public class PinTaskActivity extends AppCompatActivity{
                         }
                     }
                     writeSequence = true;
-                    //setSequenceCorrectness();
                     currentIndexCount = 0;
                     receivedDigits = "";
                     currentDigit = 'd';
@@ -169,7 +169,6 @@ public class PinTaskActivity extends AppCompatActivity{
                 }else{
                     sequenceCorrect = false;
                     writeSequence = true;
-                    //setSequenceCorrectness();
                     currentIndexCount = 0;
                     receivedDigits = "";
                     currentDigit = 'd';
@@ -180,7 +179,7 @@ public class PinTaskActivity extends AppCompatActivity{
                 }
 
             }else{
-                if(!b.getText().equals("Delete") && !b.getText().equals("Done")){
+                if(b.getId() != deleteID && b.getId() != doneID){
                     currentIndexCount++;
                     receivedDigits += b.getText();
                     actualDigit = b.getText().charAt(0);
@@ -226,6 +225,7 @@ public class PinTaskActivity extends AppCompatActivity{
 
     private void setupUI() {
         setContentView(R.layout.activity_pin_task);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         pinView = findViewById(R.id.pin_text_view);
         pinDisplay = findViewById(R.id.pin_display);
         button1 = findViewById(R.id.button1);
@@ -256,6 +256,8 @@ public class PinTaskActivity extends AppCompatActivity{
         View view = inflater.inflate(R.layout.activity_pin_task, null);
         layout = findViewById(R.id.gridLayout);
         database = MainActivity.getDbHandler();
+        deleteID = R.id.buttonDelete;
+        doneID = R.id.buttonDone;
     }
 
     private void startIntent(){
@@ -283,6 +285,11 @@ public class PinTaskActivity extends AppCompatActivity{
                 startActivity(intent);
                 break;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+
     }
 
     private class AsyncTaskRunner extends AsyncTask<String, String, String> {

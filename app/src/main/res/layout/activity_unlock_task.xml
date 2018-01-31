@@ -4,15 +4,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/wallpaper"
     tools:context="com.example.olive.agerecognitionstudy.UnlockActivityTask">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Bitte Muster eingeben:"
+        android:textColor="@color/white"
+        android:textAlignment="center"
+        android:layout_above="@+id/pattern_lock_view"
+        android:layout_marginBottom="30dp"/>
 
     <com.andrognito.patternlockview.PatternLockView
         android:id="@+id/pattern_lock_view"
         android:layout_width="280dp"
         android:layout_height="280dp"
         android:layout_centerInParent="true"
-        app:normalStateColor="@color/colorPrimaryDark"
-        app:correctStateColor="@color/colorPrimary"
+        app:normalStateColor="@color/white"
+        app:correctStateColor="@color/white"
         app:wrongStateColor="@color/colorAccent"/>
 
     <ImageView

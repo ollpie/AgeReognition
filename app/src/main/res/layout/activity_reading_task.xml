@@ -29,9 +29,10 @@
                 android:id="@+id/textView1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-
                 android:gravity="center_vertical"
-                android:text="@string/maus_part1" />
+                android:lineSpacingExtra="10sp"
+                android:text="@string/maus_part1"
+                android:textSize="8pt" />
 
             <ImageView
                 android:id="@+id/readingImage1"
@@ -47,7 +48,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:gravity="center_vertical"
-                android:text="@string/maus_part2" />
+                android:lineSpacingExtra="10sp"
+                android:text="@string/maus_part2"
+                android:textAllCaps="false"
+                android:textSize="8pt" />
 
             <ImageView
                 android:id="@+id/readingImage2"
