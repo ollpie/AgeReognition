@@ -12,17 +12,21 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.GridLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+//, "9812", "0987", "4192", "8108", "5276"
+
 public class PinTaskActivity extends AppCompatActivity{
 
-    private static final int REPETITIONS = 2;
-    private static final String[] PINS = {"0537", "8683"};
+    private static final int REPETITIONS = 5;
+    private static final String[] PINS = {"0537", "8683", "5465", "0954", "1243"};
     private static final String TASK_NAME = "Pin Task";
+
+    private ImageView finger;
 
     private GridLayout layout;
     private TextView pinView;
@@ -74,6 +78,7 @@ public class PinTaskActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupUI();
+        finger = findViewById(R.id.fingerpin);
         latinSquareUtil = MainActivity.latinSquareUtil;
         userID = MainActivity.currentUserID;
         database = MainActivity.getDbHandler();
@@ -225,7 +230,6 @@ public class PinTaskActivity extends AppCompatActivity{
 
     private void setupUI() {
         setContentView(R.layout.activity_pin_task);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         pinView = findViewById(R.id.pin_text_view);
         pinDisplay = findViewById(R.id.pin_display);
         button1 = findViewById(R.id.button1);
@@ -284,6 +288,19 @@ public class PinTaskActivity extends AppCompatActivity{
                 intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
                 break;
+        }
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            View decorView = getWindow().getDecorView();
+            decorView.setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         }
     }
 

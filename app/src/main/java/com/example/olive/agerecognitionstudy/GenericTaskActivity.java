@@ -20,13 +20,14 @@ public class GenericTaskActivity extends AppCompatActivity {
     private static final int MIN = 0;
     private static final int OFFSET = 13;
     private static final int X_AMOUNT = 5;
-    private static final int Y_AMOUNT = 3;
+    private static final int Y_AMOUNT = 5;
     private static final int PADDING = 80;
     private static final String TASK_ID = "Generic Task";
 
     DatabaseHandler database;
 
     private ImageView target;
+    private ImageView finger;
 
     private Random randomX;
     private Random randomY;
@@ -113,7 +114,7 @@ public class GenericTaskActivity extends AppCompatActivity {
         xTarget = target.getX();
         yTarget = target.getY();
         xTouch = event.getX();
-        yTouch = event.getY()-MainActivity.statusbarOffset;
+        yTouch = event.getY();
         touchPressure = event.getPressure();
         touchSize = event.getSize();
         touchOrientation = event.getOrientation();
@@ -209,10 +210,24 @@ public class GenericTaskActivity extends AppCompatActivity {
            motionSensorUtil.stop();
        }
 
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            View decorView = getWindow().getDecorView();
+            decorView.setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        }
+    }
+
 
     private void setupUI () {
         setContentView(R.layout.activity_generic_task);
         target = findViewById(R.id.targetView);
+        //finger = findViewById(R.id.finger);
     }
 
     private void startIntent(){

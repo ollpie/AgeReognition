@@ -8,6 +8,7 @@
     tools:context="com.example.olive.agerecognitionstudy.UnlockActivityTask">
 
     <TextView
+        android:fitsSystemWindows="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Bitte Muster eingeben:"

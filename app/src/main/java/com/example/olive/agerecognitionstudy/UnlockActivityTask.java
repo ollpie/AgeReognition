@@ -23,12 +23,14 @@ import com.andrognito.patternlockview.utils.ResourceUtils;
 
 import java.util.List;
 
+//, "54301", "04785", "21036", "87410", "74103"
+
 public class UnlockActivityTask extends AppCompatActivity {
 
     private static final String TASK_ID = "Unlock Pattern";
     private static final int DOT_MATRIX_DIMENSION = 3;
-    private static final String[] PINS = {"1547", "2587"};
-    private static final int CORRECT_REPETITIONS = 3;
+    private static final String[] PINS = {"15476", "25873", "03412", "24630", "01247"};
+    private static final int CORRECT_REPETITIONS = 5;
 
     private MotionSensorUtil motionSensorUtil;
     private ImageView cross;
@@ -82,6 +84,14 @@ public class UnlockActivityTask extends AppCompatActivity {
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         calculateDotPositions();
+        if (hasFocus) {
+            View decorView = getWindow().getDecorView();
+            decorView.setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        }
     }
 
     OnTouchListener listener = new OnTouchListener() {
@@ -96,8 +106,8 @@ public class UnlockActivityTask extends AppCompatActivity {
                 xTarget = dotPositions[currentPattern.get(target).getColumn()][currentPattern.get(target).getRow()].x;
                 yTarget = dotPositions[currentPattern.get(target).getColumn()][currentPattern.get(target).getRow()].y;
             }
-            cross.setX(xTarget);
-            cross.setY(yTarget);
+            //cross.setX(xTarget);
+            //cross.setY(yTarget);
             xTouch = event.getRawX();
             yTouch = event.getRawY()-MainActivity.statusbarOffset;
             touchPressure = event.getPressure();
