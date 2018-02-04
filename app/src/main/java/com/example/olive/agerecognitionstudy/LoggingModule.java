@@ -1,9 +1,14 @@
 package com.example.olive.agerecognitionstudy;
 
+import android.media.MediaScannerConnection;
 import android.os.Environment;
+import android.util.Log;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.util.List;
 import java.util.Locale;
 

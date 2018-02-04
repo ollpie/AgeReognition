@@ -5,8 +5,15 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.media.MediaScannerConnection;
+import android.os.Environment;
 import android.util.Log;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -196,6 +203,50 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         // create new tables
         onCreate(db);
+    }
+
+    /**
+     * Export database to external storage, so it can be accessed from
+     / copied
+     * to a computer.
+     *
+     * @return
+     */
+    public boolean exportDB(Context context) {
+        //
+        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).mkdirs();
+        File sd = Environment.getExternalStorageDirectory();
+        // File sd =
+        //
+        context.getFilesDir();//this.context.getExternalFilesDir(null);
+        // File sd =
+        //
+        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+
+        File data = Environment.getDataDirectory();
+        FileChannel source = null;
+        FileChannel destination = null;
+        String currentDBPath = "/data/" + "com.example.olive.agerecognitionstudy" + "/databases/"
+                + DATABASE_NAME;
+        String backupDBPath = DATABASE_NAME+".db";
+        File currentDB = new File(data, currentDBPath);
+        File backupDB = new File(sd, backupDBPath);
+
+        Log.d("RESTORE", backupDB.toString());
+        try {
+            source = new FileInputStream(currentDB).getChannel();
+            destination = new FileOutputStream(backupDB).getChannel();
+            destination.transferFrom(source, 0, source.size());
+            source.close();
+            destination.close();
+            MediaScannerConnection.scanFile(context, new
+                    String[]{backupDB.getAbsolutePath()}, null, null);
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+
+        }
+        return false;
     }
 
     // ------------------------ table methods ----------------//

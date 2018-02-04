@@ -72,8 +72,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void logData(View view) {
-        MainActivity.AsyncTaskRunner runner = new MainActivity.AsyncTaskRunner();
-        runner.execute();
+        /*MainActivity.AsyncTaskRunner runner = new MainActivity.AsyncTaskRunner();
+        runner.execute();*/
+        db.exportDB(getApplicationContext());
     }
 
     public void clearData(View view) {
