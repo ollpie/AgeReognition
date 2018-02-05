@@ -18,12 +18,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-//, "9812", "0987", "4192", "8108", "5276"
+//, "5465", "0954", "1243"
 
 public class PinTaskActivity extends AppCompatActivity{
 
-    private static final int REPETITIONS = 5;
-    private static final String[] PINS = {"0537", "8683", "5465", "0954", "1243"};
+    private static final int REPETITIONS = 2;
+    private static final String[] PINS = {"0537", "8683"};
     private static final String TASK_NAME = "Pin Task";
 
     private ImageView finger;
@@ -44,7 +44,8 @@ public class PinTaskActivity extends AppCompatActivity{
     private Button buttonDelete;
     private Button buttonDone;
 
-    private int repetitionCount = 0;
+    private int logicRepetitionCount = 0;
+    private int actualRepetitionCount = 0;
     private int currentIndexCount = 0;
     private String receivedDigits = "";
     private int pinIndex = 0;
@@ -148,20 +149,22 @@ public class PinTaskActivity extends AppCompatActivity{
                 sequenceCorrect = false;
             }
             if (b.getId() == doneID) {
-                if (receivedDigits.equals(PINS[PINS.length-1]) && repetitionCount == REPETITIONS-1 && sequenceCorrect) {
+                if (receivedDigits.equals(PINS[PINS.length-1]) && logicRepetitionCount == REPETITIONS-1 && sequenceCorrect) {
                     writeSequence = true;
                     end = true;
                 }
                 if (receivedDigits.equals(PINS[pinIndex])){
                     if (sequenceCorrect) {
-                        repetitionCount++;
+                        logicRepetitionCount++;
                     }
-                    if (repetitionCount == REPETITIONS){
-                        repetitionCount = 0;
+                    if (logicRepetitionCount == REPETITIONS){
+                        logicRepetitionCount = 0;
+                        actualRepetitionCount = 0;
                         if (pinIndex != PINS.length - 1) {
                             pinIndex++;
                         }
                     }
+                    actualRepetitionCount++;
                     writeSequence = true;
                     currentIndexCount = 0;
                     receivedDigits = "";
@@ -172,6 +175,7 @@ public class PinTaskActivity extends AppCompatActivity{
                     Toast.makeText(getApplication(),
                             "Eingabe korrekt.", Toast.LENGTH_SHORT).show();
                 }else{
+                    actualRepetitionCount++;
                     sequenceCorrect = false;
                     writeSequence = true;
                     currentIndexCount = 0;
@@ -196,7 +200,6 @@ public class PinTaskActivity extends AppCompatActivity{
 
     private void setSequenceCorrectness(){
         int size = taskmodel.pin.size();
-        Log.d("Sequence Size", String.valueOf(size));
         for (int i = 0; i < size-formerSize; i++){
             if(!sequenceCorrect){
                 taskmodel.setSequenceCorrect("false");
@@ -211,7 +214,8 @@ public class PinTaskActivity extends AppCompatActivity{
         taskmodel.setParticipantId(userID);
         taskmodel.setPin(PINS[pinIndex]);
         taskmodel.setEventType(eventType);
-        taskmodel.setRepetition(repetitionCount);
+        taskmodel.setLogicRepetition(logicRepetitionCount);
+        taskmodel.setActualRepetition(actualRepetitionCount);
         taskmodel.setProgress(receivedDigits);
         taskmodel.setCurrentDigit(currentDigit);
         taskmodel.setActualDigit(actualDigit);
@@ -225,7 +229,6 @@ public class PinTaskActivity extends AppCompatActivity{
         taskmodel.setTouchMajor(touchMajor);
         taskmodel.setTouchMinor(touchMinor);
         taskmodel.setTimestamp(timestamp);
-        Log.d("Pin Size", String.valueOf(taskmodel.pin.size())+" Eventtype: "+eventType);
     }
 
     private void setupUI() {
@@ -318,7 +321,7 @@ public class PinTaskActivity extends AppCompatActivity{
             try {
                 Log.d("Pin", String.valueOf(taskmodel.pin.size()));
                 Log.d("Type", String.valueOf(taskmodel.eventType.size()));
-                Log.d("Rep", String.valueOf(taskmodel.repetition.size()));
+                Log.d("Rep", String.valueOf(taskmodel.logicRepetition.size()));
                 Log.d("Prog", String.valueOf(taskmodel.progress.size()));
                 Log.d("Curr", String.valueOf(taskmodel.currentDigit.size()));
                 Log.d("Act", String.valueOf(taskmodel.actualDigit.size()));

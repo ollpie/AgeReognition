@@ -11,7 +11,8 @@ public class UnlockTaskDataModel {
     ArrayList<String> participantIDList;
     ArrayList<String> pattern;
     ArrayList<String> eventType;
-    ArrayList<Integer> repetition;
+    ArrayList<Integer> logicRepetition;
+    ArrayList<Integer> actualRepetition;
     ArrayList<String> progress;
     ArrayList<String> sequenceCorrect;
     ArrayList<Float> xButtonCenter;
@@ -25,31 +26,13 @@ public class UnlockTaskDataModel {
     ArrayList<Float> touchMinor;
     ArrayList<Long> timestamp;
 
-    public UnlockTaskDataModel () {
-        this.participantIDList = new ArrayList<>();
-        this.pattern = new ArrayList<>();
-        this.eventType = new ArrayList<>();
-        this.repetition = new ArrayList<>();
-        this.progress = new ArrayList<>();
-        this.sequenceCorrect = new ArrayList<>();
-        this.xButtonCenter = new ArrayList<>();
-        this.yButtonCenter = new ArrayList<>();
-        this.xTouch = new ArrayList<>();
-        this.yTouch = new ArrayList<>();
-        this.touchPressure = new ArrayList<>();
-        this.touchSize = new ArrayList<>();
-        this.touchOrientation = new ArrayList<>();
-        this.touchMajor = new ArrayList<>();
-        this.touchMinor = new ArrayList<>();
-        this.timestamp = new ArrayList<>();
-    }
-
     public UnlockTaskDataModel (String participantID) {
         this.participantIDList = new ArrayList<>();
         this.participantId = participantID;
         this.pattern = new ArrayList<>();
         this.eventType = new ArrayList<>();
-        this.repetition = new ArrayList<>();
+        this.logicRepetition = new ArrayList<>();
+        this.actualRepetition = new ArrayList<>();
         this.progress = new ArrayList<>();
         this.sequenceCorrect = new ArrayList<>();
         this.xButtonCenter = new ArrayList<>();
@@ -77,8 +60,12 @@ public class UnlockTaskDataModel {
         this.eventType.add(eventType);
     }
 
-    public void setRepetition(Integer repetition) {
-        this.repetition.add(repetition);
+    public void setLogicRepetition(Integer logicRepetition) {
+        this.logicRepetition.add(logicRepetition);
+    }
+
+    public void setActualRepetition(Integer actualRepetition) {
+        this.actualRepetition.add(actualRepetition);
     }
 
     public void setProgress(String progress) {
@@ -129,18 +116,10 @@ public class UnlockTaskDataModel {
         this.timestamp.add(timestamp);
     }
 
-    public void setParticipantIDList(String participant) {
-        this.participantIDList.add(participant);
-    }
-
     //GETTER
 
     public String getParticipantId() {
         return participantId;
-    }
-
-    public ArrayList<String> getParticipantIDList() {
-        return participantIDList;
     }
 
     public ArrayList<String> getPattern() {
@@ -151,8 +130,12 @@ public class UnlockTaskDataModel {
         return eventType;
     }
 
-    public ArrayList<Integer> getRepetition() {
-        return repetition;
+    public ArrayList<Integer> getLogicRepetition() {
+        return logicRepetition;
+    }
+
+    public ArrayList<Integer> getActualRepetition() {
+        return actualRepetition;
     }
 
     public ArrayList<String> getProgress() {

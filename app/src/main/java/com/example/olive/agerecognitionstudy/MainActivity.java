@@ -2,17 +2,15 @@ package com.example.olive.agerecognitionstudy;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Toast;
@@ -21,8 +19,11 @@ public class MainActivity extends AppCompatActivity {
 
     private static DatabaseHandler db;
     private EditText ageEntry;
+    private EditText manualIdEntry;
     private RadioButton male;
     private RadioButton female;
+    private Button taskButton;
+    private DialogUtil dialogUtil;
     public static String currentUserID;
     public static int statusbarOffset;
     public static LatinSquareUtil latinSquareUtil;
@@ -42,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
         if (latinSquareUtil == null){
             latinSquareUtil = new LatinSquareUtil();
         }
+        Log.d("Last inserted:", db.getLastInsertedManualId());
     }
 
     public static void verifyStoragePermissions(Activity activity) {
@@ -49,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
         int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
         if (permission != PackageManager.PERMISSION_GRANTED) {
-            // We don't have permission so prompt the user
             ActivityCompat.requestPermissions(
                     activity,
                     PERMISSIONS_STORAGE,
@@ -59,10 +60,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startSession(View view) {
-        if (ageEntry.getText().equals("") || (!male.isChecked() && !female.isChecked())) {
-            showAlertDialog();
+        if (isEmpty(ageEntry) || isEmpty(manualIdEntry) || (!male.isChecked() && !female.isChecked())) {
+            dialogUtil.showAlertDialog();
         }else{
-            Participant p = new Participant(Integer.parseInt(ageEntry.getText().toString()), checkGender());
+            Participant p = new Participant(Integer.parseInt(manualIdEntry.getText().toString()), Integer.parseInt(ageEntry.getText().toString()), checkGender());
             currentUserID = p.getId();
             db.createParticipant(p);
             db.closeDB();
@@ -72,8 +73,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void logData(View view) {
-        /*MainActivity.AsyncTaskRunner runner = new MainActivity.AsyncTaskRunner();
-        runner.execute();*/
         db.exportDB(getApplicationContext());
     }
 
@@ -88,6 +87,15 @@ public class MainActivity extends AppCompatActivity {
         ageEntry = findViewById(R.id.editTextAge);
         male = findViewById(R.id.radio_btn_male);
         female = findViewById(R.id.radio_btn_female);
+        manualIdEntry = findViewById(R.id.editTextID);
+        taskButton = findViewById(R.id.taskButton);
+        dialogUtil = new DialogUtil(MainActivity.this);
+        taskButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogUtil.showTaskDialog(db.getLastInsertedManualId());
+            }
+        });
 
         // calculate statusbar offset
         int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
@@ -102,6 +110,14 @@ public class MainActivity extends AppCompatActivity {
         } else {
             return "Weiblich";
         }
+    }
+
+    private boolean isEmpty(EditText etText) {
+        return etText.getText().toString().trim().length() == 0;
+    }
+
+    public static void onTaskWasChosen(int index){
+        latinSquareUtil.setIndex(index);
     }
 
     private void startIntent(){
@@ -129,67 +145,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void showAlertDialog() {
-        AlertDialog.Builder alertDialogBuilder = new Builder(this);
-
-        // set title
-        alertDialogBuilder.setTitle("Obacht!");
-
-        // set dialog message
-        alertDialogBuilder
-                .setMessage("Bitte Alter und Geschlecht auswählen.")
-                .setCancelable(false)
-                .setPositiveButton("OK",new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog,int id) {
-                        // if this button is clicked, close
-                        // current activity
-                        dialog.cancel();
-                    }
-                });
-        AlertDialog alertDialog = alertDialogBuilder.create();
-        alertDialog.show();
-    }
-
     public static DatabaseHandler getDbHandler() {
         return db;
-    }
-
-    private class AsyncTaskRunner extends AsyncTask<String, String, String> {
-
-        ProgressDialog progressDialog;
-
-        @Override
-        protected String doInBackground(String... params) {
-            try {
-                LoggingModule loggingModule = new LoggingModule(db.getAllParticipants(),
-                        db.getAllGenericTaskData(),
-                        db.getAllPinTaskData(),
-                        db.getAllUnlockTaskData(),
-                        db.getAllReadingTaskData(),
-                        db.getMotionSensorData());
-                loggingModule.generateParticipantExcelFile();
-                loggingModule.generateGenericTaskExcelFile();
-                loggingModule.generatePinTaskExcelFile();
-                loggingModule.generateUnlockTaskExcelFile();
-                loggingModule.generateReadingTaskExcelFile();
-                loggingModule.generateMotionSensorExcelFile();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-
-        @Override
-        protected void onPostExecute(String params) {
-            progressDialog.dismiss();
-        }
-
-
-        @Override
-        protected void onPreExecute() {
-            progressDialog = ProgressDialog.show(MainActivity.this,
-                    "Exportiere Daten...", "Bitte warten.");
-        }
     }
 }

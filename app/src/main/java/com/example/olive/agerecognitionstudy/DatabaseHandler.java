@@ -14,8 +14,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by olive on 04.01.2018.
@@ -45,6 +43,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     // PARTICIPANTS Table - column names
     private static final String KEY_PARTICIPANT_ID = "participant_id";
+    private static final String KEY_MANUAL_ID = "manual_id";
     private static final String KEY_AGE = "age";
     private static final String KEY_GENDER = "gender";
 
@@ -76,10 +75,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String KEY_PIN = "pin";
     private static final String KEY_CURRENT_DIGIT = "current_digit";
     private static final String KEY_ACTUAL_DIGIT = "actual_digit";
+    private static final String KEY_ACTUAL_REPETITION = "actual_repetition";
 
     // UNLOCK_PATTERN_TASK - column names
     private static final String  KEY_UNLOCK_PATTERN = "unlock_pattern";
-    private static final String  KEY_REPETITION = "repetition";
+    private static final String  KEY_LOGIC_REPETITION = "logic_repetition";
     private static final String  KEY_PROGRESS = "progress";
     private static final String  KEY_SEQUENCE_CORRECTNESS = "sequence_correctness";
     private static final String  KEY_X_BUTTON_CENTER = "x_button_center";
@@ -119,8 +119,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     // Table Create Statements
     // Participants table create statement
     private static final String CREATE_TABLE_PARTICIPANTS = "CREATE TABLE IF NOT EXISTS "
-            + TABLE_PARTICIPANTS + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_PARTICIPANT_ID + " TEXT," + KEY_AGE
-            + " INTEGER," + KEY_GENDER + " TEXT)";
+            + TABLE_PARTICIPANTS + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_PARTICIPANT_ID + " TEXT,"
+            + KEY_MANUAL_ID + " INTEGER," + KEY_AGE + " INTEGER," + KEY_GENDER + " TEXT)";
 
     private static final String CREATE_TABLE_LATIN_UTIL = "CREATE TABLE IF NOT EXISTS "
             + TABLE_LATIN_UTIL + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_INDEX + " INTEGER," + KEY_ARRAY_FIRST
@@ -140,7 +140,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_PIN_TASK = "CREATE TABLE IF NOT EXISTS "
             + TABLE_PIN_TASK + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
             + KEY_PARTICIPANT_ID + " TEXT,"
-            + KEY_PIN + " TEXT," + KEY_EVENT_TYPE + " TEXT," + KEY_REPETITION + " Text," + KEY_PROGRESS + " TEXT,"
+            + KEY_PIN + " TEXT," + KEY_EVENT_TYPE + " TEXT," + KEY_ACTUAL_REPETITION + " TEXT," + KEY_LOGIC_REPETITION + " TEXT," + KEY_PROGRESS + " TEXT,"
             + KEY_CURRENT_DIGIT + " TEXT," + KEY_ACTUAL_DIGIT + " TEXT," + KEY_SEQUENCE_CORRECTNESS + " TEXT,"
             + KEY_X_BUTTON_CENTER + " REAL," + KEY_Y_BUTTON_CENTER + " REAL,"
             + KEY_X_TOUCH + " REAL," + KEY_Y_TOUCH + " REAL," + KEY_TOUCH_PRESSURE + " REAL,"
@@ -150,7 +150,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_UNLOCK_PATTERN_TASK = "CREATE TABLE IF NOT EXISTS "
             + TABLE_UNLOCK_PATTERN_TASK + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
             + KEY_PARTICIPANT_ID + " TEXT,"
-            + KEY_UNLOCK_PATTERN + " TEXT," + KEY_EVENT_TYPE + " TEXT," + KEY_REPETITION + " TEXT,"
+            + KEY_UNLOCK_PATTERN + " TEXT," + KEY_EVENT_TYPE + " TEXT," + KEY_ACTUAL_REPETITION + " TEXT," + KEY_LOGIC_REPETITION + " TEXT,"
             + KEY_PROGRESS + " TEXT," + KEY_SEQUENCE_CORRECTNESS + " TEXT," + KEY_X_BUTTON_CENTER
             + " REAL," + KEY_Y_BUTTON_CENTER + " REAL," + KEY_X_TOUCH + " REAL," + KEY_Y_TOUCH + " REAL,"
             + KEY_TOUCH_PRESSURE + " REAL," + KEY_TOUCH_SIZE + " REAL," + KEY_ORIENTATION + " REAL,"
@@ -256,10 +256,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      */
     public long createParticipant(Participant participant) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("delete from "+ TABLE_LATIN_UTIL);
 
         ContentValues values = new ContentValues();
         values.put(KEY_PARTICIPANT_ID, participant.getId());
+        values.put(KEY_MANUAL_ID, participant.getManualID());
         values.put(KEY_AGE, participant.getAge());
         values.put(KEY_GENDER, participant.getGender());
 
@@ -320,7 +320,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 values.put(KEY_PARTICIPANT_ID, taskModel.getParticipantId());
                 values.put(KEY_PIN, taskModel.getPin().get(i));
                 values.put(KEY_EVENT_TYPE, taskModel.getEventType().get(i));
-                values.put(KEY_REPETITION, taskModel.getRepetition().get(i));
+                values.put(KEY_LOGIC_REPETITION, taskModel.getLogicRepetition().get(i));
+                values.put(KEY_ACTUAL_REPETITION, taskModel.getActualRepetition().get(i));
                 values.put(KEY_PROGRESS, taskModel.getProgress().get(i));
                 values.put(KEY_CURRENT_DIGIT, taskModel.getCurrentDigit().get(i).toString());
                 values.put(KEY_ACTUAL_DIGIT, taskModel.getActualDigit().get(i).toString());
@@ -356,7 +357,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 values.put(KEY_PARTICIPANT_ID, taskModel.getParticipantId());
                 values.put(KEY_UNLOCK_PATTERN, taskModel.getPattern().get(i));
                 values.put(KEY_EVENT_TYPE, taskModel.getEventType().get(i));
-                values.put(KEY_REPETITION, taskModel.getRepetition().get(i));
+                values.put(KEY_LOGIC_REPETITION, taskModel.getLogicRepetition().get(i));
+                values.put(KEY_ACTUAL_REPETITION, taskModel.getActualRepetition().get(i));
                 values.put(KEY_PROGRESS, taskModel.getProgress().get(i));
                 values.put(KEY_SEQUENCE_CORRECTNESS, taskModel.getSequenceCorrect().get(i));
                 values.put(KEY_X_BUTTON_CENTER, taskModel.getxButtonCenter().get(i));
@@ -446,38 +448,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
     }
 
-    /*
-* DATA GETTERS
-* */
-    public List<Participant> getAllParticipants() {
-        List<Participant> participants = new ArrayList<>();
-        String selectQuery = "SELECT * FROM " + TABLE_PARTICIPANTS;
-
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor c = db.rawQuery(selectQuery, null);
-        db.beginTransaction();
-        try{
-        // looping through all rows and adding to list
-            if (c.moveToFirst()) {
-                do {
-                    Participant pt = new Participant();
-                    pt.setId(c.getString((c.getColumnIndex(KEY_PARTICIPANT_ID))));
-                    pt.setAge((c.getInt(c.getColumnIndex(KEY_AGE))));
-                    pt.setGender(c.getString(c.getColumnIndex(KEY_GENDER)));
-
-                    // adding to participant list
-                    participants.add(pt);
-                } while (c.moveToNext());
-            }
-            db.setTransactionSuccessful();
-        }catch(Exception e){
-            Log.e("Error in Transaction",e.toString());
-        }finally{
-            db.endTransaction();
-        }
-        return participants;
-    }
-
     public int[] getLatinSquareValues() {
         int[] values = new int[5];
         String selectQuery = "SELECT * FROM " + TABLE_LATIN_UTIL;
@@ -505,188 +475,17 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return values;
     }
 
-    public GenericTaskDataModel getAllGenericTaskData() {
-        GenericTaskDataModel model = new GenericTaskDataModel();
-        String selectQuery = "SELECT * FROM " + TABLE_GENERIC_TASK;
-
+    public String getLastInsertedManualId(){
+        int id = 0;
+        String selectQuery = "SELECT * FROM "+ TABLE_PARTICIPANTS +" ORDER BY "+ KEY_ID +" DESC LIMIT 1";
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
-        db.beginTransaction();
-        try{
-            if (c.moveToFirst()) {
-
-                do {
-                    model.setParticipantList(c.getString((c.getColumnIndex(KEY_PARTICIPANT_ID))));
-                    model.setTargetId(c.getInt((c.getColumnIndex(KEY_TARGET_ID))));
-                    model.setEventType(c.getString((c.getColumnIndex(KEY_EVENT_TYPE))));
-                    model.setXTarget(c.getFloat((c.getColumnIndex(KEY_X_TARGET))));
-                    model.setYTarget(c.getFloat((c.getColumnIndex(KEY_Y_TARGET))));
-                    model.setXTouch(c.getFloat((c.getColumnIndex(KEY_X_TOUCH))));
-                    model.setYTouch(c.getFloat((c.getColumnIndex(KEY_Y_TOUCH))));
-                    model.setTouchPressure(c.getFloat((c.getColumnIndex(KEY_TOUCH_PRESSURE))));
-                    model.setTouchSize(c.getFloat((c.getColumnIndex(KEY_TOUCH_SIZE))));
-                    model.setTouchOrientation(c.getFloat((c.getColumnIndex(KEY_ORIENTATION))));
-                    model.setTouchMajor(c.getFloat((c.getColumnIndex(KEY_TOUCH_MAJOR))));
-                    model.setTouchMinor(c.getFloat((c.getColumnIndex(KEY_TOUCH_MINOR))));
-                    model.setTimestamp(c.getLong((c.getColumnIndex(KEY_TIMESTAMP))));
-                } while (c.moveToNext());
-            }
-            db.setTransactionSuccessful();
-        }catch(Exception e){
-            Log.e("Error in Transaction",e.toString());
-        }finally{
-            db.endTransaction();
-        }
-        return model;
-    }
-
-    public PinTaskDataModel getAllPinTaskData() {
-        PinTaskDataModel model = new PinTaskDataModel();
-        String selectQuery = "SELECT * FROM " + TABLE_PIN_TASK;
-
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor c = db.rawQuery(selectQuery, null);
-        db.beginTransaction();
-        try{
-        // looping through all rows and adding to list
-            if (c.moveToFirst()) {
-                do {
-                    model.setParticipantList(c.getString((c.getColumnIndex(KEY_PARTICIPANT_ID))));
-                    model.setPin(c.getString((c.getColumnIndex(KEY_PIN))));
-                    model.setEventType(c.getString((c.getColumnIndex(KEY_EVENT_TYPE))));
-                    model.setRepetition(c.getInt((c.getColumnIndex(KEY_REPETITION))));
-                    model.setProgress(c.getString((c.getColumnIndex(KEY_PROGRESS))));
-                    model.setCurrentDigit(c.getString((c.getColumnIndex(KEY_CURRENT_DIGIT))).charAt(0));
-                    model.setActualDigit(c.getString((c.getColumnIndex(KEY_ACTUAL_DIGIT))).charAt(0));
-                    model.setSequenceCorrect(c.getString((c.getColumnIndex(KEY_SEQUENCE_CORRECTNESS))));
-                    model.setxButtonCenter(c.getFloat((c.getColumnIndex(KEY_X_BUTTON_CENTER))));
-                    model.setyButtonCenter(c.getFloat((c.getColumnIndex(KEY_Y_BUTTON_CENTER))));
-                    model.setxTouch(c.getFloat((c.getColumnIndex(KEY_X_TOUCH))));
-                    model.setyTouch(c.getFloat((c.getColumnIndex(KEY_Y_TOUCH))));
-                    model.setTouchPressure(c.getFloat((c.getColumnIndex(KEY_TOUCH_PRESSURE))));
-                    model.setTouchSize(c.getFloat((c.getColumnIndex(KEY_TOUCH_SIZE))));
-                    model.setTouchOrientation(c.getFloat((c.getColumnIndex(KEY_ORIENTATION))));
-                    model.setTouchMajor(c.getFloat((c.getColumnIndex(KEY_TOUCH_MAJOR))));
-                    model.setTouchMinor(c.getFloat((c.getColumnIndex(KEY_TOUCH_MINOR))));
-                    model.setTimestamp(c.getLong((c.getColumnIndex(KEY_TIMESTAMP))));
-                } while (c.moveToNext());
-            }
-            db.setTransactionSuccessful();
-        }catch(Exception e){
-            Log.e("Error in Transaction",e.toString());
-        }finally{
-            db.endTransaction();
-        }
-        Log.d("Pin Model Length", String.valueOf(model.length()));
-        return model;
-    }
-
-    public UnlockTaskDataModel getAllUnlockTaskData() {
-        UnlockTaskDataModel model = new UnlockTaskDataModel();
-        String selectQuery = "SELECT * FROM " + TABLE_UNLOCK_PATTERN_TASK;
-
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor c = db.rawQuery(selectQuery, null);
-        Log.d("Unlock Column Count", String.valueOf(c.getColumnCount()));
-
-        db.beginTransaction();
-        try{
-        // looping through all rows and adding to list
-            if (c.moveToFirst()) {
-                do {
-                    model.setParticipantIDList(c.getString((c.getColumnIndex(KEY_PARTICIPANT_ID))));
-                    model.setPattern(c.getString((c.getColumnIndex(KEY_UNLOCK_PATTERN))));
-                    model.setEventType(c.getString((c.getColumnIndex(KEY_EVENT_TYPE))));
-                    model.setRepetition(c.getInt((c.getColumnIndex(KEY_REPETITION))));
-                    model.setProgress(c.getString((c.getColumnIndex(KEY_PROGRESS))));
-                    model.setSequenceCorrect(c.getString((c.getColumnIndex(KEY_SEQUENCE_CORRECTNESS))));
-                    model.setxButtonCenter(c.getFloat((c.getColumnIndex(KEY_X_BUTTON_CENTER))));
-                    model.setyButtonCenter(c.getFloat((c.getColumnIndex(KEY_Y_BUTTON_CENTER))));
-                    model.setxTouch(c.getFloat((c.getColumnIndex(KEY_X_TOUCH))));
-                    model.setyTouch(c.getFloat((c.getColumnIndex(KEY_Y_TOUCH))));
-                    model.setTouchPressure(c.getFloat((c.getColumnIndex(KEY_TOUCH_PRESSURE))));
-                    model.setTouchSize(c.getFloat((c.getColumnIndex(KEY_TOUCH_SIZE))));
-                    model.setTouchOrientation(c.getFloat((c.getColumnIndex(KEY_ORIENTATION))));
-                    model.setTouchMajor(c.getFloat((c.getColumnIndex(KEY_TOUCH_MAJOR))));
-                    model.setTouchMinor(c.getFloat((c.getColumnIndex(KEY_TOUCH_MINOR))));
-                    model.setTimestamp(c.getLong((c.getColumnIndex(KEY_TIMESTAMP))));
-                } while (c.moveToNext());
-            }
-            db.setTransactionSuccessful();
-        }catch(Exception e){
-            Log.e("Error in Transaction",e.toString());
-        }finally{
-            db.endTransaction();
-        }
-        return model;
-    }
-
-    public ReadingTaskDataModel getAllReadingTaskData() {
-        ReadingTaskDataModel model = new ReadingTaskDataModel();
-        String selectQuery = "SELECT * FROM " + TABLE_READING_TASK;
-
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor c = db.rawQuery(selectQuery, null);
-
-        db.beginTransaction();
-        try{
-        // looping through all rows and adding to list
-            if (c.moveToFirst()) {
-                do {
-                    model.setParticipantIDList(c.getString((c.getColumnIndex(KEY_PARTICIPANT_ID))));
-                    model.setEventType(c.getString((c.getColumnIndex(KEY_EVENT_TYPE))));
-                    model.setxTouch(c.getFloat((c.getColumnIndex(KEY_X_TOUCH))));
-                    model.setyTouch(c.getFloat((c.getColumnIndex(KEY_Y_TOUCH))));
-                    model.setyViewportTop(c.getFloat((c.getColumnIndex(KEY_X_VIEWPORT))));
-                    model.setyViewportBottom(c.getFloat((c.getColumnIndex(KEY_Y_VIEWPORT))));
-                    model.setFont(c.getString((c.getColumnIndex(KEY_FONT))));
-                    model.setFontSize(c.getInt((c.getColumnIndex(KEY_FONT_SIZE))));
-                    model.setTouchPressure(c.getFloat((c.getColumnIndex(KEY_TOUCH_PRESSURE))));
-                    model.setTouchSize(c.getFloat((c.getColumnIndex(KEY_TOUCH_SIZE))));
-                    model.setTouchOrientation(c.getFloat((c.getColumnIndex(KEY_ORIENTATION))));
-                    model.setTouchMajor(c.getFloat((c.getColumnIndex(KEY_TOUCH_MAJOR))));
-                    model.setTouchMinor(c.getFloat((c.getColumnIndex(KEY_TOUCH_MINOR))));
-                    model.setTimestamp(c.getLong((c.getColumnIndex(KEY_TIMESTAMP))));
-                } while (c.moveToNext());
-            }
-            db.setTransactionSuccessful();
-        }catch(Exception e){
-            Log.e("Error in Transaction",e.toString());
-        }finally{
-            db.endTransaction();
-        }
-        return model;
-    }
-
-    public MotionSensorDataModel getMotionSensorData() {
-        MotionSensorDataModel model = new MotionSensorDataModel();
-        String selectQuery = "SELECT * FROM " + TABLE_MOTION_SENSOR;
-
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor c = db.rawQuery(selectQuery, null);
-        Log.d("Motion Column Count", String.valueOf(c.getColumnCount()));
-
-        // looping through all rows and adding to list
-        if (c.moveToFirst()) {
+        if (c.moveToFirst()){
             do {
-                model.setParticipantList(c.getString(c.getColumnIndex(KEY_PARTICIPANT_ID)));
-                model.setTaskIDList(c.getString(c.getColumnIndex(KEY_TASK_ID)));
-                model.setTimestamp(c.getLong((c.getColumnIndex(KEY_TIMESTAMP))));
-                model.setXAcc(c.getFloat((c.getColumnIndex(KEY_X_ACC))));
-                model.setYAcc(c.getFloat((c.getColumnIndex(KEY_Y_ACC))));
-                model.setZAcc(c.getFloat((c.getColumnIndex(KEY_Z_ACC))));
-                model.setXGravity(c.getFloat((c.getColumnIndex(KEY_X_GRAVITY))));
-                model.setYGravity(c.getFloat((c.getColumnIndex(KEY_Y_GRAVITY))));
-                model.setZGravity(c.getFloat((c.getColumnIndex(KEY_Z_GRAVITY))));
-                model.setXGyroscope(c.getFloat((c.getColumnIndex(KEY_X_GYRO))));
-                model.setYGyroscope(c.getFloat((c.getColumnIndex(KEY_Y_GYRO))));
-                model.setZGyroscope(c.getFloat((c.getColumnIndex(KEY_Z_GYRO))));
-                model.setXRotation(c.getFloat((c.getColumnIndex(KEY_X_ROTATION))));
-                model.setYRotation(c.getFloat((c.getColumnIndex(KEY_Y_ROTATION))));
-                model.setZRotation(c.getFloat((c.getColumnIndex(KEY_Z_ROTATION))));
+               id = c.getInt(c.getColumnIndex(KEY_MANUAL_ID));
             } while (c.moveToNext());
         }
-        return model;
+        return String.valueOf(id);
     }
 
     // deleting all Tables
@@ -707,5 +506,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         if (db != null && db.isOpen())
             db.close();
+    }
+
+    public void deleteLatinUtilData(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("delete from "+ TABLE_LATIN_UTIL);
     }
 }

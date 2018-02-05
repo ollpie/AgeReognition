@@ -23,14 +23,13 @@ import com.andrognito.patternlockview.utils.ResourceUtils;
 
 import java.util.List;
 
-//, "54301", "04785", "21036", "87410", "74103"
-
+//, "03412", "24630", "01247"
 public class UnlockActivityTask extends AppCompatActivity {
 
     private static final String TASK_ID = "Unlock Pattern";
     private static final int DOT_MATRIX_DIMENSION = 3;
-    private static final String[] PINS = {"15476", "25873", "03412", "24630", "01247"};
-    private static final int CORRECT_REPETITIONS = 5;
+    private static final String[] PINS = {"15476", "25873"};
+    private static final int CORRECT_REPETITIONS = 2;
 
     private MotionSensorUtil motionSensorUtil;
     private ImageView cross;
@@ -38,7 +37,8 @@ public class UnlockActivityTask extends AppCompatActivity {
     private DatabaseHandler database;
     private UnlockTaskDataModel unlockDataModel;
 
-    private int repetitionCount = 0;
+    private int logicRepetitionCount = 0;
+    private int actualRepetitionCount = 0;
     private String progress = "";
     private float xTarget;
     private float yTarget;
@@ -141,7 +141,8 @@ public class UnlockActivityTask extends AppCompatActivity {
         unlockDataModel.setParticipantId(userID);
         unlockDataModel.setPattern(PINS[pinIndex]);
         unlockDataModel.setEventType(eventType);
-        unlockDataModel.setRepetition(repetitionCount);
+        unlockDataModel.setLogicRepetition(logicRepetitionCount);
+        unlockDataModel.setActualRepetition(actualRepetitionCount);
         unlockDataModel.setProgress(progress);
         unlockDataModel.setxButtonCenter(xTarget);
         unlockDataModel.setyButtonCenter(yTarget);
@@ -197,20 +198,21 @@ public class UnlockActivityTask extends AppCompatActivity {
             public void onComplete(List<Dot> pattern) {
                 target = 0;
                 if (PatternLockUtils.patternToString(mPatternLockView, pattern).equals(PINS[pinIndex])) {
-                    if ((PatternLockUtils.patternToString(mPatternLockView, pattern).equals(PINS[PINS.length-1])) && (repetitionCount == CORRECT_REPETITIONS-1)){
-                        repetitionCount = 0;
+                    if ((PatternLockUtils.patternToString(mPatternLockView, pattern).equals(PINS[PINS.length-1])) && (logicRepetitionCount == CORRECT_REPETITIONS-1)){
+                        logicRepetitionCount = 0;
                         pinIndex = 0;
                         progress = "";
                         UnlockActivityTask.AsyncTaskRunner runner = new UnlockActivityTask.AsyncTaskRunner();
                         runner.execute();
                     }
                     mPatternLockView.clearPattern();
-                    if (repetitionCount == CORRECT_REPETITIONS-1){
-                        repetitionCount = 0;
+                    if (logicRepetitionCount == CORRECT_REPETITIONS-1){
+                        logicRepetitionCount = 0;
+                        actualRepetitionCount = 0;
                         pinIndex++;
                         progress = "";
                     } else {
-                        repetitionCount++;
+                        logicRepetitionCount++;
                         progress = "";
                     }
                     Toast.makeText(getApplication(),
@@ -222,6 +224,7 @@ public class UnlockActivityTask extends AppCompatActivity {
                             "Eingabe falsch.", Toast.LENGTH_SHORT).show();
                 }
 
+                actualRepetitionCount++;
                 setSequenceCorrectness();
                 mPatternLockView.setPattern(PatternViewMode.AUTO_DRAW, PatternLockUtils.stringToPattern(mPatternLockView, PINS[pinIndex]));
                 dotProgress = PatternLockUtils.stringToPattern(mPatternLockView, PINS[pinIndex]);

@@ -11,7 +11,8 @@ public class PinTaskDataModel {
     ArrayList<String> participantList;
     ArrayList<String> pin;
     ArrayList<String> eventType;
-    ArrayList<Integer> repetition;
+    ArrayList<Integer> logicRepetition;
+    ArrayList<Integer> actualRepetition;
     ArrayList<String> progress;
     ArrayList<Character> currentDigit;
     ArrayList<Character> actualDigit;
@@ -27,33 +28,13 @@ public class PinTaskDataModel {
     ArrayList<Float> touchMinor;
     ArrayList<Long> timestamp;
 
-    public PinTaskDataModel () {
-        this.participantList = new ArrayList<>();
-        this.pin = new ArrayList<>();
-        this.eventType = new ArrayList<>();
-        this.repetition = new ArrayList<>();
-        this.progress = new ArrayList<>();
-        this.currentDigit = new ArrayList<>();
-        this.actualDigit = new ArrayList<>();
-        this.sequenceCorrect = new ArrayList<>();
-        this.xButtonCenter = new ArrayList<>();
-        this.yButtonCenter = new ArrayList<>();
-        this.xTouch = new ArrayList<>();
-        this.yTouch = new ArrayList<>();
-        this.touchPressure = new ArrayList<>();
-        this.touchSize = new ArrayList<>();
-        this.touchOrientation = new ArrayList<>();
-        this.touchMajor = new ArrayList<>();
-        this.touchMinor = new ArrayList<>();
-        this.timestamp = new ArrayList<>();
-    }
-
     public PinTaskDataModel (String participantID) {
         this.participantId = participantID;
         this.participantList = new ArrayList<>();
         this.pin = new ArrayList<>();
         this.eventType = new ArrayList<>();
-        this.repetition = new ArrayList<>();
+        this.logicRepetition = new ArrayList<>();
+        this.actualRepetition = new ArrayList<>();
         this.progress = new ArrayList<>();
         this.currentDigit = new ArrayList<>();
         this.actualDigit = new ArrayList<>();
@@ -83,8 +64,12 @@ public class PinTaskDataModel {
         this.eventType.add(eventType);
     }
 
-    public void setRepetition(Integer repetition) {
-        this.repetition.add(repetition);
+    public void setLogicRepetition(Integer logicRepetition) {
+        this.logicRepetition.add(logicRepetition);
+    }
+
+    public void setActualRepetition(Integer actualRepetition) {
+        this.actualRepetition.add(actualRepetition);
     }
 
     public void setProgress(String progress) {
@@ -143,10 +128,6 @@ public class PinTaskDataModel {
         this.timestamp.add(timestamp);
     }
 
-    public void setParticipantList(String participant) {
-        this.participantList.add(participant);
-    }
-
     //GETTER
     public ArrayList<Long> getTimestamp() {
         return timestamp;
@@ -164,8 +145,12 @@ public class PinTaskDataModel {
         return eventType;
     }
 
-    public ArrayList<Integer> getRepetition() {
-        return repetition;
+    public ArrayList<Integer> getLogicRepetition() {
+        return logicRepetition;
+    }
+
+    public ArrayList<Integer> getActualRepetition() {
+        return actualRepetition;
     }
 
     public ArrayList<String> getProgress() {
@@ -218,10 +203,6 @@ public class PinTaskDataModel {
 
     public ArrayList<Float> getTouchMinor() {
         return touchMinor;
-    }
-
-    public ArrayList<String> getParticipantList() {
-        return participantList;
     }
 
     public int length() {

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="activities">
+        <item>Generic Task</item>
+        <item>Pin Task</item>
+        <item>Unlock Pattern Task</item>
+        <item>Reading Task</item>
+    </string-array>
+</resources>

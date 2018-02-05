@@ -2,41 +2,72 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/holo_blue_dark"
     android:layout_centerHorizontal="true"
     android:orientation="horizontal">
 
+
     <EditText
         android:id="@+id/editTextAge"
+        style="@android:style/Widget.Holo.Light.EditText"
         android:layout_width="130dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_above="@+id/radioGroup"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="146dp"
+        android:layout_marginBottom="10dp"
         android:hint="@string/age_hint"
-        android:inputType="number" />
+        android:inputType="number"
+        android:backgroundTint="@color/white"
+        android:textColor="@color/white" />
 
     <RadioGroup
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/editTextAge"
-        android:layout_alignLeft="@+id/editTextAge"
-        android:layout_marginTop="30dp"
+        android:layout_centerVertical="true"
+        android:layout_alignStart="@+id/editTextAge"
         android:id="@+id/radioGroup">
 
         <RadioButton
             android:id="@+id/radio_btn_male"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/radio_male" />
+            android:buttonTint="@color/white"
+            android:text="@string/radio_male"
+            android:textColor="@color/white" />
 
         <RadioButton
             android:id="@+id/radio_btn_female"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:buttonTint="@color/white"
             android:layout_marginTop="10dp"
-            android:text="@string/radio_female" />
+            android:text="@string/radio_female"
+            android:textColor="@color/white" />
     </RadioGroup>
 
+    <EditText
+        android:id="@+id/editTextID"
+        style="@android:style/Widget.Holo.EditText"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/radioGroup"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:backgroundTint="@color/white"
+        android:hint="@string/manual_id"
+        android:inputType="number"
+        android:selectAllOnFocus="false"
+        android:singleLine="false"
+        android:textColor="@color/white" />
+
+    <Button
+        android:id="@+id/taskButton"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/editTextID"
+        android:text="@string/task_btn_name"
+        android:textColor="@color/white" />
 
     <Button
         android:id="@+id/button"
@@ -44,30 +75,30 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="45dp"
         android:onClick="startSession"
-        android:text="@string/start_btn_name" />
+        android:text="@string/start_btn_name"
+        android:textColor="@color/white" />
 
     <Button
         android:id="@+id/log_button"
+        style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
         android:onClick="logData"
-        android:text="Log" />
+        android:text="Log"
+        android:textColor="@color/white" />
 
     <Button
         android:id="@+id/clear_button"
+        style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/log_button"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
         android:onClick="clearData"
-        android:text="Clear" />
+        android:text="Clear"
+        android:textColor="@color/white" />
 
 </RelativeLayout>

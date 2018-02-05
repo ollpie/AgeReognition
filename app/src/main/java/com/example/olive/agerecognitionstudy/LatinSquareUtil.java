@@ -29,6 +29,7 @@ public class LatinSquareUtil extends AppCompatActivity{
             i = database.getLatinSquareValues()[0];
         }
         Log.d("Checksum", String.valueOf(checkSum));
+        Log.d("Indexes", String.valueOf(indexes[0]) + ", " + String.valueOf(indexes[1]) + ", " + String.valueOf(indexes[2]) + ", " + String.valueOf(indexes[3]));
     }
 
     public int getNext(){
@@ -39,7 +40,9 @@ public class LatinSquareUtil extends AppCompatActivity{
             values[2] = indexes[1];
             values[3] = indexes[2];
             values[4] = indexes[3];
+            database.deleteLatinUtilData();
             database.createLatinUtil(values);
+            database.closeDB();
             end = false;
             return 8;
         }
@@ -57,5 +60,14 @@ public class LatinSquareUtil extends AppCompatActivity{
             end = true;
         }
         return r;
+    }
+
+    public void setIndex (int index){
+        Log.d("Index", String.valueOf(index));
+        for (int j = 0; j < indexes.length; j++){
+            if (indexes[j] == index){
+                i = j;
+            }
+        }
     }
 }
