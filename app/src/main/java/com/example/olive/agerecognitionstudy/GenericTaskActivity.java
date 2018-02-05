@@ -18,7 +18,6 @@ import java.util.Random;
 public class GenericTaskActivity extends AppCompatActivity {
 
     private static final int MIN = 0;
-    private static final int OFFSET = 13;
     private static final int X_AMOUNT = 5;
     private static final int Y_AMOUNT = 5;
     private static final int PADDING = 80;
@@ -47,6 +46,8 @@ public class GenericTaskActivity extends AppCompatActivity {
     private long timestamp;
 
     private int touch_counter = 0;
+    private int xOffset = 0;
+    private int yOffset = 0;
     private String userID = "";
 
     private GenericTaskDataModel taskmodel;
@@ -73,16 +74,6 @@ public class GenericTaskActivity extends AppCompatActivity {
         database = MainActivity.getDbHandler();
         taskmodel = new GenericTaskDataModel(userID);
         motionSensorUtil = new MotionSensorUtil(userID, TASK_ID, (SensorManager) getSystemService(SENSOR_SERVICE));
-
-        randomX = new Random();
-        randomY = new Random();
-        randomXValue = randomX.nextInt(((maxX - MIN) +1)+MIN);
-        randomYValue = randomY.nextInt(((maxY - MIN) +1)+MIN);
-        target.setX(xPositions[randomXValue]);
-        target.setY(yPositions[randomYValue]);
-        positionChecker[randomXValue][randomYValue] = true;
-        touch_counter++;
-        Log.d("Total Positions", String.valueOf(xPositions.length*yPositions.length));
     }
 
     public void targetClicked() {
@@ -103,8 +94,8 @@ public class GenericTaskActivity extends AppCompatActivity {
             positionChecker[randomXValue][randomYValue] = true;
             touch_counter++;
             Log.d("Positions", String.valueOf(touch_counter));
-            target.setX(xPositions[randomXValue]-OFFSET);
-            target.setY(yPositions[randomYValue]-OFFSET);
+            target.setX(xPositions[randomXValue]-xOffset);
+            target.setY(yPositions[randomYValue]-yOffset);
             Log.d("X, Y", String.valueOf(target.getX()) + ", " + String.valueOf(target.getY()));
         }
     }
@@ -149,7 +140,6 @@ public class GenericTaskActivity extends AppCompatActivity {
         taskmodel.setYTarget(yTarget);
         taskmodel.setXTouch(xTouch);
         taskmodel.setYTouch(yTouch);
-        Log.d("Touches", "X: "+String.valueOf(xTouch)+" y: "+String.valueOf(yTouch) + " Event: "+eventType);
         taskmodel.setTouchPressure(touchPressure);
         taskmodel.setTouchSize(touchSize);
         taskmodel.setTouchOrientation(touchOrientation);
@@ -167,14 +157,18 @@ public class GenericTaskActivity extends AppCompatActivity {
         Log.d("Size", String.valueOf(width) + " x " + String.valueOf(height));
         xPositions = new float[X_AMOUNT];
         yPositions = new float[Y_AMOUNT];
-        xPositions[0] = ((width-PADDING*2)/X_AMOUNT)+PADDING;
-        yPositions[0] = ((height-PADDING*2)/Y_AMOUNT)+PADDING;
-        for (int i = 1; i<X_AMOUNT; i++){
-            xPositions[i] = xPositions[i-1] + ((width-PADDING*2)/X_AMOUNT);
+        xPositions[0] = PADDING;
+        yPositions[0] = PADDING;
+        int xStep = (width-2*PADDING)/(X_AMOUNT-1);
+        int yStep = (height-2*PADDING)/(Y_AMOUNT-1);
+        Log.d("X Werte", String.valueOf(xPositions[0]));
+        for (int i = 1; i<X_AMOUNT; i++) {
+            xPositions[i] = xPositions[i - 1] + xStep;
             Log.d("X Werte", String.valueOf(xPositions[i]));
         }
+        Log.d("Y Werte", String.valueOf(yPositions[0]));
         for (int i = 1; i<Y_AMOUNT; i++){
-            yPositions[i] = yPositions[i-1] + ((height-PADDING*2)/Y_AMOUNT);
+            yPositions[i] = yPositions[i-1] + yStep;
             Log.d("Y Werte", String.valueOf(yPositions[i]));
         }
     }
@@ -221,6 +215,18 @@ public class GenericTaskActivity extends AppCompatActivity {
                             | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         }
+        xOffset = target.getWidth()/2;
+        yOffset = target.getHeight()/2;
+
+        randomX = new Random();
+        randomY = new Random();
+        randomXValue = randomX.nextInt(((maxX - MIN) +1)+MIN);
+        randomYValue = randomY.nextInt(((maxY - MIN) +1)+MIN);
+        target.setX(xPositions[randomXValue]);
+        target.setY(yPositions[randomYValue]);
+        positionChecker[randomXValue][randomYValue] = true;
+        touch_counter++;
+        Log.d("Total Positions", String.valueOf(xPositions.length*yPositions.length));
     }
 
 
@@ -228,6 +234,14 @@ public class GenericTaskActivity extends AppCompatActivity {
         setContentView(R.layout.activity_generic_task);
         target = findViewById(R.id.targetView);
         //finger = findViewById(R.id.finger);
+    }
+
+    public int dpToPx(int dp) {
+        float density = this.getResources()
+                .getDisplayMetrics()
+                .density;
+        Log.d("Density", String.valueOf(density));
+        return Math.round((float) dp / density);
     }
 
     private void startIntent(){
