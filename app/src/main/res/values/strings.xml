@@ -1,6 +1,8 @@
 <resources>
     <string name="pick_activity">Letzte manuelle Id: </string>
     <string name="app_name">Age Recognition Study</string>
+    <string name="pin_counter">\n Noch</string>
+    <string name="pattern_hint">Bitte das Muster</string>
     <string name="start_btn_name">Starte Session</string>
     <string name="task_btn_name">Task</string>
     <string name="age_hint">Alter</string>

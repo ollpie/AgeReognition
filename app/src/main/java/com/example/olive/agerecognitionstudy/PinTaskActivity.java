@@ -3,6 +3,7 @@ package com.example.olive.agerecognitionstudy;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -70,6 +71,7 @@ public class PinTaskActivity extends AppCompatActivity{
     private boolean end = false;
     private int deleteID;
     private int doneID;
+    private String pinFillerString;
 
     DatabaseHandler database;
     private MotionSensorUtil motionSensorUtil;
@@ -85,7 +87,7 @@ public class PinTaskActivity extends AppCompatActivity{
         database = MainActivity.getDbHandler();
         taskmodel = new PinTaskDataModel(userID);
         motionSensorUtil = new MotionSensorUtil(userID, TASK_NAME, (SensorManager) getSystemService(SENSOR_SERVICE));
-        pinDisplay.setText("Pin: " + PINS[pinIndex]);
+        pinDisplay.setText("Pin: " + PINS[pinIndex] + pinFillerString + " " + (REPETITIONS-logicRepetitionCount) + " mal eingeben");
         currentDigit = PINS[pinIndex].charAt(0);
     }
 
@@ -171,7 +173,7 @@ public class PinTaskActivity extends AppCompatActivity{
                     currentDigit = 'd';
                     actualDigit = 'd';
                     pinView.setText(receivedDigits);
-                    pinDisplay.setText("Pin: " + PINS[pinIndex]);
+                    pinDisplay.setText("Pin: " + PINS[pinIndex] + pinFillerString + " " + (REPETITIONS-logicRepetitionCount) + " mal eingeben");
                     Toast.makeText(getApplication(),
                             "Eingabe korrekt.", Toast.LENGTH_SHORT).show();
                 }else{
@@ -235,6 +237,8 @@ public class PinTaskActivity extends AppCompatActivity{
         setContentView(R.layout.activity_pin_task);
         pinView = findViewById(R.id.pin_text_view);
         pinDisplay = findViewById(R.id.pin_display);
+        Resources res = PinTaskActivity.this.getResources();
+        pinFillerString = res.getString(R.string.pin_counter);
         button1 = findViewById(R.id.button1);
         button2 = findViewById(R.id.button2);
         button3 = findViewById(R.id.button3);

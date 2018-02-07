@@ -19,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/gridLayout"
-        android:layout_marginBottom="45dp"
+        android:layout_marginBottom="30dp"
         android:textAlignment="center"
         android:textColor="@color/white"
         android:textSize="8pt" />

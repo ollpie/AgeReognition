@@ -20,7 +20,7 @@ public class GenericTaskActivity extends AppCompatActivity {
     private static final int MIN = 0;
     private static final int X_AMOUNT = 5;
     private static final int Y_AMOUNT = 5;
-    private static final int PADDING = 80;
+    private static final int PADDING = 100;
     private static final String TASK_ID = "Generic Task";
 
     DatabaseHandler database;

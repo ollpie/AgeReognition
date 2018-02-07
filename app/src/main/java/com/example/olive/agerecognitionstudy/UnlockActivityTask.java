@@ -2,6 +2,7 @@ package com.example.olive.agerecognitionstudy;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Point;
 import android.hardware.SensorManager;
 import android.os.AsyncTask;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.andrognito.patternlockview.PatternLockView;
@@ -33,9 +35,12 @@ public class UnlockActivityTask extends AppCompatActivity {
 
     private MotionSensorUtil motionSensorUtil;
     private ImageView cross;
+    private TextView patternHint;
     private String userID;
     private DatabaseHandler database;
     private UnlockTaskDataModel unlockDataModel;
+    private String patternHintFirstPart;
+    private String patternHintSecondPart;
 
     private int logicRepetitionCount = 0;
     private int actualRepetitionCount = 0;
@@ -68,16 +73,25 @@ public class UnlockActivityTask extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_unlock_task);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        setupUI();
         latinSquareUtil = MainActivity.latinSquareUtil;
-        cross = findViewById(R.id.cross);
         userID = MainActivity.currentUserID;
         database = MainActivity.getDbHandler();
         unlockDataModel = new UnlockTaskDataModel(userID);
         setupPatternLockViewListener();
         setupPatternUnlock();
         motionSensorUtil = new MotionSensorUtil(userID, TASK_ID, (SensorManager) getSystemService(SENSOR_SERVICE));
+    }
+
+    private void setupUI(){
+        setContentView(R.layout.activity_unlock_task);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        cross = findViewById(R.id.cross);
+        patternHint = findViewById(R.id.pattern_hint);
+        Resources res = UnlockActivityTask.this.getResources();
+        patternHintFirstPart = res.getString(R.string.pattern_hint);
+        patternHintSecondPart = res.getString(R.string.pin_counter);
+        patternHint.setText(patternHintFirstPart + patternHintSecondPart + " " + (CORRECT_REPETITIONS-logicRepetitionCount) + " mal eingeben");
     }
 
     @Override
@@ -217,6 +231,7 @@ public class UnlockActivityTask extends AppCompatActivity {
                     }
                     Toast.makeText(getApplication(),
                             "Eingabe korrekt.", Toast.LENGTH_SHORT).show();
+                    patternHint.setText(patternHintFirstPart + patternHintSecondPart + " " + (CORRECT_REPETITIONS-logicRepetitionCount) + " mal eingeben");
                 } else {
                     progress = "";
                     sequenceCorrect = false;
