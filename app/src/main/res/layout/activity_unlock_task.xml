@@ -33,4 +33,14 @@
         android:layout_height="wrap_content"
         app:srcCompat="@drawable/cross" />
 
+    <Button
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:onClick="onUnlockTrainingEnd"
+        android:text="Training beenden"
+        android:textColor="@color/white"/>
+
 </RelativeLayout>

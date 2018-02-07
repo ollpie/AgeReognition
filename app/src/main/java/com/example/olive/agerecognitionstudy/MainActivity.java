@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
             db.createParticipant(p);
             db.closeDB();
             ageEntry.setText("");
+            manualIdEntry.setText("");
             startIntent();
         }
     }
