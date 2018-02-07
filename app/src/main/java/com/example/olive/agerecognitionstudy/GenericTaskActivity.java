@@ -60,6 +60,7 @@ public class GenericTaskActivity extends AppCompatActivity {
     private LatinSquareUtil latinSquareUtil;
 
     private boolean positionChecker[][] = new boolean[X_AMOUNT][Y_AMOUNT];
+    private boolean trainingsMode = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +75,19 @@ public class GenericTaskActivity extends AppCompatActivity {
         database = MainActivity.getDbHandler();
         taskmodel = new GenericTaskDataModel(userID);
         motionSensorUtil = new MotionSensorUtil(userID, TASK_ID, (SensorManager) getSystemService(SENSOR_SERVICE));
+    }
+
+    public void onEndGenericTraining(View view){
+        randomXValue = randomX.nextInt(((maxX - MIN) +1)+MIN);
+        randomYValue = randomY.nextInt(((maxY - MIN) +1)+MIN);
+        target.setX(xPositions[randomXValue]);
+        target.setY(yPositions[randomYValue]);
+        positionChecker[randomXValue][randomYValue] = true;
+        touch_counter++;
+        view.setVisibility(View.GONE);
+        motionSensorUtil.registerListeners();
+        trainingsMode = false;
+        Log.d("Total Positions", String.valueOf(xPositions.length*yPositions.length));
     }
 
     public void targetClicked() {
@@ -102,31 +116,42 @@ public class GenericTaskActivity extends AppCompatActivity {
 
     public boolean dispatchTouchEvent(MotionEvent event) {
         int eventAction = event.getAction();
-        xTarget = target.getX();
-        yTarget = target.getY();
-        xTouch = event.getX();
-        yTouch = event.getY();
-        touchPressure = event.getPressure();
-        touchSize = event.getSize();
-        touchOrientation = event.getOrientation();
-        touchMajor = event.getTouchMajor();
-        touchMinor = event.getTouchMinor();
-        timestamp = event.getEventTime();
-        switch(eventAction) {
-            case MotionEvent.ACTION_DOWN:
-                writeDataIntoLists("Down");
-                break;
+        if (!trainingsMode) {
+            xTarget = target.getX();
+            yTarget = target.getY();
+            xTouch = event.getX();
+            yTouch = event.getY();
+            touchPressure = event.getPressure();
+            touchSize = event.getSize();
+            touchOrientation = event.getOrientation();
+            touchMajor = event.getTouchMajor();
+            touchMinor = event.getTouchMinor();
+            timestamp = event.getEventTime();
+            switch (eventAction) {
+                case MotionEvent.ACTION_DOWN:
 
-            case MotionEvent.ACTION_MOVE:
-                writeDataIntoLists("Move");
-                break;
+                    writeDataIntoLists("Down");
+                    break;
 
-            case MotionEvent.ACTION_UP:
-                writeDataIntoLists("Up");
-                targetClicked();
-                break;
-            default:
-                break;
+                case MotionEvent.ACTION_MOVE:
+                    writeDataIntoLists("Move");
+                    break;
+
+                case MotionEvent.ACTION_UP:
+                    writeDataIntoLists("Up");
+                    targetClicked();
+                    break;
+                default:
+                    break;
+            }
+        }else{
+            if (eventAction == MotionEvent.ACTION_DOWN){
+
+                randomXValue = randomX.nextInt(((maxX - MIN) +1)+MIN);
+                randomYValue = randomY.nextInt((((maxY-3) - MIN) +1)+MIN);
+                target.setX(xPositions[randomXValue]-xOffset);
+                target.setY(yPositions[randomYValue]-yOffset);
+            }
         }
 
         return super.dispatchTouchEvent(event);
@@ -195,7 +220,6 @@ public class GenericTaskActivity extends AppCompatActivity {
        @Override
        protected void onResume() {
            super.onResume();
-           motionSensorUtil.registerListeners();
        }
 
        @Override
@@ -224,9 +248,6 @@ public class GenericTaskActivity extends AppCompatActivity {
         randomYValue = randomY.nextInt(((maxY - MIN) +1)+MIN);
         target.setX(xPositions[randomXValue]);
         target.setY(yPositions[randomYValue]);
-        positionChecker[randomXValue][randomYValue] = true;
-        touch_counter++;
-        Log.d("Total Positions", String.valueOf(xPositions.length*yPositions.length));
     }
 
 
@@ -234,14 +255,6 @@ public class GenericTaskActivity extends AppCompatActivity {
         setContentView(R.layout.activity_generic_task);
         target = findViewById(R.id.targetView);
         //finger = findViewById(R.id.finger);
-    }
-
-    public int dpToPx(int dp) {
-        float density = this.getResources()
-                .getDisplayMetrics()
-                .density;
-        Log.d("Density", String.valueOf(density));
-        return Math.round((float) dp / density);
     }
 
     private void startIntent(){

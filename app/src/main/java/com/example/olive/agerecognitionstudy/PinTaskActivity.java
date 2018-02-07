@@ -24,7 +24,9 @@ import android.widget.Toast;
 public class PinTaskActivity extends AppCompatActivity{
 
     private static final int REPETITIONS = 2;
+    private static final int TRAININGS_REPETITIONS = 2;
     private static final String[] PINS = {"0537", "8683"};
+    private static final String[] TRAININGS_PINS = {"7530", "1234"};
     private static final String TASK_NAME = "Pin Task";
 
     private ImageView finger;
@@ -77,6 +79,10 @@ public class PinTaskActivity extends AppCompatActivity{
     private MotionSensorUtil motionSensorUtil;
     private LatinSquareUtil latinSquareUtil;
 
+    private boolean trainingsMode = true;
+    private int trainingsCount = 0;
+    private int trainingsIndex = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,7 +93,7 @@ public class PinTaskActivity extends AppCompatActivity{
         database = MainActivity.getDbHandler();
         taskmodel = new PinTaskDataModel(userID);
         motionSensorUtil = new MotionSensorUtil(userID, TASK_NAME, (SensorManager) getSystemService(SENSOR_SERVICE));
-        pinDisplay.setText("Pin: " + PINS[pinIndex] + pinFillerString + " " + (REPETITIONS-logicRepetitionCount) + " mal eingeben");
+        pinDisplay.setText("Pin: " + TRAININGS_PINS[trainingsIndex] + pinFillerString + " " + (TRAININGS_REPETITIONS-trainingsCount) + " mal eingeben");
         currentDigit = PINS[pinIndex].charAt(0);
     }
 
@@ -96,46 +102,84 @@ public class PinTaskActivity extends AppCompatActivity{
         public boolean onTouch(View view, MotionEvent event) {
             int eventAction = event.getAction();
             Button b = (Button) view;
-            xTarget = (layout.getX() + b.getX() + b.getWidth()/2);
-            yTarget = (layout.getY() + b.getY() + b.getHeight()/2);
-            xTouch = event.getRawX();
-            yTouch = event.getRawY()-MainActivity.statusbarOffset;
-            touchPressure = event.getPressure();
-            touchSize = event.getSize();
-            touchOrientation = event.getOrientation();
-            touchMajor = event.getTouchMajor();
-            touchMinor = event.getTouchMinor();
-            timestamp = event.getEventTime();
-            switch(eventAction) {
-                case MotionEvent.ACTION_DOWN:
-                    processButtonPress(b);
-                    writeDataIntoLists("Down");
-                    break;
+            if (!trainingsMode) {
+                xTarget = (layout.getX() + b.getX() + b.getWidth() / 2);
+                yTarget = (layout.getY() + b.getY() + b.getHeight() / 2);
+                xTouch = event.getRawX();
+                yTouch = event.getRawY() - MainActivity.statusbarOffset;
+                touchPressure = event.getPressure();
+                touchSize = event.getSize();
+                touchOrientation = event.getOrientation();
+                touchMajor = event.getTouchMajor();
+                touchMinor = event.getTouchMinor();
+                timestamp = event.getEventTime();
+                switch (eventAction) {
+                    case MotionEvent.ACTION_DOWN:
+                        processButtonPress(b);
+                        writeDataIntoLists("Down");
+                        break;
 
-                case MotionEvent.ACTION_MOVE:
-                    writeDataIntoLists("Move");
-                    break;
+                    case MotionEvent.ACTION_MOVE:
+                        writeDataIntoLists("Move");
+                        break;
 
-                case MotionEvent.ACTION_UP:
-                    writeDataIntoLists("Up");
-                    if (writeSequence){
-                        setSequenceCorrectness();
-                        sequenceCorrect = true;
-                        writeSequence = false;
+                    case MotionEvent.ACTION_UP:
+                        writeDataIntoLists("Up");
+                        if (writeSequence) {
+                            setSequenceCorrectness();
+                            sequenceCorrect = true;
+                            writeSequence = false;
+                        }
+                        if (end) {
+                            motionSensorUtil.stop();
+                            pinView.setText("FERTIG");
+                            PinTaskActivity.AsyncTaskRunner runner = new PinTaskActivity.AsyncTaskRunner();
+                            runner.execute();
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }else{
+                if (eventAction == MotionEvent.ACTION_DOWN){
+                    if (b.getId() == doneID){
+                        pinView.setText("");
+                        receivedDigits = "";
+
+                        if (trainingsCount == TRAININGS_REPETITIONS-1){
+                            if(TRAININGS_PINS.length-1 == trainingsIndex){
+                                trainingsIndex = 0;
+                            }else {
+                                trainingsIndex++;
+                            }
+                            trainingsCount = 0;
+                        }else {
+                            trainingsCount++;
+                        }
+                        pinDisplay.setText("Pin: " + TRAININGS_PINS[trainingsIndex] + pinFillerString + " " + (TRAININGS_REPETITIONS-trainingsCount) + " mal eingeben");
+                    }else{
+                        if (b.getId() == deleteID && !receivedDigits.equals("")){
+                            receivedDigits = receivedDigits.substring(0, receivedDigits.length()-1);
+                            pinView.setText(receivedDigits);
+                        }else {
+                            receivedDigits += b.getText();
+                            pinView.setText(receivedDigits);
+                        }
                     }
-                    if (end){
-                        motionSensorUtil.stop();
-                        pinView.setText("FERTIG");
-                        PinTaskActivity.AsyncTaskRunner runner = new PinTaskActivity.AsyncTaskRunner();
-                        runner.execute();
-                    }
-                    break;
-                default:
-                    break;
+                }
             }
             return false;
         }
     };
+
+    public void onEndPinTraining(View view){
+        receivedDigits = "";
+        pinView.setText(receivedDigits);
+        pinDisplay.setText("Pin: " + PINS[pinIndex] + pinFillerString + " " + (REPETITIONS-logicRepetitionCount) + " mal eingeben");
+        trainingsMode = false;
+        motionSensorUtil.registerListeners();
+        view.setVisibility(View.GONE);
+    }
 
      private void processButtonPress(Button b) {
         if (!(receivedDigits.length() > PINS[0].length()-1) || b.getId() == deleteID || b.getId() == doneID){
@@ -368,7 +412,6 @@ public class PinTaskActivity extends AppCompatActivity{
     @Override
     protected void onResume() {
         super.onResume();
-        motionSensorUtil.registerListeners();
     }
 
     @Override
