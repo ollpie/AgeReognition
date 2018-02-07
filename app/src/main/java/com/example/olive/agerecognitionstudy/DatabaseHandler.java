@@ -88,7 +88,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     // READING_TASK - column names
     private static final String KEY_X_VIEWPORT = "x_viewport";
     private static final String KEY_Y_VIEWPORT = "y_viewport";
-    private static final String KEY_FONT = "font";
+    private static final String KEY_FONT = "text";
     private static final String KEY_FONT_SIZE = "font_size";
 
     // MOTION_SENSOR_TABLE - column names
@@ -161,7 +161,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             + KEY_PARTICIPANT_ID + " TEXT,"
             + KEY_EVENT_TYPE + " TEXT," + KEY_X_TOUCH + " REAL," + KEY_Y_TOUCH + " REAL,"
             + KEY_X_VIEWPORT + " REAL," + KEY_Y_VIEWPORT + " REAL,"
-            + KEY_FONT + " TEXT," + KEY_FONT_SIZE + " INTEGER," + KEY_TOUCH_PRESSURE + " REAL,"
+            + KEY_FONT + " INTEGER," + KEY_FONT_SIZE + " INTEGER," + KEY_TOUCH_PRESSURE + " REAL,"
             + KEY_TOUCH_SIZE + " REAL," + KEY_ORIENTATION + " REAL," + KEY_TOUCH_MAJOR + " REAL,"
             + KEY_TOUCH_MINOR + " REAL," + KEY_TIMESTAMP + " REAL, FOREIGN KEY (" + KEY_PARTICIPANT_ID + ") REFERENCES " + TABLE_PARTICIPANTS + "(" + KEY_PARTICIPANT_ID + "))";
 
@@ -396,7 +396,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 values.put(KEY_Y_TOUCH, taskModel.getyTouch().get(i));
                 values.put(KEY_X_VIEWPORT, taskModel.getyViewport().get(i));
                 values.put(KEY_Y_VIEWPORT, taskModel.getyViewportBottom().get(i));
-                values.put(KEY_FONT, taskModel.getFont().get(i));
+                values.put(KEY_FONT, taskModel.getText().get(i));
                 values.put(KEY_FONT_SIZE, taskModel.getFontSize().get(i));
                 values.put(KEY_TOUCH_PRESSURE, taskModel.getTouchPressure().get(i));
                 values.put(KEY_TOUCH_SIZE, taskModel.getTouchSize().get(i));

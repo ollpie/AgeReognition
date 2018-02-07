@@ -23,7 +23,7 @@ import android.widget.Toast;
 
 public class PinTaskActivity extends AppCompatActivity{
 
-    private static final int REPETITIONS = 2;
+    private static final int REPETITIONS = 10;
     private static final int TRAININGS_REPETITIONS = 2;
     private static final String[] PINS = {"0537", "8683", "5465", "0954", "1243"};
     private static final String[] TRAININGS_PINS = {"7530", "1234"};

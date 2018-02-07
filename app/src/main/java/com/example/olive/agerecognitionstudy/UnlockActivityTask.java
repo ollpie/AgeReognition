@@ -32,7 +32,7 @@ public class UnlockActivityTask extends AppCompatActivity {
     private static final int DOT_MATRIX_DIMENSION = 3;
     private static final String[] PINS = {"15476", "25873", "03412", "24630", "01247"};
     private static final String[] TRAININGS_PINS = {"01258", "048"};
-    private static final int CORRECT_REPETITIONS = 2;
+    private static final int CORRECT_REPETITIONS = 10;
     private static final int TRAININGS_REPETITIONS = 2;
 
     private MotionSensorUtil motionSensorUtil;

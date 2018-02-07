@@ -7,6 +7,7 @@ import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
@@ -18,7 +19,7 @@ import android.widget.TextView;
 public class ReadingTaskActivity extends AppCompatActivity {
 
     private static final String TASK_ID = "Reading Task";
-    private static final int TEXT_SIZE = 14;
+    private static final int TEXT_SIZE = 9;
     private static final int[] FIRST_TEXTS = {R.string.regensburg1, R.string.borschtsch, R.string.ruth};
     private static final int[] SECOND_TEXTS = {R.string.regensburg2, R.string.borschtsch2, R.string.ruth2};
     private static final int[] FIRST_IMAGE = {R.drawable.regensburger_dom, R.drawable.borschtsch, R.drawable.natur};
@@ -51,6 +52,7 @@ public class ReadingTaskActivity extends AppCompatActivity {
     private boolean trainigsMode = true;
     private LatinSquareUtil latinSquareUtil;
     private int clickCounter = 0;
+    private int textCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,8 +73,8 @@ public class ReadingTaskActivity extends AppCompatActivity {
         image2 = findViewById(R.id.readingImage2);
         textView1 = findViewById(R.id.textView1);
         textView2 = findViewById(R.id.textView2);
-        textView1.setTextSize(TEXT_SIZE);
-        textView2.setTextSize(TEXT_SIZE);
+        //textView1.setTextSize(TEXT_SIZE);
+        //textView2.setTextSize(TEXT_SIZE);
     }
 
     @Override
@@ -97,6 +99,10 @@ public class ReadingTaskActivity extends AppCompatActivity {
             ReadingTaskActivity.AsyncTaskRunner asyncTask = new ReadingTaskActivity.AsyncTaskRunner();
             asyncTask.execute();
         }else{
+            if(!trainigsMode){
+                textCount++;
+            }
+            Log.d("Mode", String.valueOf(textCount));
             scrollView.scrollTo(0,0);
             textView1.setText(getResources().getString(FIRST_TEXTS[clickCounter]));
             textView2.setText(getResources().getString(SECOND_TEXTS[clickCounter]));
@@ -150,7 +156,7 @@ public class ReadingTaskActivity extends AppCompatActivity {
         readingTaskModel.setEventType(eventType);
         readingTaskModel.setyViewportTop(yViewPort);
         readingTaskModel.setyViewportBottom(yViewPortBottom);
-        readingTaskModel.setFont("Default");
+        readingTaskModel.setText(textCount);
         readingTaskModel.setFontSize(TEXT_SIZE);
         readingTaskModel.setxTouch(xTouch);
         readingTaskModel.setyTouch(yTouch);

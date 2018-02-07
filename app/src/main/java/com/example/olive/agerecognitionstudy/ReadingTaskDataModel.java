@@ -14,7 +14,7 @@ public class ReadingTaskDataModel {
     ArrayList<Float> yTouch;
     ArrayList<Float> xViewport;
     ArrayList<Float> yViewport;
-    ArrayList<String> font;
+    ArrayList<Integer> text;
     ArrayList<Integer> fontSize;
     ArrayList<Float> touchPressure;
     ArrayList<Float> touchSize;
@@ -22,23 +22,6 @@ public class ReadingTaskDataModel {
     ArrayList<Float> touchMajor;
     ArrayList<Float> touchMinor;
     ArrayList<Long> timestamp;
-
-    public ReadingTaskDataModel () {
-        this.eventType = new ArrayList<>();
-        this.participantIDList = new ArrayList<>();
-        this.xTouch = new ArrayList<>();
-        this.yTouch = new ArrayList<>();
-        this.xViewport = new ArrayList<>();
-        this.yViewport = new ArrayList<>();
-        this.font = new ArrayList<>();
-        this.fontSize = new ArrayList<>();
-        this.touchPressure = new ArrayList<>();
-        this.touchSize = new ArrayList<>();
-        this.touchOrientation = new ArrayList<>();
-        this.touchMajor = new ArrayList<>();
-        this.touchMinor = new ArrayList<>();
-        this.timestamp = new ArrayList<>();
-    }
 
     public ReadingTaskDataModel (String participantID) {
         this.participantId = participantID;
@@ -48,7 +31,7 @@ public class ReadingTaskDataModel {
         this.yTouch = new ArrayList<>();
         this.xViewport = new ArrayList<>();
         this.yViewport = new ArrayList<>();
-        this.font = new ArrayList<>();
+        this.text = new ArrayList<>();
         this.fontSize = new ArrayList<>();
         this.touchPressure = new ArrayList<>();
         this.touchSize = new ArrayList<>();
@@ -63,10 +46,6 @@ public class ReadingTaskDataModel {
         this.participantId = participantId;
     }
 
-    public void setParticipantIDList(String participant) {
-        this.participantIDList.add(participant);
-    }
-
     public void setEventType(String eventType) {
         this.eventType.add(eventType);
     }
@@ -79,8 +58,8 @@ public class ReadingTaskDataModel {
         this.yViewport.add(y);
     }
 
-    public void setFont(String fontType) {
-        this.font.add(fontType);
+    public void setText(int fontType) {
+        this.text.add(fontType);
     }
 
     public void setFontSize(int size) {
@@ -124,10 +103,6 @@ public class ReadingTaskDataModel {
         return participantId;
     }
 
-    public ArrayList<String> getParticipantIDList() {
-        return participantIDList;
-    }
-
     public ArrayList<String> getEventType() {
         return eventType;
     }
@@ -148,8 +123,8 @@ public class ReadingTaskDataModel {
         return yViewport;
     }
 
-    public ArrayList<String> getFont() {
-        return font;
+    public ArrayList<Integer> getText() {
+        return text;
     }
 
     public ArrayList<Integer> getFontSize() {

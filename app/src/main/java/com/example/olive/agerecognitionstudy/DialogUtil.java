@@ -38,6 +38,23 @@ public class DialogUtil {
         alertDialog.show();
     }
 
+    public void showDBDialog(){
+        AlertDialog.Builder builder = new Builder(context);
+        builder.setTitle("Datenbank Aktionen");
+        builder.setPositiveButton("Exportieren", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                MainActivity.onLogData();
+            }
+        });
+        builder.setNegativeButton("Löschen", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                MainActivity.onClearData();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
 
     public void showTaskDialog(String manualId) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);

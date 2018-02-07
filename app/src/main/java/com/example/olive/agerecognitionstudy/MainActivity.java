@@ -2,6 +2,7 @@ package com.example.olive.agerecognitionstudy;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -27,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     public static String currentUserID;
     public static int statusbarOffset;
     public static LatinSquareUtil latinSquareUtil;
+    private static Context context;
 
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static String[] PERMISSIONS_STORAGE = {
@@ -39,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setupUI();
         verifyStoragePermissions(this);
+        context = getApplicationContext();
         db = new DatabaseHandler(getApplicationContext());
         if (latinSquareUtil == null){
             latinSquareUtil = new LatinSquareUtil();
@@ -73,14 +76,20 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void logData(View view) {
-        db.exportDB(getApplicationContext());
+    public void onDBButtonClicked(View view){
+        dialogUtil.showDBDialog();
     }
 
-    public void clearData(View view) {
+    public static void onLogData() {
+        db.exportDB(context);
+        Toast.makeText(context,
+                "Daten wurden exportiert", Toast.LENGTH_SHORT).show();
+    }
+
+    public static void onClearData() {
         db.deleteAllTables();
-        Toast.makeText(getApplication(),
-                "Tables cleared", Toast.LENGTH_SHORT).show();
+        Toast.makeText(context,
+                "Daten wurden gelöscht", Toast.LENGTH_SHORT).show();
     }
 
     private void setupUI() {
