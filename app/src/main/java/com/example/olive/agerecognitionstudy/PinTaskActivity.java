@@ -19,13 +19,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-//, "5465", "0954", "1243"
+//, "0954", "1243"
 
 public class PinTaskActivity extends AppCompatActivity{
 
     private static final int REPETITIONS = 2;
     private static final int TRAININGS_REPETITIONS = 2;
-    private static final String[] PINS = {"0537", "8683"};
+    private static final String[] PINS = {"0537", "8683", "5465"};
     private static final String[] TRAININGS_PINS = {"7530", "1234"};
     private static final String TASK_NAME = "Pin Task";
 
@@ -200,6 +200,7 @@ public class PinTaskActivity extends AppCompatActivity{
                     end = true;
                 }
                 if (receivedDigits.equals(PINS[pinIndex])){
+                    actualRepetitionCount++;
                     if (sequenceCorrect) {
                         logicRepetitionCount++;
                     }
@@ -210,7 +211,6 @@ public class PinTaskActivity extends AppCompatActivity{
                             pinIndex++;
                         }
                     }
-                    actualRepetitionCount++;
                     writeSequence = true;
                     currentIndexCount = 0;
                     receivedDigits = "";

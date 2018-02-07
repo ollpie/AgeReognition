@@ -48,7 +48,7 @@ public class ReadingTaskActivity extends AppCompatActivity {
     private long timestamp;
 
     private int displayHeight;
-    private boolean end = false;
+    private boolean trainigsMode = true;
     private LatinSquareUtil latinSquareUtil;
     private int clickCounter = 0;
 
@@ -78,15 +78,6 @@ public class ReadingTaskActivity extends AppCompatActivity {
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        /*
-        if (hasFocus) {
-            View decorView = getWindow().getDecorView();
-            decorView.setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-        }*/
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
@@ -94,10 +85,14 @@ public class ReadingTaskActivity extends AppCompatActivity {
     }
 
     public void buttonClicked (View view){
-        setFontSize();
+        if (trainigsMode){
+            motionSensorUtil.registerListeners();
+        }
+        trainigsMode = false;
+        nextText();
     }
 
-    private void setFontSize(){
+    private void nextText(){
         if (clickCounter == FIRST_TEXTS.length){
             ReadingTaskActivity.AsyncTaskRunner asyncTask = new ReadingTaskActivity.AsyncTaskRunner();
             asyncTask.execute();
@@ -119,33 +114,34 @@ public class ReadingTaskActivity extends AppCompatActivity {
     }
 
     public boolean dispatchTouchEvent(MotionEvent event) {
-        int eventAction = event.getAction();
-        yViewPort = scrollView.getScrollY();
-        yViewPortBottom = yViewPort + displayHeight - MainActivity.statusbarOffset;
-        xTouch = event.getX();
-        yTouch = event.getY()-MainActivity.statusbarOffset;
-        touchPressure = event.getPressure();
-        touchSize = event.getSize();
-        touchOrientation = event.getOrientation();
-        touchMajor = event.getTouchMajor();
-        touchMinor = event.getTouchMinor();
-        timestamp = event.getEventTime();
-        switch(eventAction) {
-            case MotionEvent.ACTION_DOWN:
-                writeDataIntoLists("Down");
-                break;
+        if (!trainigsMode) {
+            int eventAction = event.getAction();
+            yViewPort = scrollView.getScrollY();
+            yViewPortBottom = yViewPort + displayHeight - MainActivity.statusbarOffset;
+            xTouch = event.getX();
+            yTouch = event.getY() - MainActivity.statusbarOffset;
+            touchPressure = event.getPressure();
+            touchSize = event.getSize();
+            touchOrientation = event.getOrientation();
+            touchMajor = event.getTouchMajor();
+            touchMinor = event.getTouchMinor();
+            timestamp = event.getEventTime();
+            switch (eventAction) {
+                case MotionEvent.ACTION_DOWN:
+                    writeDataIntoLists("Down");
+                    break;
 
-            case MotionEvent.ACTION_MOVE:
-                writeDataIntoLists("Move");
-                break;
+                case MotionEvent.ACTION_MOVE:
+                    writeDataIntoLists("Move");
+                    break;
 
-            case MotionEvent.ACTION_UP:
-                writeDataIntoLists("Up");
-                break;
-            default:
-                break;
+                case MotionEvent.ACTION_UP:
+                    writeDataIntoLists("Up");
+                    break;
+                default:
+                    break;
+            }
         }
-
         return super.dispatchTouchEvent(event);
     }
 
@@ -231,7 +227,6 @@ public class ReadingTaskActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        motionSensorUtil.registerListeners();
     }
 
     @Override
