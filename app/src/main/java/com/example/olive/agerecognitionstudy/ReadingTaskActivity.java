@@ -19,10 +19,10 @@ public class ReadingTaskActivity extends AppCompatActivity {
 
     private static final String TASK_ID = "Reading Task";
     private static final int TEXT_SIZE = 14;
-    private static final int[] FIRST_TEXTS = {R.string.regensburg1, R.string.borschtsch};
-    private static final int[] SECOND_TEXTS = {R.string.regensburg2, R.string.borschtsch2};
-    private static final int[] FIRST_IMAGE = {R.drawable.regensburger_dom, R.drawable.borschtsch};
-    private static final int[] SECOND_IMAGE = {0,0};
+    private static final int[] FIRST_TEXTS = {R.string.regensburg1, R.string.borschtsch, R.string.ruth};
+    private static final int[] SECOND_TEXTS = {R.string.regensburg2, R.string.borschtsch2, R.string.ruth2};
+    private static final int[] FIRST_IMAGE = {R.drawable.regensburger_dom, R.drawable.borschtsch, R.drawable.natur};
+    private static final int[] SECOND_IMAGE = {0,0,0};
 
     ScrollView scrollView;
     Button doneButton;

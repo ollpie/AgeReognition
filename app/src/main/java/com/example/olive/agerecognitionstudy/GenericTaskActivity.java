@@ -12,21 +12,23 @@ import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.util.Random;
 
 public class GenericTaskActivity extends AppCompatActivity {
 
     private static final int MIN = 0;
-    private static final int X_AMOUNT = 5;
-    private static final int Y_AMOUNT = 5;
-    private static final int PADDING = 100;
+    private static final int X_AMOUNT = 15;
+    private static final int Y_AMOUNT = 26;
+    private static final int PADDING = 220;
     private static final String TASK_ID = "Generic Task";
 
     DatabaseHandler database;
 
     private ImageView target;
     private ImageView finger;
+    private TextView counterDisplay;
 
     private Random randomX;
     private Random randomY;
@@ -83,9 +85,9 @@ public class GenericTaskActivity extends AppCompatActivity {
         target.setX(xPositions[randomXValue]);
         target.setY(yPositions[randomYValue]);
         positionChecker[randomXValue][randomYValue] = true;
-        touch_counter++;
         view.setVisibility(View.GONE);
         motionSensorUtil.registerListeners();
+        counterDisplay.setText("Noch " + ((xPositions.length*yPositions.length)-touch_counter) + " mal tippen");
         trainingsMode = false;
         Log.d("Total Positions", String.valueOf(xPositions.length*yPositions.length));
     }
@@ -112,6 +114,7 @@ public class GenericTaskActivity extends AppCompatActivity {
             target.setY(yPositions[randomYValue]-yOffset);
             Log.d("X, Y", String.valueOf(target.getX()) + ", " + String.valueOf(target.getY()));
         }
+        counterDisplay.setText("Noch " + ((xPositions.length*yPositions.length)-touch_counter) + " mal tippen");
     }
 
     public boolean dispatchTouchEvent(MotionEvent event) {
@@ -245,7 +248,7 @@ public class GenericTaskActivity extends AppCompatActivity {
         randomX = new Random();
         randomY = new Random();
         randomXValue = randomX.nextInt(((maxX - MIN) +1)+MIN);
-        randomYValue = randomY.nextInt(((maxY - MIN) +1)+MIN);
+        randomYValue = randomY.nextInt((((maxY-2) - MIN) +1)+MIN);
         target.setX(xPositions[randomXValue]);
         target.setY(yPositions[randomYValue]);
     }
@@ -254,7 +257,7 @@ public class GenericTaskActivity extends AppCompatActivity {
     private void setupUI () {
         setContentView(R.layout.activity_generic_task);
         target = findViewById(R.id.targetView);
-        //finger = findViewById(R.id.finger);
+        counterDisplay = findViewById(R.id.generic_counter_display);
     }
 
     private void startIntent(){
