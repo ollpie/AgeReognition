@@ -7,12 +7,6 @@
     android:layout_height="match_parent"
     android:background="@drawable/wallpaper">
 
-    <ImageView
-        android:id="@+id/fingerpin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/cross" />
-
     <TextView
         android:fitsSystemWindows="true"
         android:id="@+id/pin_display"

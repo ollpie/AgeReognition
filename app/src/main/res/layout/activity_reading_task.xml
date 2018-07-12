@@ -31,7 +31,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:lineSpacingExtra="14sp"
-                android:text="@string/maus_part1"
+                android:text="@string/borschtsch"
                 android:textAlignment="textStart"
                 android:textSize="9pt" />
 
@@ -41,7 +41,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:text="@string/maus_part2"
-                app:srcCompat="@drawable/smdm" />
+                app:srcCompat="@drawable/borschtsch" />
 
             <TextView
                 android:id="@+id/textView2"
@@ -50,7 +50,7 @@
                 android:layout_marginTop="10dp"
                 android:gravity="center_vertical"
                 android:lineSpacingExtra="14sp"
-                android:text="@string/maus_part2"
+                android:text="@string/borschtsch2"
                 android:textAllCaps="false"
                 android:textSize="9pt" />
 
@@ -58,8 +58,7 @@
                 android:id="@+id/readingImage2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/maus_part2"
-                app:srcCompat="@drawable/smdm_moderatoren" />
+                android:text="@string/maus_part2" />
 
             <Button
                 android:id="@+id/doneButton"

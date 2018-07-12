@@ -14,28 +14,45 @@
     <string name="unlock_hint">Gib das angezeigte Muster auf dem Eingabefeld ein.</string>
     <string name="title_activity_reading_task">ReadingTaskActivity</string>
     <string name="empty"></string>
-    <string name="ruth"><b>Eulen</b> \n\nDie deutsche Sprache kennt die Bezeichnungen „Eule“ und „Kauz“. Diese Unterscheidung wird
-        so in keiner anderen europäischen Sprache getroffen. Im Englischen werden alle Eulenarten als
-        "owl" und im Niederländischen als "uil" bezeichnet. Die französische Sprache kennt zwar neben "chouette"
-        noch den Begriff "hibou", jedoch wird letztere Bezeichnung ausschließlich für Eulen mit Federohren
-        wie die Waldohreule verwendet.
-
-        \n\nDie beiden deutschen Begriffe haben sich lautmalerisch aus den Rufen der Eulen entwickelt.
-        „Eule“ weist auf die heulenden Rufe hin, während „Kauz“ eine Umschreibung der kurzen und markanten
-        Rufe ist. Der Begriff Eule wird im Deutschen vorwiegend für Arten verwendet, die in ihrem
-        Erscheinungsbild schlank wirken. Kauz – im Deutschen auch für die Gattung Strix verwendet –
-        bezeichnet meist Arten, die eher gedrungen und rundlich wirken.
+    <string name="steinmeier1">
+        <b>Ein Jahr Steinmeier - "Überraschende Aufgaben hinzugekommen" \n\nAnfangs musste Bundespräsident Steinmeier seine Rolle erst noch finden. Dann kamen Bundestagswahl
+            und neue Herausforderungen. Er selbst spricht von "überraschenden Aufgaben".</b>
     </string>
-    <string name="ruth2">Eulen besitzen eine sehr typische Gestalt. Als auf die nächtliche Jagd spezialisierte
-        Vögel unterscheiden sich Eulen von anderen Vögeln durch spezifische anatomische Merkmale.
-        Der Körper ist gedrungen und der Kopf, im Vergleich zu dem anderer Vögel, auffällig groß und
-        rundlich. Der Schnabel der Eulen ist stark gekrümmt und scharfkantig.
+    <string name="steinmeier2">
+        Für Frank-Walter Steinmeier war es der Höhepunkt seiner Asien-Reise: Am Freitag nahm er an der Eröffnung
+        der Olympischen Winterspiele in Pyeongchang teil. Dass ihn noch während der Feier Nachrichten
+        aus Deutschland vom Unheil seiner SPD ereilten, war sicher ein Dämpfer für die sportliche Begeisterung.
+        In Südkorea war er mehrfach beglückwünscht worden für seinen herausragenden Beitrag zur Bildung
+        einer neuen stabilen Regierung in Deutschland. Jetzt ist wieder vieles ungewiss.
 
-        \n\nDie meisten Eulen sind nachtaktiv. Sie jagen in der Nacht und schlafen am Tag. Ausnahmen
-        sind beispielsweise die tagaktive Schnee-Eule, die Sperbereule, die Sumpfohreule oder der oft
-        auch am Tag aktive Sperlingskauz. Eulen sind vor allem auf nachtaktive Beutetiere spezialisiert.
-        Die von den Eulen praktizierte Jagdtechnik ist dabei artspezifisch, von den jeweiligen örtlichen
-        Gegebenheiten geprägt und auch beuteabhängig.
+        \n\nWährend in Berlin also gezittert wird, wie es nach dem Rückzug von Noch-Parteichef Martin Schulz
+        weitergeht mit der SPD, gibt Steinmeier den Chefdiplomaten. Bei den Winterspielen findet er
+        sich mittendrin in den Bemühungen um eine Entschärfung des derzeit wohl gefährlichsten Konflikts
+        der Welt um Nordkoreas Atomprogramm. Er mahnt, wie es seine Art ist, zur Besonnenheit und zum Dialog.
+
+        \n\n"Es sind überraschende Aufgaben hinzugekommen" - so beschreibt Steinmeier selbst das Jahr seit seiner
+        Wahl zum Staatsoberhaupt am 12. Februar 2017. Der ehemalige Außenminister, der seine SPD-Mitgliedschaft
+        ruhen lässt, hat seitdem viele Reden gehalten und wichtige Reisen unternommen. Aber entscheidend
+        für den Blick zurück ist doch vor allem ein Datum: der 20. November. Die Sondierungen von Union,
+        FDP und Grünen über eine Jamaika-Koalition waren gerade geplatzt, da trat Steinmeier im Berliner
+        Schloss Bellevue vor die Kameras.
+    </string>
+    <string name="ruth"><b>Die Eulenfamilie</b> \n\nFamilie Eule lebte auf einem alten Baum in einem
+        großen Wald. Der Baum war so hoch, dass man seine Spitze nicht sehen konnte. Die Eulenfamilie
+        liebte einfach ihr Zuhause.
+
+        \n\nDie Äste des Baumes waren so dick, dass sie ohne Probleme darauf sitzen konnten. Außerdem
+        konnten sie von der Baumspitze aus den gesamten Wald überblicken. Keine Familie lebte besser als sie.
+        Eines Tages kam ein kleines Eichhörnchen vorbei und wollte ebenfalls auf dem Baum leben. Doch
+        Vater Eule war strikt dagegen. „Wir leben hier schon seit Jahren. Der Baum ist unser!“,
+        antwortete Vater Eule dem Eichhörnchen. „Aber der Baum ist hoch genug, damit wir alle hier
+        leben können“, fiepte das Eichhörnchen.
+    </string>
+    <string name="ruth2">Als Mutter Eule das verzweifelte Eichhörnchen sah, versuchte sie ihren Mann zu überzeugen. „Lass ihn
+        doch hier wohnen. Wir haben Platz genug. Und so haben wir auch immer Unterhaltung.“ Auch die
+        Kinder von Familie Eule versuchten den Vater zu überreden. Schließlich gab dieser nach. Als
+        er den Entschluss dem Eichhörnchen mitteilte, war dieses überglücklich. Bereits am nächsten
+        Morgen zog es ein und wohnte von da an mit Familie Eule zusammen auf dem alten Baum im Wald.
     </string>
 
     <string name="maus_part1"><b>Die Sendung mit der Maus</b> \n\nDie Sendung mit der Maus ist eine

@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -43,10 +42,11 @@ public class MainActivity extends AppCompatActivity {
         verifyStoragePermissions(this);
         context = getApplicationContext();
         db = new DatabaseHandler(getApplicationContext());
+        db.createDB();
+
         if (latinSquareUtil == null){
             latinSquareUtil = new LatinSquareUtil();
         }
-        Log.d("Last inserted:", db.getLastInsertedManualId());
     }
 
     public static void verifyStoragePermissions(Activity activity) {

@@ -15,7 +15,6 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.GridLayout;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,8 +27,6 @@ public class PinTaskActivity extends AppCompatActivity{
     private static final String[] PINS = {"0537", "8683", "5465", "0954", "1243"};
     private static final String[] TRAININGS_PINS = {"7530", "1234"};
     private static final String TASK_NAME = "Pin Task";
-
-    private ImageView finger;
 
     private GridLayout layout;
     private TextView pinView;
@@ -87,7 +84,6 @@ public class PinTaskActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupUI();
-        finger = findViewById(R.id.fingerpin);
         latinSquareUtil = MainActivity.latinSquareUtil;
         userID = MainActivity.currentUserID;
         database = MainActivity.getDbHandler();

@@ -8,11 +8,11 @@ import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.WindowManager;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,7 +36,6 @@ public class UnlockActivityTask extends AppCompatActivity {
     private static final int TRAININGS_REPETITIONS = 2;
 
     private MotionSensorUtil motionSensorUtil;
-    private ImageView cross;
     private TextView patternHint;
     private String userID;
     private DatabaseHandler database;
@@ -92,7 +91,6 @@ public class UnlockActivityTask extends AppCompatActivity {
     private void setupUI(){
         setContentView(R.layout.activity_unlock_task);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        cross = findViewById(R.id.cross);
         patternHint = findViewById(R.id.pattern_hint);
         Resources res = UnlockActivityTask.this.getResources();
         patternHintFirstPart = res.getString(R.string.pattern_hint);
@@ -134,8 +132,6 @@ public class UnlockActivityTask extends AppCompatActivity {
                     xTarget = dotPositions[currentPattern.get(target).getColumn()][currentPattern.get(target).getRow()].x;
                     yTarget = dotPositions[currentPattern.get(target).getColumn()][currentPattern.get(target).getRow()].y;
                 }
-                //cross.setX(xTarget);
-                //cross.setY(yTarget);
                 xTouch = event.getRawX();
                 yTouch = event.getRawY() - MainActivity.statusbarOffset;
                 touchPressure = event.getPressure();
@@ -293,6 +289,7 @@ public class UnlockActivityTask extends AppCompatActivity {
                 float xPos = mPatternLockView.getX() + (mPatternLockView.getWidth() * (i/DOT_MATRIX_DIMENSION)) - ((1.0f/DOT_MATRIX_DIMENSION) * mPatternLockView.getWidth()/2);
                 float yPos = mPatternLockView.getY() + (mPatternLockView.getHeight() * (j/DOT_MATRIX_DIMENSION)) - ((1.0f/DOT_MATRIX_DIMENSION) * mPatternLockView.getHeight()/2);
                 dotPositions[(int) i-1][(int) j-1] = new Point((int) xPos, (int) yPos);
+                Log.d("Position", "Position "+ String.valueOf(i-1) + ": " + String.valueOf(dotPositions[(int) i-1][(int) j-1]));
             }
         }
     }

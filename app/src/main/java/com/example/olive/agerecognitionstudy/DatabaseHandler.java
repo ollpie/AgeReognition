@@ -249,6 +249,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return false;
     }
 
+    public void createDB(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        onCreate(db);
+    }
+
     // ------------------------ table methods ----------------//
 
     /**
@@ -497,7 +502,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_UNLOCK_PATTERN_TASK);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_READING_TASK);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_MOTION_SENSOR);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_LATIN_UTIL);
         onCreate(db);
     }
 

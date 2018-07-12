@@ -7,7 +7,6 @@ import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,11 +18,10 @@ import android.widget.TextView;
 public class ReadingTaskActivity extends AppCompatActivity {
 
     private static final String TASK_ID = "Reading Task";
-    private static final int TEXT_SIZE = 9;
-    private static final int[] FIRST_TEXTS = {R.string.regensburg1, R.string.borschtsch, R.string.ruth};
-    private static final int[] SECOND_TEXTS = {R.string.regensburg2, R.string.borschtsch2, R.string.ruth2};
-    private static final int[] FIRST_IMAGE = {R.drawable.regensburger_dom, R.drawable.borschtsch, R.drawable.natur};
-    private static final int[] SECOND_IMAGE = {0,0,0};
+    private static final int[] FIRST_TEXTS = {R.string.ruth, R.string.steinmeier1, R.string.maus_part1};
+    private static final int[] SECOND_TEXTS = {R.string.ruth2, R.string.steinmeier2, R.string.maus_part2};
+    private static final int[] FIRST_IMAGE = {R.drawable.natur, R.drawable.steinmeier, R.drawable.smdm};
+    private static final int[] SECOND_IMAGE = {0,0,R.drawable.smdm_moderatoren};
 
     ScrollView scrollView;
     Button doneButton;
@@ -32,37 +30,18 @@ public class ReadingTaskActivity extends AppCompatActivity {
     ImageView image1;
     ImageView image2;
 
-    private DatabaseHandler database;
     private MotionSensorUtil motionSensorUtil;
-    private ReadingTaskDataModel readingTaskModel;
-    private String userID;
-
-    private float yViewPort;
-    private float yViewPortBottom;
-    private float xTouch = 0.0F;
-    private float yTouch = 0.0F;
-    private float touchPressure = 0.0F;
-    private float touchSize = 0.0F;
-    private float touchOrientation = 0.0F;
-    private float touchMajor = 0.0F;
-    private float touchMinor = 0.0F;
-    private long timestamp;
-
     private int displayHeight;
-    private boolean trainigsMode = true;
-    private LatinSquareUtil latinSquareUtil;
     private int clickCounter = 0;
-    private int textCount = 0;
+
+    private ReadingDataWriter dataWritingUtil;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupUI();
-        latinSquareUtil = MainActivity.latinSquareUtil;
-        userID = MainActivity.currentUserID;
-        database = MainActivity.getDbHandler();
-        readingTaskModel = new ReadingTaskDataModel(userID);
-        motionSensorUtil = new MotionSensorUtil(userID, TASK_ID, (SensorManager) getSystemService(SENSOR_SERVICE));
+        dataWritingUtil = new ReadingDataWriter();
+        motionSensorUtil = new MotionSensorUtil(dataWritingUtil.userID, TASK_ID, (SensorManager) getSystemService(SENSOR_SERVICE));
     }
 
     private void setupUI(){
@@ -73,8 +52,6 @@ public class ReadingTaskActivity extends AppCompatActivity {
         image2 = findViewById(R.id.readingImage2);
         textView1 = findViewById(R.id.textView1);
         textView2 = findViewById(R.id.textView2);
-        //textView1.setTextSize(TEXT_SIZE);
-        //textView2.setTextSize(TEXT_SIZE);
     }
 
     @Override
@@ -87,10 +64,10 @@ public class ReadingTaskActivity extends AppCompatActivity {
     }
 
     public void buttonClicked (View view){
-        if (trainigsMode){
+        if (dataWritingUtil.trainigsMode){
             motionSensorUtil.registerListeners();
         }
-        trainigsMode = false;
+        dataWritingUtil.trainigsMode = false;
         nextText();
     }
 
@@ -99,77 +76,25 @@ public class ReadingTaskActivity extends AppCompatActivity {
             ReadingTaskActivity.AsyncTaskRunner asyncTask = new ReadingTaskActivity.AsyncTaskRunner();
             asyncTask.execute();
         }else{
-            if(!trainigsMode){
-                textCount++;
+            if(!dataWritingUtil.trainigsMode){
+                dataWritingUtil.textCount++;
             }
-            Log.d("Mode", String.valueOf(textCount));
             scrollView.scrollTo(0,0);
             textView1.setText(getResources().getString(FIRST_TEXTS[clickCounter]));
             textView2.setText(getResources().getString(SECOND_TEXTS[clickCounter]));
-            /*LinearLayout.LayoutParams parameter = (LinearLayout.LayoutParams) image1.getLayoutParams();
-            parameter.setMargins(0,0,0,0);
-            image1.setLayoutParams(parameter);*/
             image1.setImageResource(FIRST_IMAGE[clickCounter]);
-
-/*            LinearLayout.LayoutParams parameter2 = (LinearLayout.LayoutParams) image2.getLayoutParams();
-            parameter.setMargins(0,0,0,0);
-            image2.setLayoutParams(parameter2);*/
             image2.setImageResource(SECOND_IMAGE[clickCounter]);
             clickCounter++;
         }
     }
 
     public boolean dispatchTouchEvent(MotionEvent event) {
-        if (!trainigsMode) {
-            int eventAction = event.getAction();
-            yViewPort = scrollView.getScrollY();
-            yViewPortBottom = yViewPort + displayHeight - MainActivity.statusbarOffset;
-            xTouch = event.getX();
-            yTouch = event.getY() - MainActivity.statusbarOffset;
-            touchPressure = event.getPressure();
-            touchSize = event.getSize();
-            touchOrientation = event.getOrientation();
-            touchMajor = event.getTouchMajor();
-            touchMinor = event.getTouchMinor();
-            timestamp = event.getEventTime();
-            switch (eventAction) {
-                case MotionEvent.ACTION_DOWN:
-                    writeDataIntoLists("Down");
-                    break;
-
-                case MotionEvent.ACTION_MOVE:
-                    writeDataIntoLists("Move");
-                    break;
-
-                case MotionEvent.ACTION_UP:
-                    writeDataIntoLists("Up");
-                    break;
-                default:
-                    break;
-            }
-        }
+        dataWritingUtil.handleTouch(event, scrollView, displayHeight);
         return super.dispatchTouchEvent(event);
     }
 
-    private void writeDataIntoLists(String eventType) {
-        readingTaskModel.setParticipantId(userID);
-        readingTaskModel.setEventType(eventType);
-        readingTaskModel.setyViewportTop(yViewPort);
-        readingTaskModel.setyViewportBottom(yViewPortBottom);
-        readingTaskModel.setText(textCount);
-        readingTaskModel.setFontSize(TEXT_SIZE);
-        readingTaskModel.setxTouch(xTouch);
-        readingTaskModel.setyTouch(yTouch);
-        readingTaskModel.setTouchPressure(touchPressure);
-        readingTaskModel.setTouchSize(touchSize);
-        readingTaskModel.setTouchOrientation(touchOrientation);
-        readingTaskModel.setTouchMajor(touchMajor);
-        readingTaskModel.setTouchMinor(touchMinor);
-        readingTaskModel.setTimestamp(timestamp);
-    }
-
     private void startIntent(){
-        int activity = latinSquareUtil.getNext();
+        int activity = dataWritingUtil.latinSquareUtil.getNext();
         Intent intent;
         switch (activity){
             case 0:
@@ -207,9 +132,7 @@ public class ReadingTaskActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
             try {
-                database.createReadingTaskData(readingTaskModel);
-                database.createMotionSensorData(motionSensorUtil.getMotionSensorData());
-                database.close();
+                dataWritingUtil.writeReadingData(motionSensorUtil.getMotionSensorData());
             } catch (Exception e) {
                 e.printStackTrace();
             }
