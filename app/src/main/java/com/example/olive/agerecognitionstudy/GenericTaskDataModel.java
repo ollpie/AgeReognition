@@ -113,7 +113,6 @@ public class GenericTaskDataModel {
         this.participantList.add(participant);
     }
 
-
     //Getter Methods
     public String getParticipantId(){
         return this.participantId;
@@ -170,7 +169,6 @@ public class GenericTaskDataModel {
     public ArrayList<String> getParticipantList (){
         return this.participantList;
     }
-
 
     public int length() {
         return targetId.size();

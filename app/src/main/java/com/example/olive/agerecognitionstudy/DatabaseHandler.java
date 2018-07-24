@@ -23,11 +23,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     // Logcat tag
     private static final String LOG = "DatabaseHelper";
-
-    // Database Version
     private static final int DATABASE_VERSION = 1;
-
-    // Database Name
     private static final String DATABASE_NAME = "participantsManager";
 
     // Table Names
@@ -110,12 +106,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     private static final String KEY_TASK_ID = "task_id";
 
-    // PIN_TASK Table - column names
-
-    // SLIDE_PIN_TASK
-
-    // READING_TASK
-
     // Table Create Statements
     // Participants table create statement
     private static final String CREATE_TABLE_PARTICIPANTS = "CREATE TABLE IF NOT EXISTS "
@@ -179,7 +169,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-
         // creating required tables
         db.execSQL(CREATE_TABLE_PARTICIPANTS);
         db.execSQL(CREATE_TABLE_GENERIC_TASK);
@@ -205,22 +194,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    /**
-     * Export database to external storage, so it can be accessed from
-     / copied
-     * to a computer.
-     *
-     * @return
-     */
     public boolean exportDB(Context context) {
         //
         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).mkdirs();
         File sd = Environment.getExternalStorageDirectory();
-        // File sd =
-        //
         context.getFilesDir();//this.context.getExternalFilesDir(null);
-        // File sd =
-        //
         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
 
         File data = Environment.getDataDirectory();
@@ -256,9 +234,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     // ------------------------ table methods ----------------//
 
-    /**
-     * Creating Participants
-     */
     public long createParticipant(Participant participant) {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -270,12 +245,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         long participant_id = db.insert(TABLE_PARTICIPANTS, null, values);
         return participant_id;
-
     }
 
     public void createLatinUtil(int[] latinSquareValues) {
         SQLiteDatabase db = this.getWritableDatabase();
-
         ContentValues values = new ContentValues();
         values.put(KEY_INDEX, latinSquareValues[0]);
         values.put(KEY_ARRAY_FIRST, latinSquareValues[1]);

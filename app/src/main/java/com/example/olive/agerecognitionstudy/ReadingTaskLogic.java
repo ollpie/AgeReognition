@@ -7,16 +7,14 @@ import android.widget.ScrollView;
  * Created by olive on 19.01.2018.
  */
 
-public class ReadingDataWriter {
+public class ReadingTaskLogic {
 
     private static final int TEXT_SIZE = 9;
 
     public static boolean trainigsMode = true;
-
     private DatabaseHandler database;
     private ReadingTaskDataModel readingTaskModel;
     public static String userID;
-
     private float yViewPort;
     private float yViewPortBottom;
     private float xTouch = 0.0F;
@@ -27,11 +25,10 @@ public class ReadingDataWriter {
     private float touchMajor = 0.0F;
     private float touchMinor = 0.0F;
     private long timestamp;
-
     public static LatinSquareUtil latinSquareUtil;
     public static int textCount = 0;
 
-    public ReadingDataWriter() {
+    public ReadingTaskLogic() {
         latinSquareUtil = MainActivity.latinSquareUtil;
         userID = MainActivity.currentUserID;
         database = MainActivity.getDbHandler();
@@ -55,11 +52,9 @@ public class ReadingDataWriter {
                 case MotionEvent.ACTION_DOWN:
                     writeDataIntoLists("Down");
                     break;
-
                 case MotionEvent.ACTION_MOVE:
                     writeDataIntoLists("Move");
                     break;
-
                 case MotionEvent.ACTION_UP:
                     writeDataIntoLists("Up");
                     break;

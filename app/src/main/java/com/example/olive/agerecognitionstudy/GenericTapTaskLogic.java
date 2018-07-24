@@ -6,7 +6,6 @@ import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import java.util.Random;
 
@@ -14,15 +13,14 @@ import java.util.Random;
  * Created by olive on 17.06.2018.
  */
 
-public class GenericTapDataWriter {
+public class GenericTapTaskLogic {
 
     private static final int MIN = 0;
-    private static final int X_AMOUNT = 10;
-    private static final int Y_AMOUNT = 15;
+    private static final int X_AMOUNT = 5;
+    private static final int Y_AMOUNT = 5;
     private static final int PADDING = 220;
 
     private ImageView target;
-    private TextView counterDisplay;
     private Display display;
 
     private Random randomX;
@@ -54,13 +52,13 @@ public class GenericTapDataWriter {
     private DatabaseHandler database;
     static String userID = "";
     private GenericTaskDataModel taskmodel;
+    private GenericTaskActivity activity;
 
     private boolean positionChecker[][] = new boolean[X_AMOUNT][Y_AMOUNT];
     private boolean trainingsMode = true;
 
-    public GenericTapDataWriter(ImageView target, TextView counterDisplay, Display display){
+    public GenericTapTaskLogic(ImageView target, Display display, GenericTaskActivity activity){
         this.target = target;
-        this.counterDisplay = counterDisplay;
         this.display = display;
         initPositions();
         initPositionChecker();
@@ -70,6 +68,7 @@ public class GenericTapDataWriter {
         userID = MainActivity.currentUserID;
         database = MainActivity.getDbHandler();
         taskmodel = new GenericTaskDataModel(userID);
+        this.activity = activity;
     }
 
     public void handleTouch(MotionEvent event, View target) {
@@ -87,14 +86,11 @@ public class GenericTapDataWriter {
             timestamp = event.getEventTime();
             switch (eventAction) {
                 case MotionEvent.ACTION_DOWN:
-
                     writeDataIntoLists("Down");
                     break;
-
                 case MotionEvent.ACTION_MOVE:
                     writeDataIntoLists("Move");
                     break;
-
                 case MotionEvent.ACTION_UP:
                     writeDataIntoLists("Up");
                     targetClicked();
@@ -104,7 +100,6 @@ public class GenericTapDataWriter {
             }
         }else{
             if (eventAction == MotionEvent.ACTION_DOWN){
-
                 randomXValue = randomX.nextInt(((maxX - MIN) +1)+MIN);
                 randomYValue = randomY.nextInt((((maxY-3) - MIN) +1)+MIN);
                 target.setX(xPositions[randomXValue]-xOffset);
@@ -116,7 +111,7 @@ public class GenericTapDataWriter {
     public void targetClicked() {
         if (didTouchEveryPosition()){
             target.setVisibility(View.GONE);
-
+            activity.startAsyncTask();
         } else {
             randomXValue = randomX.nextInt(((maxX - MIN) +1)+MIN);
             randomYValue = randomY.nextInt(((maxY - MIN) +1)+MIN);
@@ -133,7 +128,7 @@ public class GenericTapDataWriter {
             target.setY(yPositions[randomYValue]-yOffset);
             Log.d("X, Y", String.valueOf(target.getX()) + ", " + String.valueOf(target.getY()));
         }
-        counterDisplay.setText("Noch " + ((xPositions.length*yPositions.length)-touch_counter) + " mal tippen");
+        activity.setCounterDisplay("Noch " + ((xPositions.length*yPositions.length)-touch_counter) + " mal tippen");
     }
 
     private void writeDataIntoLists(String eventType) {
@@ -157,22 +152,17 @@ public class GenericTapDataWriter {
         display.getSize(size);
         int width = size.x;
         int height = size.y-MainActivity.statusbarOffset;
-        Log.d("Size", String.valueOf(width) + " x " + String.valueOf(height));
         xPositions = new float[X_AMOUNT];
         yPositions = new float[Y_AMOUNT];
         xPositions[0] = PADDING;
         yPositions[0] = PADDING;
         int xStep = (width-2*PADDING)/(X_AMOUNT-1);
         int yStep = (height-2*PADDING)/(Y_AMOUNT-1);
-        Log.d("X Werte", String.valueOf(xPositions[0]));
         for (int i = 1; i<X_AMOUNT; i++) {
             xPositions[i] = xPositions[i - 1] + xStep;
-            Log.d("X Werte", String.valueOf(xPositions[i]));
         }
-        Log.d("Y Werte", String.valueOf(yPositions[0]));
         for (int i = 1; i<Y_AMOUNT; i++){
             yPositions[i] = yPositions[i-1] + yStep;
-            Log.d("Y Werte", String.valueOf(yPositions[i]));
         }
     }
 
@@ -198,7 +188,6 @@ public class GenericTapDataWriter {
     public void windowFocusChanged(){
         xOffset = target.getWidth()/2;
         yOffset = target.getHeight()/2;
-
         randomX = new Random();
         randomY = new Random();
         randomXValue = randomX.nextInt(((maxX - MIN) +1)+MIN);
@@ -213,8 +202,13 @@ public class GenericTapDataWriter {
         target.setX(xPositions[randomXValue]);
         target.setY(yPositions[randomYValue]);
         positionChecker[randomXValue][randomYValue] = true;
-        counterDisplay.setText("Noch " + ((xPositions.length*yPositions.length)-touch_counter) + " mal tippen");
+        activity.setCounterDisplay("Noch " + ((xPositions.length*yPositions.length)-touch_counter) + " mal tippen");
         trainingsMode = false;
     }
 
+    public void writeGenericTapData(MotionSensorDataModel motionData){
+        database.createGenericTaskData(taskmodel);
+        database.createMotionSensorData(motionData);
+        database.close();
+    }
 }

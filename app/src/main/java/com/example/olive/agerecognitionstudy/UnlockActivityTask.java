@@ -3,12 +3,10 @@ package com.example.olive.agerecognitionstudy;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Point;
 import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
@@ -29,63 +27,23 @@ import java.util.List;
 public class UnlockActivityTask extends AppCompatActivity {
 
     private static final String TASK_ID = "Unlock Pattern";
-    private static final int DOT_MATRIX_DIMENSION = 3;
-    private static final String[] PINS = {"15476", "25873", "03412", "24630", "01247"};
-    private static final String[] TRAININGS_PINS = {"01258", "048"};
-    private static final int CORRECT_REPETITIONS = 10;
-    private static final int TRAININGS_REPETITIONS = 2;
 
     private MotionSensorUtil motionSensorUtil;
     private TextView patternHint;
-    private String userID;
-    private DatabaseHandler database;
-    private UnlockTaskDataModel unlockDataModel;
-    private String patternHintFirstPart;
-    private String patternHintSecondPart;
-
-    private int logicRepetitionCount = 0;
-    private int actualRepetitionCount = 0;
-    private String progress = "";
-    private float xTarget;
-    private float yTarget;
-    private float xTouch = 0.0F;
-    private float yTouch = 0.0F;
-    private float touchPressure = 0.0F;
-    private float touchSize = 0.0F;
-    private float touchOrientation = 0.0F;
-    private float touchMajor = 0.0F;
-    private float touchMinor = 0.0F;
-    private long timestamp;
-
-    private int pinIndex = 0;
-    private int target = 0;
-    private List<Dot> dotProgress;
-    private List<Dot> currentPattern;
-    private boolean sequenceCorrect = true;
-    private boolean progressBegan = false;
-    private int formerSize = 0;
-
-    private Point[][] dotPositions;
-
     private PatternLockView mPatternLockView;
     private PatternLockViewListener mPatternLockViewListener;
-    private LatinSquareUtil latinSquareUtil;
-
-    private boolean trainingMode = true;
-    private int trainingsCount = 0;
-    private int trainingsIndex = 0;
+    private UnlockPatternTaskLogic unlockPatternTaskLogic;
+    private String patternHintFirstPart;
+    private String patternHintSecondPart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        unlockPatternTaskLogic = new UnlockPatternTaskLogic(UnlockActivityTask.this);
         setupUI();
-        latinSquareUtil = MainActivity.latinSquareUtil;
-        userID = MainActivity.currentUserID;
-        database = MainActivity.getDbHandler();
-        unlockDataModel = new UnlockTaskDataModel(userID);
         setupPatternLockViewListener();
         setupPatternUnlock();
-        motionSensorUtil = new MotionSensorUtil(userID, TASK_ID, (SensorManager) getSystemService(SENSOR_SERVICE));
+        motionSensorUtil = new MotionSensorUtil(unlockPatternTaskLogic.userID, TASK_ID, (SensorManager) getSystemService(SENSOR_SERVICE));
     }
 
     private void setupUI(){
@@ -95,21 +53,36 @@ public class UnlockActivityTask extends AppCompatActivity {
         Resources res = UnlockActivityTask.this.getResources();
         patternHintFirstPart = res.getString(R.string.pattern_hint);
         patternHintSecondPart = res.getString(R.string.pin_counter);
-        patternHint.setText(patternHintFirstPart + patternHintSecondPart + " " + (TRAININGS_REPETITIONS - trainingsCount) + " mal eingeben");
+        patternHint.setText(patternHintFirstPart + patternHintSecondPart + unlockPatternTaskLogic.getInitialHintMessage());
     }
 
     public void onUnlockTrainingEnd(View view){
-        trainingMode = false;
-        mPatternLockView.setPattern(PatternViewMode.AUTO_DRAW, PatternLockUtils.stringToPattern(mPatternLockView, PINS[pinIndex]));
-        patternHint.setText(patternHintFirstPart + patternHintSecondPart + " " + (CORRECT_REPETITIONS-logicRepetitionCount) + " mal eingeben");
+        unlockPatternTaskLogic.trainingMode = false;
+        mPatternLockView.setPattern(PatternViewMode.AUTO_DRAW, PatternLockUtils.stringToPattern(mPatternLockView, unlockPatternTaskLogic.getPattern()));
+        patternHint.setText(patternHintFirstPart + patternHintSecondPart + unlockPatternTaskLogic.getHintMessageAfterTraining());
         view.setVisibility(View.GONE);
         motionSensorUtil.registerListeners();
+    }
+
+    public void makeToast(String message){
+        Toast.makeText(getApplication(),
+                message, Toast.LENGTH_SHORT).show();
+    }
+
+    public void startAsyncTask(){
+        motionSensorUtil.stop();
+        UnlockActivityTask.AsyncTaskRunner runner = new UnlockActivityTask.AsyncTaskRunner();
+        runner.execute();
+    }
+
+    public void onUpdatePatternHint(String text) {
+        patternHint.setText(patternHintFirstPart + patternHintSecondPart + text);
     }
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        calculateDotPositions();
+        unlockPatternTaskLogic.calculateDotPositions();
         if (hasFocus) {
             View decorView = getWindow().getDecorView();
             decorView.setSystemUiVisibility(
@@ -123,66 +96,14 @@ public class UnlockActivityTask extends AppCompatActivity {
     OnTouchListener listener = new OnTouchListener() {
         @Override
         public boolean onTouch(View view, MotionEvent event) {
-            int eventAction = event.getAction();
-            if(!trainingMode) {
-                if (progressBegan && sequenceCorrect) {
-                    xTarget = dotPositions[currentPattern.get(target - 1).getColumn()][currentPattern.get(target - 1).getRow()].x;
-                    yTarget = dotPositions[currentPattern.get(target - 1).getColumn()][currentPattern.get(target - 1).getRow()].y;
-                } else {
-                    xTarget = dotPositions[currentPattern.get(target).getColumn()][currentPattern.get(target).getRow()].x;
-                    yTarget = dotPositions[currentPattern.get(target).getColumn()][currentPattern.get(target).getRow()].y;
-                }
-                xTouch = event.getRawX();
-                yTouch = event.getRawY() - MainActivity.statusbarOffset;
-                touchPressure = event.getPressure();
-                touchSize = event.getSize();
-                touchOrientation = event.getOrientation();
-                touchMajor = event.getTouchMajor();
-                touchMinor = event.getTouchMinor();
-                timestamp = event.getEventTime();
-                switch (eventAction) {
-                    case MotionEvent.ACTION_DOWN:
-
-                        writeDataIntoLists("Down");
-
-                        break;
-
-                    case MotionEvent.ACTION_MOVE:
-                        writeDataIntoLists("Move");
-                        break;
-
-                    case MotionEvent.ACTION_UP:
-                        writeDataIntoLists("Up");
-                        break;
-                    default:
-                        break;
-                }
-            }
+            unlockPatternTaskLogic.handleTouch(view, event);
             return false;
         }
     };
 
-    private void writeDataIntoLists(String eventType) {
-        unlockDataModel.setParticipantId(userID);
-        unlockDataModel.setPattern(PINS[pinIndex]);
-        unlockDataModel.setEventType(eventType);
-        unlockDataModel.setLogicRepetition(logicRepetitionCount);
-        unlockDataModel.setActualRepetition(actualRepetitionCount);
-        unlockDataModel.setProgress(progress);
-        unlockDataModel.setxButtonCenter(xTarget);
-        unlockDataModel.setyButtonCenter(yTarget);
-        unlockDataModel.setxTouch(xTouch);
-        unlockDataModel.setyTouch(yTouch);
-        unlockDataModel.setTouchPressure(touchPressure);
-        unlockDataModel.setTouchSize(touchSize);
-        unlockDataModel.setTouchOrientation(touchOrientation);
-        unlockDataModel.setTouchMajor(touchMajor);
-        unlockDataModel.setTouchMinor(touchMinor);
-        unlockDataModel.setTimestamp(timestamp);
-    }
-
     private void setupPatternUnlock () {
         mPatternLockView = findViewById(R.id.pattern_lock_view);
+        unlockPatternTaskLogic.setLockView(mPatternLockView);
         mPatternLockView.setDotCount(3);
         mPatternLockView.setDotNormalSize((int) ResourceUtils.getDimensionInPx(this, R.dimen.pattern_lock_dot_size));
         mPatternLockView.setDotSelectedSize((int) ResourceUtils.getDimensionInPx(this, R.dimen.pattern_lock_dot_selected_size));
@@ -193,9 +114,8 @@ public class UnlockActivityTask extends AppCompatActivity {
         mPatternLockView.setInputEnabled(true);
         mPatternLockView.addPatternLockListener(mPatternLockViewListener);
         mPatternLockView.setOnTouchListener(listener);
-        dotProgress = PatternLockUtils.stringToPattern(mPatternLockView, PINS[0]);
-        currentPattern = PatternLockUtils.stringToPattern(mPatternLockView, PINS[0]);
-        mPatternLockView.setPattern(PatternViewMode.AUTO_DRAW, PatternLockUtils.stringToPattern(mPatternLockView, TRAININGS_PINS[trainingsIndex]));
+        unlockPatternTaskLogic.setDotProgressAndPattern();
+        mPatternLockView.setPattern(PatternViewMode.AUTO_DRAW, PatternLockUtils.stringToPattern(mPatternLockView, unlockPatternTaskLogic.getTrainingPattern()));
     }
 
     void setupPatternLockViewListener() {
@@ -207,107 +127,22 @@ public class UnlockActivityTask extends AppCompatActivity {
 
             @Override
             public void onProgress(List<Dot> progressPattern) {
-                if(!trainingMode) {
-                    progress = PatternLockUtils.patternToString(mPatternLockView, progressPattern);
-                    dotProgress = progressPattern;
-                    if (dotProgress.size() < PINS[0].length()) {
-                        if (sequenceCorrect && (dotProgress.get(dotProgress.size() - 1) == PatternLockUtils.stringToPattern(mPatternLockView, PINS[pinIndex]).get(target))) {
-                            target++;
-                        } else {
-                            sequenceCorrect = false;
-                        }
-                        progressBegan = true;
-                    }
-                }
+                unlockPatternTaskLogic.updateProgress(progressPattern);
             }
 
             @Override
             public void onComplete(List<Dot> pattern) {
-                if (!trainingMode) {
-                    target = 0;
-                    actualRepetitionCount++;
-                    if (PatternLockUtils.patternToString(mPatternLockView, pattern).equals(PINS[pinIndex])) {
-                        if ((PatternLockUtils.patternToString(mPatternLockView, pattern).equals(PINS[PINS.length - 1])) && (logicRepetitionCount == CORRECT_REPETITIONS - 1)) {
-                            logicRepetitionCount = 0;
-                            pinIndex = 0;
-                            progress = "";
-                            UnlockActivityTask.AsyncTaskRunner runner = new UnlockActivityTask.AsyncTaskRunner();
-                            runner.execute();
-                        }
-                        mPatternLockView.clearPattern();
-                        if (logicRepetitionCount == CORRECT_REPETITIONS - 1) {
-                            logicRepetitionCount = 0;
-                            actualRepetitionCount = 0;
-                            pinIndex++;
-                            progress = "";
-                        } else {
-                            logicRepetitionCount++;
-                            progress = "";
-                        }
-                        Toast.makeText(getApplication(),
-                                "Eingabe korrekt.", Toast.LENGTH_SHORT).show();
-                        patternHint.setText(patternHintFirstPart + patternHintSecondPart + " " + (CORRECT_REPETITIONS - logicRepetitionCount) + " mal eingeben");
-                    } else {
-                        progress = "";
-                        sequenceCorrect = false;
-                        Toast.makeText(getApplication(),
-                                "Eingabe falsch.", Toast.LENGTH_SHORT).show();
-                    }
-                    setSequenceCorrectness();
-                    mPatternLockView.setPattern(PatternViewMode.AUTO_DRAW, PatternLockUtils.stringToPattern(mPatternLockView, PINS[pinIndex]));
-                    dotProgress = PatternLockUtils.stringToPattern(mPatternLockView, PINS[pinIndex]);
-                    currentPattern = PatternLockUtils.stringToPattern(mPatternLockView, PINS[pinIndex]);
-                    sequenceCorrect = true;
-                    progressBegan = false;
-                }else{
-                    if (PatternLockUtils.patternToString(mPatternLockView, pattern).equals(TRAININGS_PINS[trainingsIndex])){
-                        if (trainingsCount == TRAININGS_REPETITIONS-1){
-                            if(TRAININGS_PINS.length-1 == trainingsIndex){
-                                trainingsIndex = 0;
-                            }else {
-                                trainingsIndex++;
-                            }
-                            trainingsCount = 0;
-                        }else {
-                            trainingsCount++;
-                        }
-                    }
-                    mPatternLockView.setPattern(PatternViewMode.AUTO_DRAW, PatternLockUtils.stringToPattern(mPatternLockView, TRAININGS_PINS[trainingsIndex]));
-                    patternHint.setText(patternHintFirstPart + patternHintSecondPart + " " + (TRAININGS_REPETITIONS - trainingsCount) + " mal eingeben");
-                }
+                unlockPatternTaskLogic.onPatternComplete(pattern);
             }
+
             @Override
             public void onCleared() {
             }
         };
     }
 
-    private void calculateDotPositions(){
-        dotPositions = new Point[DOT_MATRIX_DIMENSION][DOT_MATRIX_DIMENSION];
-        for (float i = 1.0f; i < DOT_MATRIX_DIMENSION+1; i++){
-            for (float j = 1.0f; j < DOT_MATRIX_DIMENSION+1; j++){
-                float xPos = mPatternLockView.getX() + (mPatternLockView.getWidth() * (i/DOT_MATRIX_DIMENSION)) - ((1.0f/DOT_MATRIX_DIMENSION) * mPatternLockView.getWidth()/2);
-                float yPos = mPatternLockView.getY() + (mPatternLockView.getHeight() * (j/DOT_MATRIX_DIMENSION)) - ((1.0f/DOT_MATRIX_DIMENSION) * mPatternLockView.getHeight()/2);
-                dotPositions[(int) i-1][(int) j-1] = new Point((int) xPos, (int) yPos);
-                Log.d("Position", "Position "+ String.valueOf(i-1) + ": " + String.valueOf(dotPositions[(int) i-1][(int) j-1]));
-            }
-        }
-    }
-
-    private void setSequenceCorrectness(){
-        int size = unlockDataModel.pattern.size();
-        for (int i = 0; i < size-formerSize; i++){
-            if(!sequenceCorrect){
-                unlockDataModel.setSequenceCorrect("false");
-            }else {
-                unlockDataModel.setSequenceCorrect("true");
-            }
-        }
-        formerSize = size;
-    }
-
     private void startIntent(){
-        int activity = latinSquareUtil.getNext();
+        int activity = unlockPatternTaskLogic.latinSquareUtil.getNext();
         Intent intent;
         switch (activity){
             case 0:
@@ -345,9 +180,7 @@ public class UnlockActivityTask extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
             try {
-                database.createUnlockTaskData(unlockDataModel);
-                database.createMotionSensorData(motionSensorUtil.getMotionSensorData());
-                database.close();
+                unlockPatternTaskLogic.writeUnlockPatternData(motionSensorUtil.getMotionSensorData());
             } catch (Exception e) {
                 e.printStackTrace();
             }

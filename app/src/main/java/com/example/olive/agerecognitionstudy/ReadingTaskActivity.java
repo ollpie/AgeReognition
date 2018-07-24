@@ -34,14 +34,14 @@ public class ReadingTaskActivity extends AppCompatActivity {
     private int displayHeight;
     private int clickCounter = 0;
 
-    private ReadingDataWriter dataWritingUtil;
+    private ReadingTaskLogic readingTaskLogic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupUI();
-        dataWritingUtil = new ReadingDataWriter();
-        motionSensorUtil = new MotionSensorUtil(dataWritingUtil.userID, TASK_ID, (SensorManager) getSystemService(SENSOR_SERVICE));
+        readingTaskLogic = new ReadingTaskLogic();
+        motionSensorUtil = new MotionSensorUtil(readingTaskLogic.userID, TASK_ID, (SensorManager) getSystemService(SENSOR_SERVICE));
     }
 
     private void setupUI(){
@@ -64,10 +64,10 @@ public class ReadingTaskActivity extends AppCompatActivity {
     }
 
     public void buttonClicked (View view){
-        if (dataWritingUtil.trainigsMode){
+        if (readingTaskLogic.trainigsMode){
             motionSensorUtil.registerListeners();
         }
-        dataWritingUtil.trainigsMode = false;
+        readingTaskLogic.trainigsMode = false;
         nextText();
     }
 
@@ -76,8 +76,8 @@ public class ReadingTaskActivity extends AppCompatActivity {
             ReadingTaskActivity.AsyncTaskRunner asyncTask = new ReadingTaskActivity.AsyncTaskRunner();
             asyncTask.execute();
         }else{
-            if(!dataWritingUtil.trainigsMode){
-                dataWritingUtil.textCount++;
+            if(!readingTaskLogic.trainigsMode){
+                readingTaskLogic.textCount++;
             }
             scrollView.scrollTo(0,0);
             textView1.setText(getResources().getString(FIRST_TEXTS[clickCounter]));
@@ -89,12 +89,12 @@ public class ReadingTaskActivity extends AppCompatActivity {
     }
 
     public boolean dispatchTouchEvent(MotionEvent event) {
-        dataWritingUtil.handleTouch(event, scrollView, displayHeight);
+        readingTaskLogic.handleTouch(event, scrollView, displayHeight);
         return super.dispatchTouchEvent(event);
     }
 
     private void startIntent(){
-        int activity = dataWritingUtil.latinSquareUtil.getNext();
+        int activity = readingTaskLogic.latinSquareUtil.getNext();
         Intent intent;
         switch (activity){
             case 0:
@@ -132,7 +132,7 @@ public class ReadingTaskActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
             try {
-                dataWritingUtil.writeReadingData(motionSensorUtil.getMotionSensorData());
+                readingTaskLogic.writeReadingData(motionSensorUtil.getMotionSensorData());
             } catch (Exception e) {
                 e.printStackTrace();
             }

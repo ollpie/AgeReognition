@@ -1,7 +1,6 @@
 package com.example.olive.agerecognitionstudy;
 
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 /**
  * Created by olive on 24.01.2018.
@@ -10,7 +9,6 @@ import android.util.Log;
 public class LatinSquareUtil extends AppCompatActivity{
 
     private int[] indexes = {0, 1, 2, 3};
-
     private int i = 0;
     private int l = 3;
     private boolean end = false;
@@ -28,8 +26,6 @@ public class LatinSquareUtil extends AppCompatActivity{
             }
             i = database.getLatinSquareValues()[0];
         }
-        Log.d("Checksum", String.valueOf(checkSum));
-        Log.d("Indexes", String.valueOf(indexes[0]) + ", " + String.valueOf(indexes[1]) + ", " + String.valueOf(indexes[2]) + ", " + String.valueOf(indexes[3]));
     }
 
     public int getNext(){
@@ -63,7 +59,6 @@ public class LatinSquareUtil extends AppCompatActivity{
     }
 
     public void setIndex (int index){
-        Log.d("Index", String.valueOf(index));
         for (int j = 0; j < indexes.length; j++){
             if (indexes[j] == index){
                 i = j;
